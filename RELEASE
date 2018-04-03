@@ -1,0 +1,99 @@
+Facebook Ads Extension
+Latest version: 1.0.11
+
+Change log
+1.0.11 - 3 Apr 2018
+* Handling for cases where the image field of product is storing external image URLs instead of storing images uploaded to merchant's OpenCart server.
+* Improved the method of libraryFB() to fix the error of Call to undefined method Loader::libraryFB() in some user's OpenCart system.
+* Added in another FAE setup check on the admin panel dashboard screen to ensure the FAE settings is correct.
+
+1.0.10 - 29 Mar 2018
+Important: We have improved the plugin support for php5.4. If you are on php5.4, please go to Facebook Ads Extension -> Manage Settings -> Advanced Settings -> Delete Settings. Click on Delete Settings and re-setup Facebook Ads Extension again.
+
+* Improved the plugin robustness by providing support for php5.4. Also fixed a bug which causes initial product sync to fail for servers on php5.4 due to the usage of CurlFile which is not available for php5.4.
+* Included in the opencart version and server version in the error logging when product sync fails.
+* Improved the mechanism of syncing of product availability such that we will not perform a product sync if the FAE setup is not complete.
+* Improved the robustness of the plugin by validating if the Facebook product catalog has been deleted. If so, the plugin will remove away the existing Facebook Ads Extension catalog settings and prompt user to re-setup Facebook Ads Extension again.
+* Improved the validate if product initial sync has completed in the product management screen. If not we will like to do a query to get the product initial sync status from FB
+* Improved the robustness of Facebook Ads Extension plugin by checking that the required files and folders (including parent) have the required read+write+excute permissions
+
+1.0.9 - 20 Mar 2018
+* Improved the plugin robustness by auto detecting if there are missing required files or missing Database table and prompt user on the problem and rectification steps
+* Fix a bug which crash the Facebook Ads Extension setup screen by enabling backward compatibility with PHP 5.3 to PHP 5.5 servers due to scalar expression on const field
+* Fix a display bug where the sample product images are not shown during the Facebook Ads Extension setup
+* Fix a display bug where the total products shown during Facebook Ads Extension should only include enabled products and exclude out disabled products
+* Fix a logging bug by not logging the deletion of disabled products as error
+* Fix a bug on product sync if the product image or additional_image_urls contain single quotes
+
+* Added opensource license to the codebase
+* Included Frequently Asked Questions section to the readme file
+
+1.0.8 - 12 Feb 2018
+* Improved the product feed file (for initial product sync) to be residing in either system/storage/modication or system/storage/logs folder
+* Improved the overall robustness and message notification to handle situations when the initial product sync did not complete as expected or if the plugin is installed but has not been setup yet
+* Added in capability to refresh the FB access token if it has expired, eg due to change in FB password
+* Improved the robustness of firing the ViewContent pixel event
+* Fixed a bug to cap additional_image_urls to only the first 10 images, as FB only stores up to 10 images
+
+1.0.7 - 25 Nov 2017
+* Fix 2 bugs on the initial sync of products
+** Decimal value of products is trancated
+** Currency of product not sent correctly
+* Improved the product catalog price to include in the tax if the display price with tax is selected
+* Added in firing of a custom event, ViewBrand when viewing products by brand
+* Do not sync disabled OpenCart products to Facebook product catalog and Facebook Page Shop
+
+1.0.6 - 14 Nov 2017
+* Improved on the performance of the initial sync of products to Facebook product catalog
+
+1.0.5 - 10 Nov 2017
+* Improved on the robustness of the plugin on syncing product discounts to Facebook product catalog
+
+1.0.4 - 20 Oct 2017
+* Improved on the robustness of the plugin
+
+1.0.3 - 27 Sep 2017
+* Added in feature to delete away existing FAE settings from Facebook Ads Extension -> Advanced Options
+
+1.0.2 - 24 Sep 2017
+* Fix a bug where the product is not shown properly on Page Shop on Mobile
+* Syncing of additional images to Facebook product catalog.
+
+1.0.1 - 2 Sep 2017
+Improvements
+
+* Syncing of sales discount of products to Facebook product catalog. The sales discount supported are
+** Unlimited discount period, ie no sales start and sales end specified
+** The first upcoming/ongoing sales discount of the highest priority
+
+* Better support for currencies with no cents, eg TWD
+
+* Provide function to resync all products to Facebook
+
+1.0.0 - 22 Aug 2017
+
+First release adding full Facebook Pixel support enabling a best in class
+setup of tracking events enabling out the box support for
+Facebook Website Custom Audiences, Dynamic Product Ads, oCPM and
+conversion attribution.
+
+* Adds the following events to your pages
+** PageView (triggers on all pages)
+** Search (triggers on the search results page)
+** ViewCategory (triggers on the category page)
+** ViewContent (triggers on viewing product detail pages)
+** AddToCart (triggers after an item has been added to cart)
+** Purchase (triggers on order confirmation)
+** InitiateCheckout (triggers when user begins checkout flow)
+** AddToWishlist (triggers when an item has been added to wishlist)
+** CompleteRegistration (triggers when a new user registers an account)
+** Lead (triggers when user submits a Contact us form)
+** Sends Personal Identifiable Information in the form of email address, first name, last name and telephone number. This option is disabled by default and can be changed during the plugin installation stage.
+
+* Provides automated sync between your catalog and Facebook catalog
+** Full sync of the catalog upon plugin installation
+** Real time sync of the catalog during
+*** Creation of new products
+*** Editing of existing products
+*** Deletion of existing products
+*** Sales transaction of products

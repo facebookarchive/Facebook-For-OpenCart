@@ -1,0 +1,758 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2017-present, Facebook, Inc. -->
+<!-- All rights reserved. -->
+
+<!-- This source code is licensed under the license found in the -->
+<!-- LICENSE file in the root directory of this source tree. -->
+
+<modification>
+  <name>Facebook Ads Extension</name>
+  <code>facebook_ads_extension</code>
+  <version>1.0.11</version>
+  <author>Facebook</author>
+  <link></link>
+
+  <!-- Admin panel settings -->
+  <file path="admin/controller/common/column_left.php">
+    <operation>
+      <search><![CDATA[public function index() {]]></search>
+      <add position="after"><![CDATA[
+        $facebookAdsExtension = array();      
+        $facebookAdsExtension[] = array(
+          'name'     => 'Facebook Ads Extension',
+          'href'     => $this->url->link('facebook/facebookadsextension', 'token=' . $this->session->data['token'], true),
+          'children' => array()   
+        );
+
+        $data['menus'][] = array(
+          'id'       => 'menu-facebook-ads-extension',
+          'icon'     => 'fa-facebook-square', 
+          'name'     => 'Facebook Ads Extension',
+          'href'     => '',
+          'children' => $facebookAdsExtension
+        );
+      ]]></add>
+    </operation>
+  </file>
+
+  <!-- Admin dashboard settings -->
+  <file path="admin/controller/common/dashboard.php">
+    <operation>
+      <search><![CDATA[public function index() {]]></search>
+      <add position="after"><![CDATA[
+        try {
+          $operation = ', dashboard module';
+          $this->load->controller(
+            'facebook/facebookproduct/validateFAEAndCatalogSetupAndProductUploadComplete',
+            $operation);
+        } catch (Exception $e) {
+          $data['error_facebook_sync'] =
+            ($e->getCode() === FacebookGraphAPIError::ACCESS_TOKEN_EXCEPTION_CODE)
+            ? $this->language->get('text_warning_facebook_access_token_problem')
+            : $e->getMessage();
+        }
+      ]]></add>
+    </operation>
+  </file>
+
+  <file path="admin/view/template/common/dashboard.tpl">
+    <operation>
+      <search><![CDATA[<?php if ($error_install) { ?>]]></search>
+      <add position="before"><![CDATA[
+        <?php if ($error_facebook_sync) {?>
+        <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> <?= $error_facebook_sync; ?>
+          <button type="button" class="close" data-dismiss="alert">&times;</button>
+        </div>
+        <?php } ?>
+      ]]></add>
+    </operation>
+  </file>
+
+  <!-- For opencart v2.x and not v2.3.x, -->
+  <!-- the method of displaying the functions on menu sidebar of admin panel -->
+  <!-- is via explicit hardcoding on the menu controller and template -->
+  <!-- This code insertion is to handle for v2.x and not v2.3.x -->
+  <!-- by explicitly adding FAE to menu controller and template -->
+  <!-- In v2.3.x, there are no menu.php and menu.tpl files -->
+
+  <!-- Seach syntax for opencart v2.2.0.0 and below -->
+  <file path="admin/controller/common/menu.php">
+    <operation>
+      <search><![CDATA[public function index() {]]></search>
+      <add position="after"><![CDATA[
+        $data['text_facebook_ads_extension'] = 'Facebook Ads Extension';
+        $data['facebookadsextension'] = $this->url->link('facebook/facebookadsextension', 'token=' . $this->session->data['token'], 'SSL');
+      ]]></add>
+    </operation>
+  </file>
+
+  <file path="admin/view/template/common/menu.tpl">
+    <operation>
+      <search><![CDATA[<ul id="menu">]]></search>
+      <add position="after"><![CDATA[
+        <li id="facebookadsextension"><a class="parent"><i class="fa fa-facebook-square fa-fw"></i> <span><?= $text_facebook_ads_extension; ?></span></a>
+          <ul>
+            <li>
+              <a href="<?= $facebookadsextension; ?>">
+                <?= $text_facebook_ads_extension; ?>
+              </a>
+            </li>
+          </ul>
+        </li>
+      ]]></add>
+    </operation>
+  </file>
+
+  <!-- Admin product settings -->
+  <file path="admin/model/catalog/product.php">
+    <!-- This operation is to store in the new product id -->
+    <!-- in the request->post variable. -->
+    <!-- Using this new product id, we can then access from -->
+    <!-- the controller and sync it with facebook catalog -->
+    <operation>
+      <search><![CDATA[return $product_id;]]></search>
+      <add position="before"><![CDATA[
+        $this->request->post['facebook_id_of_new_product'] = $product_id;
+      ]]></add>
+    </operation>
+  </file>
+
+  <file path="admin/controller/catalog/product.php">
+    <operation>
+      <!-- We want to provide feedback to merchant on their FAE status -->
+      <!-- when they access the product management module entry screen-->
+      <!-- The feedback could be either FAE not setup or  -->
+      <!-- a problem with the FAE setup -->
+      <search><![CDATA[public function index() {]]></search>
+      <add position="after"><![CDATA[
+        try {
+          $operation = ', access product module';
+          $this->load->controller(
+            'facebook/facebookproduct/validateFAEAndCatalogSetupAndProductUploadComplete',
+            $operation);
+        } catch (Exception $e) {
+          $this->session->data['error_facebook_sync'] =
+            ($e->getCode() === FacebookGraphAPIError::ACCESS_TOKEN_EXCEPTION_CODE)
+            ? $this->language->get('text_warning_facebook_access_token_problem')
+            : $e->getMessage();
+        }
+      ]]></add>
+    </operation>
+
+    <operation>
+      <!-- We need to retrieve out the new product id after it is -->
+      <!-- created in the database. Although the addProduct method -->
+      <!-- returns the product_id, but the default Opencart code -->
+      <!-- does not read in the return product_id -->
+      <!-- As it is riskier if to modify and replace original base codes, -->
+      <!-- the approach is to use the request->post variable to pass back -->
+      <!-- the new product id from model to controller -->
+      <search><![CDATA[$this->model_catalog_product->addProduct($this->request->post);]]></search>
+      <add position="after"><![CDATA[
+        try {
+          $product_id = $this->request->post['facebook_id_of_new_product'];
+          $result = $this->load->controller(
+            'facebook/facebookproduct/syncProductForProductId',
+            $product_id);
+          if (!isset($result['success_count'])
+            || $result['success_count'] !== $result['total_count']) {
+            $this->session->data['error_facebook_sync'] =
+              $this->language->get('text_warning_facebook_sync');
+          }
+        } catch (Exception $e) {
+          $this->session->data['error_facebook_sync'] =
+            ($e->getCode() === FacebookGraphAPIError::ACCESS_TOKEN_EXCEPTION_CODE)
+            ? $this->language->get('text_warning_facebook_access_token_problem')
+            : $e->getMessage();
+        }
+      ]]></add>
+    </operation>
+
+    <operation>
+      <search><![CDATA[$this->model_catalog_product->editProduct($this->request->get['product_id'], $this->request->post);]]></search>
+      <add position="after"><![CDATA[
+        try {
+          $result = $this->load->controller(
+            'facebook/facebookproduct/syncProductForProductId',
+            $this->request->get['product_id']);
+          if (!isset($result['success_count'])
+            || $result['success_count'] !== $result['total_count']) {
+            $this->session->data['error_facebook_sync'] =
+              $this->language->get('text_warning_facebook_sync');
+          }
+        } catch (Exception $e) {
+          $this->session->data['error_facebook_sync'] =
+            ($e->getCode() === FacebookGraphAPIError::ACCESS_TOKEN_EXCEPTION_CODE)
+            ? $this->language->get('text_warning_facebook_access_token_problem')
+            : $e->getMessage();
+        }
+      ]]></add>
+    </operation>
+
+    <operation>
+      <search><![CDATA[if (isset($this->request->post['selected']) && $this->validateDelete()) {]]></search>
+      <add position="after"><![CDATA[
+        try {
+          $result = $this->load->controller(
+            'facebook/facebookproduct/deleteProductsForProductId',
+            $this->request->post['selected']);
+          if (!isset($result['success_count'])
+            || $result['success_count'] !== $result['total_count']) {
+            $this->session->data['error_facebook_sync'] =
+              $this->language->get('text_warning_facebook_sync');
+          }
+        } catch (Exception $e) {
+          $this->session->data['error_facebook_sync'] =
+            ($e->getCode() === FacebookGraphAPIError::ACCESS_TOKEN_EXCEPTION_CODE)
+            ? $this->language->get('text_warning_facebook_access_token_problem')
+            : $e->getMessage();
+        }
+      ]]></add>
+    </operation>
+
+    <operation>
+      <search><![CDATA[protected function getList() {]]></search>
+      <add position="after"><![CDATA[
+        if (isset($this->session->data['error_facebook_sync'])) {
+          $data['error_facebook_sync'] = $this->session->data['error_facebook_sync'];
+          unset($this->session->data['error_facebook_sync']);
+        } else {
+          $data['error_facebook_sync'] = '';
+        }
+
+        if (isset($this->session->data['error_facebook_delete'])) {
+          $data['error_facebook_delete'] = $this->session->data['error_facebook_delete'];
+          unset($this->session->data['error_facebook_delete']);
+        } else {
+          $data['error_facebook_delete'] = '';
+        }        
+      ]]></add>
+    </operation>  
+
+    <operation>
+      <search><![CDATA[$url = '';]]></search>
+      <add position="after"><![CDATA[
+        if (isset($this->request->get['debug_facebook_sync_error'])) {
+          $url .= '&debug_facebook_sync_error=1';
+        } 
+      ]]></add>
+    </operation>
+  </file>
+
+  <file path="admin/view/template/catalog/product_list.tpl">
+    <operation>
+      <search><![CDATA[    <?php if ($error_warning) { ?>]]></search>
+      <add position="before"><![CDATA[
+        <?php if ($error_facebook_sync) {?>
+        <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> <?= $error_facebook_sync; ?>
+          <button type="button" class="close" data-dismiss="alert">&times;</button>
+        </div>
+        <?php } ?> 
+        <?php if ($error_facebook_delete) {?>
+        <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> <?= $error_facebook_delete; ?>
+          <button type="button" class="close" data-dismiss="alert">&times;</button>
+        </div>
+        <?php } ?>           
+      ]]></add>
+    </operation>   
+  </file>
+
+  <file path="admin/language/*/catalog/product.php">
+    <operation>
+      <search><![CDATA[$_['text_success']           = 'Success: You have modified products!';]]></search>
+      <add position="after"><![CDATA[
+        $_['text_warning_facebook_sync']           = 'Warning: Encountered problem updating product(s) to Facebook. Please retry again. Check the error log file for more details';
+        $_['text_warning_facebook_delete']           = 'Warning: Encountered problem deleting product(s) to Facebook. Check the error log file for more details.';
+        $_['text_warning_facebook_access_token_problem'] = 'Warning: There is a problem with your Facebook access token. Please go to Facebook Ads Extension to refresh the access token.';
+      ]]></add>
+    </operation>   
+  </file>  
+  <!-- End Admin product settings -->
+
+  <!-- Admin panel - add/edit sales orders, this will sync up the product availability with Facebook -->
+  <file path="catalog/controller/api/order.php">
+    <!-- This is to handle for Adding of new orders -->
+    <operation>
+      <search><![CDATA[$this->model_checkout_order->addOrderHistory($json['order_id'], $order_status_id);]]></search>
+      <add position="after"><![CDATA[
+        $products = $this->cart->getProducts();
+        if ($products && sizeof($products)) {
+          $this->facebookcommonutils = new FacebookCommonUtils();
+          $this->facebookcommonutils->updateProductAvailability(
+            $this->registry,
+            $products);
+        }      
+      ]]></add>
+    </operation>
+
+    <!-- This is to handle for Editing of existing orders. -->
+    <!-- There may be cases where the user removes existing products -->
+    <!-- and adds in new products. In these cases, we need to -->
+    <!-- get the full list of affected products and update the -->
+    <!-- availability for them -->
+    <!-- This gets the products pre edit -->
+    <operation>
+      <search><![CDATA[$this->model_checkout_order->editOrder($order_id, $order_data);]]></search>
+      <add position="before"><![CDATA[
+        $products_pre_edit = $this->model_checkout_order->getOrderProductIds($order_id);
+      ]]></add>
+    </operation>
+
+    <!-- This gets the products post edit and merges the pre and post lists together -->
+    <!-- for product availability update -->
+    <operation>
+      <search><![CDATA[$this->model_checkout_order->addOrderHistory($order_id, $order_status_id);]]></search>
+      <add position="after"><![CDATA[
+        $products_post_edit = $this->cart->getProducts();
+        $this->facebookcommonutils = new FacebookCommonUtils();
+        $products_for_availabilty_update =
+          array_merge($products_pre_edit, $products_post_edit);
+        $this->facebookcommonutils->updateProductAvailability(
+          $this->registry,
+          $products_for_availabilty_update);
+      ]]></add>
+    </operation>
+  </file>
+
+  <!-- This function retrieves out the product_ids for an order_id -->
+  <file path="catalog/model/checkout/order.php">
+    <operation>
+      <search><![CDATA[class ModelCheckoutOrder extends Model]]></search>
+      <add position="after"><![CDATA[
+          public function getOrderProductIds($order_id) {
+            $sql = "SELECT product_id FROM " . DB_PREFIX . "order_product " .
+              "WHERE order_id = '" . (int)$order_id . "'";
+            return $this->db->query($sql)->rows;
+          }
+      ]]></add>
+    </operation>
+  </file>
+  <!-- Admin modify orders, this will sync up the product availability with Facebook -->
+
+  <!-- Facebook pixel base code -->
+
+  <!-- Firing the pixel init and event code -->
+  <!-- The facebook_pixel_event_params_FAE is retrieved from the request->post -->
+  <file path="catalog/controller/common/header.php">
+    <operation>
+      <search><![CDATA[public function index()]]></search>
+      <add position="after"><![CDATA[
+        $this->facebookcommonutils = new FacebookCommonUtils();
+        $data['facebook_pixel_id_FAE'] =
+          $this->config->get('facebook_pixel_id');
+        $source = 'exopencart';
+        $opencart_version = VERSION;
+        $plugin_version = $this->facebookcommonutils->getPluginVersion();
+        $agent_string = sprintf(
+          '%s-%s-%s',
+          $source,
+          $opencart_version,
+          $plugin_version);
+        $facebook_pixel_pii_FAE = array();
+        if ($this->config->get('facebook_pixel_use_pii') === 'true'
+          && $this->customer->isLogged()) {
+          $facebook_pixel_pii_FAE['em'] =
+            $this->facebookcommonutils->getEscapedString(
+              $this->customer->getEmail());
+          $facebook_pixel_pii_FAE['fn'] =
+            $this->facebookcommonutils->getEscapedString(
+              $this->customer->getFirstName());
+          $facebook_pixel_pii_FAE['ln'] =
+            $this->facebookcommonutils->getEscapedString(
+              $this->customer->getLastName());
+          $facebook_pixel_pii_FAE['ph'] =
+            $this->facebookcommonutils->getEscapedString(
+              $this->customer->getTelephone());
+        }
+        $data['facebook_pixel_pii_FAE'] = json_encode(
+          $facebook_pixel_pii_FAE,
+          JSON_PRETTY_PRINT | JSON_FORCE_OBJECT);
+        $facebook_pixel_params_FAE = array('agent' => $agent_string);
+        $data['facebook_pixel_params_FAE'] = json_encode(
+          $facebook_pixel_params_FAE,
+          JSON_PRETTY_PRINT | JSON_FORCE_OBJECT);
+        $data['facebook_pixel_event_params_FAE'] =
+          (isset($this->request->post['facebook_pixel_event_params_FAE'])
+            && $this->request->post['facebook_pixel_event_params_FAE'])
+          ? $this->request->post['facebook_pixel_event_params_FAE']
+          : '';
+        // flushing away the facebook_pixel_event_params_FAE
+        // in the controller to ensure that subsequent fires
+        // for the same param is not performed
+        $this->request->post['facebook_pixel_event_params_FAE'] = '';
+      ]]></add>
+    </operation>
+  </file>
+
+  <!-- The actual firing of the pixel code is done in the header file -->
+  <!-- The injection for the header file is based on locating -->
+  <!-- the tag </head> which should give the lowest chance to break -->
+  <!-- with custom plugins -->
+  <file path="catalog/view/theme/*/template/common/header.tpl">
+    <operation>
+      <search><![CDATA[</head>]]></search>
+      <add position="before"><![CDATA[
+        <script type="text/javascript">
+          !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+          n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+          n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+          t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+          document,'script','https://connect.facebook.net/en_US/fbevents.js');
+        </script>
+        <script type="text/javascript" src = "catalog/view/javascript/facebook/facebook_pixel.js"></script>
+        <?php if ($facebook_pixel_id_FAE) { ?>
+          <script type="text/javascript">
+            (function() {
+              var params = <?= $facebook_pixel_params_FAE ?>;
+              _facebookAdsExtension.facebookPixel.init(
+                '<?= $facebook_pixel_id_FAE ?>',
+                <?= $facebook_pixel_pii_FAE ?>,
+                params);
+              <?php if ($facebook_pixel_event_params_FAE) { ?>
+                _facebookAdsExtension.facebookPixel.firePixel(
+                  JSON.parse('<?= $facebook_pixel_event_params_FAE ?>'));
+              <?php } ?>
+            })();
+          </script>
+        <?php } ?>
+      ]]></add>
+    </operation>
+  </file>
+  <!-- End Facebook pixel base code -->
+
+  <!-- Facebook pixel ViewContent code -->
+  <!-- This will prepare the params for ViewContent pixel -->
+  <file path="catalog/controller/product/product.php">
+    <operation>
+      <search><![CDATA[if ($product_info) {]]></search>
+      <add position="after"><![CDATA[
+        $this->facebookcommonutils = new FacebookCommonUtils();
+        $params = new DAPixelConfigParams(array(
+          'eventName' => 'ViewContent',
+          'products' => array($product_info),
+          'currency' => $this->currency,
+          'currencyCode' => $this->session->data['currency'],
+          'hasQuantity' => false));
+        $facebook_pixel_event_params_FAE =
+          $this->facebookcommonutils->getDAPixelParamsForProducts($params);
+        // stores the pixel event params in the session
+        $this->request->post['facebook_pixel_event_params_FAE'] =
+          addslashes(json_encode($facebook_pixel_event_params_FAE));
+      ]]></add>
+    </operation>
+  </file>
+  <!-- End Facebook pixel ViewContent code -->
+
+  <!-- AddToCart at product details page -->
+  <!-- Uses jQuery to add new listener to button-cart.click -->
+  <!-- The code injection is set to match <?php echo $footer; ?> -->
+  <!-- which will reduce the chance of breakage with custom plugins -->
+  <file path="catalog/view/theme/*/template/product/product.tpl">
+    <operation>
+      <search><![CDATA[<?php echo $footer; ?>]]></search>
+      <add position="after"><![CDATA[
+        <script>
+          jQuery(function ($) {
+            $('#button-cart').on('click', function() {
+              var quantity = Number($("input[name*='quantity'], input[id*='quantity']").first().val());
+              quantity = (isNaN(quantity) || quantity <= 0)
+                ? 1 : quantity;
+
+              var url = 'index.php?route=facebook/facebookproduct/getproductinfoforfacebookpixel' +
+                '&product_id=<?= $product_id; ?>' +
+                '&event_name=AddToCart' +
+                '&quantity=' + quantity;
+              $.ajax({
+                url: url,
+                type: 'post',
+                dataType: 'json',
+                success: function(json) {
+                  if (json.facebook_pixel_event_params_FAE) {
+                    _facebookAdsExtension.facebookPixel.firePixel(
+                      json.facebook_pixel_event_params_FAE);
+                  }
+                }
+              });
+            });
+          });
+        </script>
+      ]]></add>
+    </operation>
+  </file>
+
+  <!-- AddToCart at view cart page -->
+  <!-- This will prepare the params for AddToCart pixel -->
+  <!-- When user is viewing the cart -->
+  <file path="catalog/controller/checkout/cart.php">
+    <operation>
+      <search><![CDATA[$products = $this->cart->getProducts();]]></search>
+      <add position="after"><![CDATA[
+        $this->facebookcommonutils = new FacebookCommonUtils();
+        if (sizeof($products)) {
+          $params = new DAPixelConfigParams(array(
+            'eventName' => 'AddToCart',
+            'products' => $products,
+            'currency' => $this->currency,
+            'currencyCode' => $this->session->data['currency'],
+            'hasQuantity' => true));
+          $facebook_pixel_event_params_FAE =
+            $this->facebookcommonutils->getDAPixelParamsForProducts($params);
+          // stores the pixel params in the session
+          $this->request->post['facebook_pixel_event_params_FAE'] =
+            addslashes(json_encode($facebook_pixel_event_params_FAE));
+        }
+      ]]></add>
+    </operation>
+  </file>
+
+  <!-- AddToCart at reorder page -->
+  <!-- This will prepare the params for AddToCart pixel -->
+  <!-- When user is reordering the same product -->
+  <!-- from view past orders -->
+  <file path="catalog/controller/account/order.php">
+    <operation>
+      <search><![CDATA[public function info()]]></search>
+      <add position="after"><![CDATA[
+        if (isset($this->session->data['product_id'])) {
+          $this->load->model('catalog/product');
+          $product_info =
+            $this->model_catalog_product->getProduct(
+              $this->session->data['product_id']);
+          $product_info['quantity'] = $this->session->data['quantity'];
+          $this->facebookcommonutils = new FacebookCommonUtils();
+          $params = new DAPixelConfigParams(array(
+            'eventName' => 'AddToCart',
+            'products' => array($product_info),
+            'currency' => $this->currency,
+            'currencyCode' => $this->session->data['currency'],
+            'hasQuantity' => true));
+          $facebook_pixel_event_params_FAE =
+            $this->facebookcommonutils->getDAPixelParamsForProducts($params);
+          // stores the pixel params in the session
+          $this->request->post['facebook_pixel_event_params_FAE'] =
+            addslashes(json_encode($facebook_pixel_event_params_FAE));
+        }
+      ]]></add>
+    </operation>
+
+    <operation>
+      <search><![CDATA[$product_info = $this->model_catalog_product->getProduct($order_product_info['product_id']);]]></search>
+      <add position="after"><![CDATA[
+        if ($product_info) {
+          $this->session->data['product_id'] = $order_product_info['product_id'];
+          $this->session->data['quantity'] = $order_product_info['quantity'];
+        }
+      ]]></add>
+    </operation>
+  </file>
+  <!-- End Facebook pixel AddToCart code -->
+
+  <!-- Facebook pixel Purchase code -->
+  <!-- This will prepare the params for Purchase pixel at Thank you page -->
+  <file path="catalog/controller/checkout/success.php">
+    <operation>
+      <search><![CDATA[public function index()]]></search>
+      <add position="after"><![CDATA[
+        $this->facebookcommonutils = new FacebookCommonUtils();
+        $products = $this->cart->getProducts();
+        if (sizeof($products)) {
+          $params = new DAPixelConfigParams(array(
+            'eventName' => 'Purchase',
+            'products' => $products,
+            'currency' => $this->currency,
+            'currencyCode' => $this->session->data['currency'],
+            'hasQuantity' => true));
+          $facebook_pixel_event_params_FAE =
+            $this->facebookcommonutils->getDAPixelParamsForProducts($params);
+          // stores the pixel params in the session
+          $this->request->post['facebook_pixel_event_params_FAE'] =
+            addslashes(json_encode($facebook_pixel_event_params_FAE));
+          // update the product availability on Facebook
+          $this->facebookcommonutils->updateProductAvailability(
+            $this->registry,
+            $products);
+        }
+      ]]></add>
+    </operation>
+  </file>
+  <!-- End Facebook pixel Purchase code -->
+
+  <!-- Facebook pixel InitiateCheckout code -->
+  <!-- This is preparing the params required for firing initiateCheckout -->
+  <file path="catalog/controller/checkout/checkout.php">
+    <operation>
+      <search><![CDATA[$products = $this->cart->getProducts();]]></search>
+      <add position="after"><![CDATA[
+        $this->facebookcommonutils = new FacebookCommonUtils();
+        if (sizeof($products)) {
+          $params = new DAPixelConfigParams(array(
+            'eventName' => 'InitiateCheckout',
+            'products' => $products,
+            'currency' => $this->currency,
+            'currencyCode' => $this->session->data['currency'],
+            'hasQuantity' => true));
+          $facebook_pixel_event_params_FAE =
+            $this->facebookcommonutils->getDAPixelParamsForProducts($params);
+          // stores the pixel params in the session
+          $this->request->post['facebook_pixel_event_params_FAE'] =
+            addslashes(json_encode($facebook_pixel_event_params_FAE));
+        }
+      ]]></add>
+    </operation>
+  </file>
+  <!-- End Facebook pixel InitiateCheckout code -->
+
+  <!-- Start of Facebook pixel Search code -->
+  <!-- this is preparing the params required for firing search on the PHP side -->
+  <file path="catalog/controller/product/search.php">
+    <operation>
+      <search><![CDATA[$results = $this->model_catalog_product->getProducts($filter_data);]]></search>
+      <add position="after"><![CDATA[
+        $this->facebookcommonutils = new FacebookCommonUtils();
+        $params = new DAPixelConfigParams(array(
+          'eventName' => 'Search',
+          'products' => $results,
+          'currency' => $this->currency,
+          'currencyCode' => $this->session->data['currency'],
+          'hasQuantity' => false,
+          'isCustomEvent' => false,
+          'paramNameUsedInProductListing' => 'search_string',
+          'paramValueUsedInProductListing' => $search));
+        $facebook_pixel_event_params_FAE =
+          $this->facebookcommonutils->getDAPixelParamsForProductListing($params);
+        // stores the pixel params in the session
+        $this->request->post['facebook_pixel_event_params_FAE'] =
+          addslashes(json_encode($facebook_pixel_event_params_FAE));
+      ]]></add>
+    </operation>
+  </file>
+  <!-- End of Facebook pixel Search code -->
+
+  <!-- Facebook pixel ViewCategory code -->
+  <!-- this is preparing the params required for firing ViewCategory on the PHP side -->
+  <file path="catalog/controller/product/category.php">
+    <operation>
+      <search><![CDATA[$results = $this->model_catalog_product->getProducts($filter_data);]]></search>
+      <add position="after"><![CDATA[
+        $this->facebookcommonutils = new FacebookCommonUtils();
+        $params = new DAPixelConfigParams(array(
+          'eventName' => 'ViewCategory',
+          'products' => $results,
+          'currency' => $this->currency,
+          'currencyCode' => $this->session->data['currency'],
+          'hasQuantity' => false,
+          'isCustomEvent' => false,
+          'paramNameUsedInProductListing' => 'content_category',
+          'paramValueUsedInProductListing' => $category_info['name']));
+        $facebook_pixel_event_params_FAE =
+          $this->facebookcommonutils->getDAPixelParamsForProductListing($params);
+        // stores the pixel params in the session
+        $this->request->post['facebook_pixel_event_params_FAE'] =
+          addslashes(json_encode($facebook_pixel_event_params_FAE));
+      ]]></add>
+    </operation>
+  </file>
+  <!-- End Facebook pixel ViewCategory code -->
+
+  <!-- Facebook pixel AddToWishlist code -->
+  <!-- this is preparing the params required for firing AddToWishlist on the PHP side -->
+  <file path="catalog/controller/account/wishlist.php">
+    <!-- As the wishlist only contains the product_id, -->
+    <!-- we need to hold an array to hold the product details -->
+    <operation>
+      <search><![CDATA[public function index() {]]></search>
+      <add position="after"><![CDATA[
+        $products = array();
+      ]]></add>
+    </operation>
+
+    <!-- Adds the product_info to products after retrieving from database -->
+    <operation>
+      <search><![CDATA[$data['products'][] = array(]]></search>
+      <add position="before"><![CDATA[
+        $products[] = $product_info;
+      ]]></add>
+    </operation>
+
+    <!-- this is preparing the params required for firing AddToWishlist on the PHP side -->
+    <operation>
+      <search><![CDATA[$data['header'] = $this->load->controller('common/header');]]></search>
+      <add position="before"><![CDATA[
+        $this->facebookcommonutils = new FacebookCommonUtils();
+        if (sizeof($products)) {
+          $params = new DAPixelConfigParams(array(
+            'eventName' => 'AddToWishlist',
+            'products' => $products,
+            'currency' => $this->currency,
+            'currencyCode' => $this->session->data['currency'],
+            'hasQuantity' => false));
+          $facebook_pixel_event_params_FAE =
+            $this->facebookcommonutils->getDAPixelParamsForProducts($params);
+          // stores the pixel params in the session
+          $this->request->post['facebook_pixel_event_params_FAE'] =
+            addslashes(json_encode($facebook_pixel_event_params_FAE));
+        }
+      ]]></add>
+    </operation>
+  </file>
+  <!-- End Facebook pixel AddToWishlist code -->
+
+  <!-- Facebook pixel CompleteRegistration code -->
+  <!-- this is preparing the params required for firing CompleteRegistration on the PHP side -->
+  <file path="catalog/controller/account/success.php">
+    <operation>
+      <search><![CDATA[public function index()]]></search>
+      <add position="after"><![CDATA[
+        if ($this->customer->isLogged()) {
+          $facebook_pixel_event_params_FAE = array(
+            'event_name' => 'CompleteRegistration',
+            'status' => 'Successful');
+          // stores the pixel params in the session
+          $this->request->post['facebook_pixel_event_params_FAE'] =
+            addslashes(json_encode($facebook_pixel_event_params_FAE));
+        }
+      ]]></add>
+    </operation>
+  </file>
+
+  <!-- Facebook pixel Lead code -->
+  <!-- this is preparing the params required for firing Lead on the PHP side -->
+  <file path="catalog/controller/information/contact.php">
+    <operation>
+      <search><![CDATA[public function success()]]></search>
+      <add position="after"><![CDATA[
+        $facebook_pixel_event_params_FAE = array(
+          'event_name' => 'Lead');
+        // stores the pixel params in the session
+        $this->request->post['facebook_pixel_event_params_FAE'] =
+          addslashes(json_encode($facebook_pixel_event_params_FAE));
+      ]]></add>
+    </operation>
+    <!-- End Facebook pixel Lead code -->
+  </file>
+
+  <!-- Facebook pixel ViewBrand code -->
+  <!-- this is preparing the params required for firing ViewBrand on the PHP side -->
+  <file path="catalog/controller/product/manufacturer.php">
+    <operation>
+      <search><![CDATA[$results = $this->model_catalog_product->getProducts($filter_data);]]></search>
+      <add position="after"><![CDATA[
+        $this->facebookcommonutils = new FacebookCommonUtils();
+        $params = new DAPixelConfigParams(array(
+          'eventName' => 'ViewBrand',
+          'products' => $results,
+          'currency' => $this->currency,
+          'currencyCode' => $this->session->data['currency'],
+          'hasQuantity' => false,
+          'isCustomEvent' => true,
+          'paramNameUsedInProductListing' => 'content_brand',
+          'paramValueUsedInProductListing' => $manufacturer_info['name']));
+        $facebook_pixel_event_params_FAE =
+          $this->facebookcommonutils->getDAPixelParamsForProductListing($params);
+        $this->request->post['facebook_pixel_event_params_FAE'] =
+          addslashes(json_encode($facebook_pixel_event_params_FAE));
+      ]]></add>
+    </operation>
+  </file>
+  <!-- End Facebook pixel ViewBrand code -->
+</modification>
