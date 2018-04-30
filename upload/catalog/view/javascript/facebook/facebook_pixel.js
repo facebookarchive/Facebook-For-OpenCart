@@ -4,7 +4,7 @@
 // This source code is licensed under the license found in the
 // LICENSE file in the root directory of this source tree.
 
-; (function(facebookAdsExtension, window, document, undefined) {  
+; (function(facebookAdsExtension, window, document, undefined) {
   var facebookPixel =
     facebookAdsExtension.facebookPixel =
     facebookAdsExtension.facebookPixel || (function () {
@@ -25,54 +25,58 @@
     return {
       init: init,
       firePixel: firePixel
-    };    
+    };
   }());
 }(window._facebookAdsExtension = window._facebookAdsExtension || {}, window, document));
 
-// catalog/view/javascript/common.js has a cart variable which is used by
-// various product listing pages to add product to cart directly.
-// We will like to modify and inject AddToCart event in the cart.add() method.
-// However, OpenCart's modification system does not support js and css files
-// as they are not accessible from the front end.
-// https://github.com/vqmod/vqmod/wiki/About-vQmod
-// Instead, we modify the existing cart.add method and fire off addToCart.
-// A ajax call is fire to the URl endpoint /getproductinfoforfacebookpixel
-// to get the price and name of the product
-var oldCartAdd = cart.add;
-cart.add = function(product_id, quantity) {
-  url = 'index.php?route=facebook/facebookproduct/getproductinfoforfacebookpixel' +
-    '&product_id=' + product_id +
-    '&event_name=AddToCart';
-  $.ajax({
-    url: url,
-    type: 'post',
-    dataType: 'json',
-    success: function(json) {
-      if (json.facebook_pixel_event_params_FAE) {
-        _facebookAdsExtension.facebookPixel.firePixel(
-          json.facebook_pixel_event_params_FAE);
+(function () {
+  function fireProductInfoEvent(eventName, productID, quantity) {
+    jQuery.get(
+      'index.php?route=facebook/facebookproduct/getproductinfoforfacebookpixel',
+      {
+        event_name: eventName,
+        product_id: productID,
+        quantity: quantity,
+      },
+      function (json) {
+        if (json.facebook_pixel_event_params_FAE) {
+          _facebookAdsExtension.facebookPixel.firePixel(
+            json.facebook_pixel_event_params_FAE);
+        }
       }
-    }
-  });
-  oldCartAdd.apply(oldCartAdd, [product_id, quantity]);
-};
+    );
+  }
 
-// adopting the same cart.add strategy for wishlist.add
-var oldWishlist = wishlist.add;
-wishlist.add = function(product_id) {
-  url = 'index.php?route=facebook/facebookproduct/getproductinfoforfacebookpixel' +
-    '&product_id=' + product_id +
-    '&event_name=AddToWishlist';
-  $.ajax({
-    url: url,
-    type: 'post',
-    dataType: 'json',
-    success: function(json) {
-      if (json.facebook_pixel_event_params_FAE) {
-        _facebookAdsExtension.facebookPixel.firePixel(
-          json.facebook_pixel_event_params_FAE);
-      }
-    }
+  // catalog/view/javascript/common.js has a cart variable which is used by
+  // various product listing pages to add product to cart directly.
+  // We will like to modify and inject AddToCart event in the cart.add() method.
+  // However, OpenCart's modification system does not support js and css files
+  // as they are not accessible from the front end.
+  // https://github.com/vqmod/vqmod/wiki/About-vQmod
+  // Instead, we modify the existing cart.add method and fire off addToCart.
+  // A ajax call is fire to the URl endpoint /getproductinfoforfacebookpixel
+  // to get the price and name of the product
+  var oldCartAdd = cart.add;
+  cart.add = function(productID, quantity) {
+    fireProductInfoEvent('AddToCart', productID, quantity);
+    oldCartAdd.apply(oldCartAdd, [productID, quantity]);
+  };
+
+  // adopting the same cart.add strategy for wishlist.add
+  var oldWishlist = wishlist.add;
+  wishlist.add = function(productID) {
+    fireProductInfoEvent('AddToWishlist', productID);
+    oldWishlist.apply(oldWishlist, [productID]);
+  };
+
+  jQuery(function ($) {
+    $('#button-cart').on('click', function() {
+      var quantity = Number(
+        $("input[name*='quantity'], input[id*='quantity']").first().val()
+      );
+      quantity = isNaN(quantity) || quantity <= 0 ? 1 : quantity;
+      var productID = $('#fbProductID').val();
+      fireProductInfoEvent('AddToCart', productID, quantity);
+    });
   });
-  oldWishlist.apply(oldWishlist, [product_id]);
-};
+})();

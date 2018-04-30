@@ -1,7 +1,12 @@
 Facebook Ads Extension
-Latest version: 1.0.11
+Latest version: 1.0.12
 
 Change log
+1.0.12 - 1 May 2018
+* We have open-sourced our plugin codes and is available at https://github.com/facebookincubator/Facebook-For-OpenCart/
+* Fixed an incorrect notification warning shown on the OpenCart dashboard "Undefined variable: error_facebook_sync"
+* Fixed incorrect display of Greek product names, descriptions and category in product catalog in the initial product catalog sync
+
 1.0.11 - 3 Apr 2018
 * Handling for cases where the image field of product is storing external image URLs instead of storing images uploaded to merchant's OpenCart server.
 * Improved the method of libraryFB() to fix the error of Call to undefined method Loader::libraryFB() in some user's OpenCart system.

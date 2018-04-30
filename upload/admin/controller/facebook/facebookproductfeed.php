@@ -158,7 +158,8 @@ class ControllerFacebookFacebookProductFeed extends Controller {
     $products,
     $feed_filename) {
     try {
-      $feed_file = fopen($feed_filename, "w");
+      $feed_file = fopen($feed_filename, "wb");
+      fputs($feed_file, "\xEF\xBB\xBF");
       fwrite($feed_file, $this->getProductFeedHeaderRow());
       array_walk(
         $products,

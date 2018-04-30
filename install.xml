@@ -8,7 +8,7 @@
 <modification>
   <name>Facebook Ads Extension</name>
   <code>facebook_ads_extension</code>
-  <version>1.0.11</version>
+  <version>1.0.12</version>
   <author>Facebook</author>
   <link></link>
 
@@ -17,16 +17,16 @@
     <operation>
       <search><![CDATA[public function index() {]]></search>
       <add position="after"><![CDATA[
-        $facebookAdsExtension = array();      
+        $facebookAdsExtension = array();
         $facebookAdsExtension[] = array(
           'name'     => 'Facebook Ads Extension',
           'href'     => $this->url->link('facebook/facebookadsextension', 'token=' . $this->session->data['token'], true),
-          'children' => array()   
+          'children' => array()
         );
 
         $data['menus'][] = array(
           'id'       => 'menu-facebook-ads-extension',
-          'icon'     => 'fa-facebook-square', 
+          'icon'     => 'fa-facebook-square',
           'name'     => 'Facebook Ads Extension',
           'href'     => '',
           'children' => $facebookAdsExtension
@@ -59,7 +59,7 @@
     <operation>
       <search><![CDATA[<?php if ($error_install) { ?>]]></search>
       <add position="before"><![CDATA[
-        <?php if ($error_facebook_sync) {?>
+        <?php if (isset($error_facebook_sync)) {?>
         <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> <?= $error_facebook_sync; ?>
           <button type="button" class="close" data-dismiss="alert">&times;</button>
         </div>
@@ -225,16 +225,16 @@
           unset($this->session->data['error_facebook_delete']);
         } else {
           $data['error_facebook_delete'] = '';
-        }        
+        }
       ]]></add>
-    </operation>  
+    </operation>
 
     <operation>
       <search><![CDATA[$url = '';]]></search>
       <add position="after"><![CDATA[
         if (isset($this->request->get['debug_facebook_sync_error'])) {
           $url .= '&debug_facebook_sync_error=1';
-        } 
+        }
       ]]></add>
     </operation>
   </file>
@@ -247,14 +247,14 @@
         <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> <?= $error_facebook_sync; ?>
           <button type="button" class="close" data-dismiss="alert">&times;</button>
         </div>
-        <?php } ?> 
+        <?php } ?>
         <?php if ($error_facebook_delete) {?>
         <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> <?= $error_facebook_delete; ?>
           <button type="button" class="close" data-dismiss="alert">&times;</button>
         </div>
-        <?php } ?>           
+        <?php } ?>
       ]]></add>
-    </operation>   
+    </operation>
   </file>
 
   <file path="admin/language/*/catalog/product.php">
@@ -265,8 +265,8 @@
         $_['text_warning_facebook_delete']           = 'Warning: Encountered problem deleting product(s) to Facebook. Check the error log file for more details.';
         $_['text_warning_facebook_access_token_problem'] = 'Warning: There is a problem with your Facebook access token. Please go to Facebook Ads Extension to refresh the access token.';
       ]]></add>
-    </operation>   
-  </file>  
+    </operation>
+  </file>
   <!-- End Admin product settings -->
 
   <!-- Admin panel - add/edit sales orders, this will sync up the product availability with Facebook -->
@@ -281,7 +281,7 @@
           $this->facebookcommonutils->updateProductAvailability(
             $this->registry,
             $products);
-        }      
+        }
       ]]></add>
     </operation>
 
@@ -451,31 +451,7 @@
     <operation>
       <search><![CDATA[<?php echo $footer; ?>]]></search>
       <add position="after"><![CDATA[
-        <script>
-          jQuery(function ($) {
-            $('#button-cart').on('click', function() {
-              var quantity = Number($("input[name*='quantity'], input[id*='quantity']").first().val());
-              quantity = (isNaN(quantity) || quantity <= 0)
-                ? 1 : quantity;
-
-              var url = 'index.php?route=facebook/facebookproduct/getproductinfoforfacebookpixel' +
-                '&product_id=<?= $product_id; ?>' +
-                '&event_name=AddToCart' +
-                '&quantity=' + quantity;
-              $.ajax({
-                url: url,
-                type: 'post',
-                dataType: 'json',
-                success: function(json) {
-                  if (json.facebook_pixel_event_params_FAE) {
-                    _facebookAdsExtension.facebookPixel.firePixel(
-                      json.facebook_pixel_event_params_FAE);
-                  }
-                }
-              });
-            });
-          });
-        </script>
+        <input type='hidden' id='fbProductID' value='<?= $product_id ?>' />
       ]]></add>
     </operation>
   </file>
