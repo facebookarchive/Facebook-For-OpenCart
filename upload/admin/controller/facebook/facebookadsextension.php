@@ -354,7 +354,7 @@ class ControllerFacebookFacebookAdsExtension extends Controller {
         // loops through the entire folder tree to detect which
         // folders are not accessible
         do {
-          // keeps if this is a first occurence of the folder
+          // keeps if this is a first occurrence of the folder
           if (!in_array($folder, $folders_with_missing_files)) {
             $folders_with_missing_files[] = $folder;
           }

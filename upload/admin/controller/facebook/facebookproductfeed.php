@@ -61,7 +61,7 @@ class ControllerFacebookFacebookProductFeed extends Controller {
     $facebook_page_token = $this->getFacebookPageAccessToken();
     if (!$facebook_catalog_id || !$facebook_page_token) {
       $this->logError(
-        FacebookCommonUtils::NO_CATALOG_ID_ACCESS_TOKEN_ERROR_MESSAGE .
+        FacebookCommonUtils::NO_CATALOG_ID_PAGE_ID_ACCESS_TOKEN_ERROR_MESSAGE .
           $operation,
         $error_data,
         FacebookCommonUtils::INITIAL_PRODUCT_SYNC_EXCEPTION_MESSAGE);

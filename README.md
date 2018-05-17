@@ -110,7 +110,7 @@ If you see this error, it means that your Page is associated with another store.
 
 Your Facebook Ads Extension setup did not complete as planned. Please download and install the latest version of the plugin, delete the existing setup and restart the setup again.
 
-#### 7. Will Facebook dyamic ads stay up to date with my stock changes?
+#### 7. Will Facebook dynamic ads stay up to date with my stock changes?
 
 Yes, we'll sync with your OpenCart site immediately when you make any modifications to the products.
 
