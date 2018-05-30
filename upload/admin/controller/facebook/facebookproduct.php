@@ -58,7 +58,7 @@ class ControllerFacebookFacebookProduct extends Controller {
     if ($this->facebookgraphapierror->isInvalidIdError($result)) {
       if (!$this->isCatalogIdValid()) {
         // invalid catalog found
-        // we will remove the catalog id from the local DIA settigs
+        // we will remove the catalog id from the local DIA settings
         // this will trigger an red notification to get user
         // to re-setup FAE again
         $this->faeLog->write('Deleting catalog id settings from local system');
@@ -605,5 +605,10 @@ private function populateFacebookIdsForProductsSyncFromFeed(
       'retailer_id' => $product['product_id']
     );
     return $product_group_data;
+  }
+
+  public function getTotalEnabledProducts($data = array()) {
+    return $this->model_catalog_product->getTotalProducts(
+      array('filter_status' => 1));
   }
 }

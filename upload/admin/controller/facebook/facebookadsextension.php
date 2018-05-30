@@ -68,8 +68,6 @@ class ControllerFacebookFacebookAdsExtension extends Controller {
       $this->model_localisation_currency->refresh();
     }
 
-    $this->load->model('catalog/product');
-
     $this->load->model('facebook/facebooksetting');
     $facebook_setting = $this->model_facebook_facebooksetting->getSettings();
 
@@ -108,9 +106,9 @@ class ControllerFacebookFacebookAdsExtension extends Controller {
     $data['opencart_version'] = VERSION;
     $data['plugin_version'] = $this->facebookcommonutils->getPluginVersion();
 
-    $filter_status = array('filter_status' => 1);
-    $data['total_visible_products'] =
-      $this->model_catalog_product->getTotalProducts($filter_status);
+    $data['total_visible_products'] = $this->load->controller(
+      'facebook/facebookproduct/getTotalEnabledProducts');
+
     $data['sample_feed'] = $this->load->controller(
       'facebook/facebookproduct/getSampleProductFeed');
     if (!$data['sample_feed']) {
@@ -258,11 +256,48 @@ class ControllerFacebookFacebookAdsExtension extends Controller {
     try {
       $result = $this->load->controller(
         'facebook/facebookproductfeed/syncAllProductsUsingFeed');
+      if ($result['success'] !== 'true') {
+        // checks if the total number of products is within threshold
+        $total = $this->load->controller(
+          'facebook/facebookproduct/getTotalEnabledProducts');
+        $this->faeLog->write('Total number of products = ' . $total);
+        if ($total <=
+          FacebookCommonUtils::FACEBOOK_THRESHOLD_FOR_INITIAL_SYNC_BY_API) {
+          // initial sync using feed fail
+          // fallback to use API to initial sync all the products
+          // this will result in significantly more time for
+          // merchants with many products, eg > 500
+          $this->faeLog->write('Syncing using API as fallback');
+
+          $this->updateSettingsToIndicateInitialSyncByAPI();
+          $api_result = $this->load->controller(
+            'facebook/facebookproduct/syncAllProducts');
+          $result =
+            ($api_result['total_count'] === $api_result['success_count']);
+          $this->faeLog->write('Complete Syncing using API as fallback' .
+            ' Total=' . $api_result['total_count'] .
+            ' Success=' . $api_result['success_count']);
+        }
+      }
+
       $this->response->addHeader('Content-Type: application/json');
       $this->response->setOutput(json_encode($result));
     } catch (Exception $e) {
       header("HTTP/1.1 400 " . $e->getMessage());
     }
+  }
+
+  private function updateSettingsToIndicateInitialSyncByAPI() {
+    $this->faeLog->write('Updating FAE settings - ');
+    $this->load->model('facebook/facebooksetting');
+    $data = array();
+    $data[FacebookCommonUtils::FACEBOOK_FEED_ID] =
+      'USING_API_FOR_INITIAL_SYNC';
+    $data[FacebookCommonUtils::FACEBOOK_UPLOAD_ID] =
+      'USING_API_FOR_INITIAL_SYNC';
+    $data[FacebookCommonUtils::FACEBOOK_UPLOAD_END_TIME] =
+      'USING_API_FOR_INITIAL_SYNC';
+    $this->model_facebook_facebooksetting->updateSettings($data);
   }
 
   public function getInitialProductSyncStatus() {
@@ -318,6 +353,8 @@ class ControllerFacebookFacebookAdsExtension extends Controller {
       DIR_SYSTEM . '/library/facebooksampleproductfeedformatter.php',
       DIR_SYSTEM . '/library/facebooktax.php',
       DIR_CATALOG . '/controller/facebook/facebookproduct.php',
+      DIR_CATALOG . '/view/css/facebook/cookieconsent.min.css',
+      DIR_CATALOG . '/view/javascript/facebook/cookieconsent.min.js',
       DIR_CATALOG . '/view/javascript/facebook/facebook_pixel.js',
 // system auto generated, DO NOT MODIFY
       null
@@ -354,7 +391,7 @@ class ControllerFacebookFacebookAdsExtension extends Controller {
         // loops through the entire folder tree to detect which
         // folders are not accessible
         do {
-          // keeps if this is a first occurence of the folder
+          // keeps if this is a first occurrence of the folder
           if (!in_array($folder, $folders_with_missing_files)) {
             $folders_with_missing_files[] = $folder;
           }

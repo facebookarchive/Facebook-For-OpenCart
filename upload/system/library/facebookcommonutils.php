@@ -91,6 +91,8 @@ class FacebookCommonUtils {
   const FACEBOOK_UPLOAD_ID = 'facebook_upload_id';
   const FACEBOOK_UPLOAD_END_TIME = 'facebook_upload_end_time';
 
+  const FACEBOOK_THRESHOLD_FOR_INITIAL_SYNC_BY_API = 1000;
+
   const NO_CATALOG_ID_PAGE_ID_ACCESS_TOKEN_ERROR_MESSAGE =
     'Failure - no catalog, page or access token';
   const FEED_NOT_CREATED_ERROR_MESSAGE =
@@ -109,7 +111,7 @@ class FacebookCommonUtils {
   const PRODUCT_SYNC_EXCEPTION_MESSAGE =
     'The product sync on Facebook catalog is still ongoing. Please wait for the sync to complete before making any product changes.';
 
-  private $pluginVersion = '1.0.12';
+  private $pluginVersion = '1.0.14';
 
   public function __construct() {
 

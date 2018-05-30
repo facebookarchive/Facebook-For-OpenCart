@@ -12,8 +12,8 @@ class ModelFacebookFacebookProduct extends Model {
     $facebook_product_group_id) {
     $this->db->query("INSERT INTO " . DB_PREFIX . "facebook_product " .
       "SET product_id = " . (int)$product_id . "," .
-      "facebook_product_id = " . (int)$facebook_product_id . "," .
-      "facebook_product_group_id = " . (int)$facebook_product_group_id);
+      "facebook_product_id = '" . $facebook_product_id . "'," .
+      "facebook_product_group_id = '" . $facebook_product_group_id . "'");
   }
 
   public function deleteAllFacebookProducts() {
@@ -53,8 +53,8 @@ class ModelFacebookFacebookProduct extends Model {
     $facebook_product_id,
     $facebook_product_group_id) {
     $this->db->query("UPDATE " . DB_PREFIX . "facebook_product " .
-      "SET facebook_product_id = " . (int)$facebook_product_id . "," .
-      "facebook_product_group_id = " . (int)$facebook_product_group_id . " " .
+      "SET facebook_product_id = '" . $facebook_product_id . "'," .
+      "facebook_product_group_id = '" . $facebook_product_group_id . "' " .
       "WHERE product_id = " . (int)$product_id);
   }
 

@@ -1,7 +1,15 @@
 Facebook Ads Extension
-Latest version: 1.0.12
+Latest version: 1.0.14
 
 Change log
+1.0.14 - 21 May 2018
+* Provided support for 32bit server by converting bigint to varchar
+* Improved the robustness of initial product sync by falling back to API if the feed approach fail
+* Fixed typo bugs - contributed by https://github.com/pborreli
+
+1.0.13 - 10 May 2018
+* Provided cookie consent for GDPR
+
 1.0.12 - 1 May 2018
 * We have open-sourced our plugin codes and is available at https://github.com/facebookincubator/Facebook-For-OpenCart/
 * Fixed an incorrect notification warning shown on the OpenCart dashboard "Undefined variable: error_facebook_sync"
@@ -20,7 +28,7 @@ Important: We have improved the plugin support for php5.4. If you are on php5.4,
 * Improved the mechanism of syncing of product availability such that we will not perform a product sync if the FAE setup is not complete.
 * Improved the robustness of the plugin by validating if the Facebook product catalog has been deleted. If so, the plugin will remove away the existing Facebook Ads Extension catalog settings and prompt user to re-setup Facebook Ads Extension again.
 * Improved the validate if product initial sync has completed in the product management screen. If not we will like to do a query to get the product initial sync status from FB
-* Improved the robustness of Facebook Ads Extension plugin by checking that the required files and folders (including parent) have the required read+write+excute permissions
+* Improved the robustness of Facebook Ads Extension plugin by checking that the required files and folders (including parent) have the required read+write+execute permissions
 
 1.0.9 - 20 Mar 2018
 * Improved the plugin robustness by auto detecting if there are missing required files or missing Database table and prompt user on the problem and rectification steps
@@ -34,7 +42,7 @@ Important: We have improved the plugin support for php5.4. If you are on php5.4,
 * Included Frequently Asked Questions section to the readme file
 
 1.0.8 - 12 Feb 2018
-* Improved the product feed file (for initial product sync) to be residing in either system/storage/modication or system/storage/logs folder
+* Improved the product feed file (for initial product sync) to be residing in either system/storage/modification or system/storage/logs folder
 * Improved the overall robustness and message notification to handle situations when the initial product sync did not complete as expected or if the plugin is installed but has not been setup yet
 * Added in capability to refresh the FB access token if it has expired, eg due to change in FB password
 * Improved the robustness of firing the ViewContent pixel event
@@ -42,7 +50,7 @@ Important: We have improved the plugin support for php5.4. If you are on php5.4,
 
 1.0.7 - 25 Nov 2017
 * Fix 2 bugs on the initial sync of products
-** Decimal value of products is trancated
+** Decimal value of products is truncated
 ** Currency of product not sent correctly
 * Improved the product catalog price to include in the tax if the display price with tax is selected
 * Added in firing of a custom event, ViewBrand when viewing products by brand

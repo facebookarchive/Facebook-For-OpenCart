@@ -61,57 +61,67 @@ class ControllerFacebookFacebookProductFeed extends Controller {
     $facebook_page_token = $this->getFacebookPageAccessToken();
     if (!$facebook_catalog_id || !$facebook_page_token) {
       $this->logError(
-        FacebookCommonUtils::NO_CATALOG_ID_ACCESS_TOKEN_ERROR_MESSAGE .
+        FacebookCommonUtils::NO_CATALOG_ID_PAGE_ID_ACCESS_TOKEN_ERROR_MESSAGE .
           $operation,
         $error_data,
         FacebookCommonUtils::INITIAL_PRODUCT_SYNC_EXCEPTION_MESSAGE);
     }
 
-    $productFeedFullFilename = $this->getWritableProductFeedFullFilename();
-    if (!$productFeedFullFilename) {
-      $this->logError(
-        self::FEED_NOT_WRITABLE_ERROR_MESSAGE . $operation,
-        $error_data,
-        $this->getFeedFolderNotWritableExceptionMessage());
+    try {
+      $productFeedFullFilename = $this->getWritableProductFeedFullFilename();
+      if (!$productFeedFullFilename) {
+        $this->logError(
+          self::FEED_NOT_WRITABLE_ERROR_MESSAGE . $operation,
+          $error_data,
+          $this->getFeedFolderNotWritableExceptionMessage());
+      }
+
+      if (!$this->generateProductFeedFile($productFeedFullFilename)) {
+        $this->logError(
+          self::FEED_FILE_NOT_GENERATED_ERROR_MESSAGE . $operation,
+          $error_data,
+          FacebookCommonUtils::INITIAL_PRODUCT_SYNC_EXCEPTION_MESSAGE);
+      }
+      $this->faeLog->write('Sync all products using feed, feed file generated');
+
+      $feed_id = $this->createFeed(
+        $facebook_catalog_id,
+        $facebook_page_token);
+      if (!$feed_id) {
+        $this->logError(
+          self::FEED_NOT_CREATED_ERROR_MESSAGE . $operation,
+          $error_data,
+          FacebookCommonUtils::INITIAL_PRODUCT_SYNC_EXCEPTION_MESSAGE);
+      }
+      $this->faeLog->write(
+        'Sync all products using feed, facebook feed created');
+
+      $upload_id = $this->createUpload(
+        $feed_id,
+        $facebook_page_token,
+        $productFeedFullFilename);
+      if (!$upload_id) {
+        $this->logError(
+          self::UPLOAD_NOT_CREATED_ERROR_MESSAGE . $operation,
+          $error_data,
+          FacebookCommonUtils::INITIAL_PRODUCT_SYNC_EXCEPTION_MESSAGE);
+      }
+      $this->faeLog->write(
+        'Sync all products using feed, facebook upload created');
+
+      unlink($productFeedFullFilename);
+
+      // performs a final check to ensure the feed sync has correctly setup
+      $this->validateFAEAndCatalogSetup($operation, $error_data);
+
+      $this->faeLog->write('Complete - Sync all products using feed');
+      return array('success' => 'true');
+    } catch (Exception $e) {
+      $this->faeLog->write(
+        'Error with syncing all products with feed ' .
+        json_encode($e->getMessage()));
+      return array ('success' => 'false');
     }
-
-    if (!$this->generateProductFeedFile($productFeedFullFilename)) {
-      $this->logError(
-        self::FEED_FILE_NOT_GENERATED_ERROR_MESSAGE . $operation,
-        $error_data,
-        FacebookCommonUtils::INITIAL_PRODUCT_SYNC_EXCEPTION_MESSAGE);
-    }
-    $this->faeLog->write('Sync all products using feed, feed file generated');
-
-    $feed_id = $this->createFeed(
-      $facebook_catalog_id,
-      $facebook_page_token);
-    if (!$feed_id) {
-      $this->logError(
-        self::FEED_NOT_CREATED_ERROR_MESSAGE . $operation,
-        $error_data,
-        FacebookCommonUtils::INITIAL_PRODUCT_SYNC_EXCEPTION_MESSAGE);
-    }
-    $this->faeLog->write(
-      'Sync all products using feed, facebook feed created');
-
-    $upload_id = $this->createUpload(
-      $feed_id,
-      $facebook_page_token,
-      $productFeedFullFilename);
-    if (!$upload_id) {
-      $this->logError(
-        self::UPLOAD_NOT_CREATED_ERROR_MESSAGE . $operation,
-        $error_data,
-        FacebookCommonUtils::INITIAL_PRODUCT_SYNC_EXCEPTION_MESSAGE);
-    }
-    $this->faeLog->write(
-      'Sync all products using feed, facebook upload created');
-
-    unlink($productFeedFullFilename);
-
-    $this->faeLog->write('Complete - Sync all products using feed');
-    return array('success' => 'true');
   }
 
   private function getWritableProductFeedFolder() {

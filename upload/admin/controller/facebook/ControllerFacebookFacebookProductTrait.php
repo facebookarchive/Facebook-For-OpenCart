@@ -60,7 +60,7 @@ trait ControllerFacebookFacebookProductTrait {
     // unable to load the model
     // this will happen for common models which are placed in
     // the admin folder and shared/re-used in catalog folder (store front)
-    // in this case we will explictly load the full name of the model
+    // in this case we will explicitly load the full name of the model
     if (!$is_facebook_model_loaded) {
       require_once
         DIR_APPLICATION . "../admin/model/" . $model_name . ".php";
