@@ -5,10 +5,10 @@
 // This source code is licensed under the license found in the
 // LICENSE file in the root directory of this source tree.
 
-require_once('ControllerFacebookFacebookProductTrait.php');
+require_once('facebookproducttrait.php');
 
-class ControllerFacebookFacebookProduct extends Controller {
-  use ControllerFacebookFacebookProductTrait;
+class ControllerExtensionFacebookProduct extends Controller {
+  use ControllerExtensionFacebookProductTrait;
 
   public function __construct($registry) {
     parent::__construct($registry);
@@ -157,12 +157,13 @@ class ControllerFacebookFacebookProduct extends Controller {
 
   public function getSampleProductFeed() {
     return $this->load->controller(
-      'facebook/facebookproductfeed/getSampleProductFeed');
+      'extension/facebookproductfeed/getSampleProductFeed');
   }
 
   public function clearAllFacebookProducts() {
     $this->faeLog->write('Clear all Facebook products');
-    $this->model_facebook_facebookproduct->deleteAllFacebookProducts();
+    $this->model_extension_facebookproduct->
+      deleteAllFacebookProducts();
     $json = array('success' => 'true');
     $this->response->addHeader('Content-Type: application/json');
     $this->response->setOutput(json_encode($json));
@@ -171,7 +172,8 @@ class ControllerFacebookFacebookProduct extends Controller {
 
   public function syncAllProducts() {
     $this->faeLog->write('Sync all products');
-    $products = $this->model_facebook_facebookproduct->getProducts();
+    $products = $this->model_extension_facebookproduct->
+      getProducts();
     $successfully_sync = $this->syncProducts($products);
     $this->faeLog->write('Complete - Sync all products');
     return array(
@@ -190,7 +192,8 @@ class ControllerFacebookFacebookProduct extends Controller {
       $error_data,
       true);
 
-    $product = $this->model_facebook_facebookproduct->getProduct($product_id);
+    $product = $this->model_extension_facebookproduct->
+      getProduct($product_id);
     $successfully_sync = $this->syncProducts(array($product));
     $this->faeLog->write('Complete - Sync for product ' . $product_id);
     return array(
@@ -263,7 +266,8 @@ private function populateFacebookIdsForProductsSyncFromFeed(
         // into the database
         $product['facebook_product_id'] = $facebook_product_id;
         $product['facebook_product_group_id'] = $facebook_product_group_id;
-        $this->model_facebook_facebookproduct->addFacebookProduct(
+        $this->model_extension_facebookproduct->
+          addFacebookProduct(
           $product['product_id'],
           $product['facebook_product_id'],
           $product['facebook_product_group_id']);
@@ -310,7 +314,7 @@ private function populateFacebookIdsForProductsSyncFromFeed(
           $product['product_id'],
           $result['id'],
           'create');
-        $this->model_facebook_facebookproduct->addFacebookProduct(
+        $this->model_extension_facebookproduct->addFacebookProduct(
           $product['product_id'],
           $result['id'],
           $product['facebook_product_group_id']);
@@ -373,7 +377,7 @@ private function populateFacebookIdsForProductsSyncFromFeed(
     // checks if there is an existing product group id
     // if not, creates a new product group id and assigns to product
     list($facebook_product_id, $facebook_product_group_id) =
-      $this->model_facebook_facebookproduct->
+      $this->model_extension_facebookproduct->
         getFacebookProductIdAndProductGroupId($product['product_id']);
 
     if (!$facebook_product_group_id) {
@@ -384,7 +388,7 @@ private function populateFacebookIdsForProductsSyncFromFeed(
           $facebook_page_token);
       if ($facebook_product_group_id) {
         $product['facebook_product_group_id'] = $facebook_product_group_id;
-        $this->model_facebook_facebookproduct->updateFacebookProduct(
+        $this->model_extension_facebookproduct->updateFacebookProduct(
           $product['product_id'],
           $product['facebook_product_id'],
           $product['facebook_product_group_id']);
@@ -433,7 +437,7 @@ private function populateFacebookIdsForProductsSyncFromFeed(
       // performs a check on internal db to see if we can detect the
       // facebook product id and product group id
       list($facebook_product_id, $facebook_product_group_id) =
-        $this->model_facebook_facebookproduct->
+        $this->model_extension_facebookproduct->
           getFacebookProductIdAndProductGroupId($product_id);
 
       // if we cant find the facebook product id and product group id
@@ -448,7 +452,7 @@ private function populateFacebookIdsForProductsSyncFromFeed(
       }
 
       if ($facebook_product_id) {
-        $this->model_facebook_facebookproduct->deleteFacebookProduct(
+        $this->model_extension_facebookproduct->deleteFacebookProduct(
           $product_id);
         if ($this->deleteProductInFacebook(
           $product_id,
@@ -462,7 +466,8 @@ private function populateFacebookIdsForProductsSyncFromFeed(
         // as we do not want to send out as error log if the
         // product is disabled (not sync to FB) and merchant
         // goes to delete the product and we cant find any FB ID for this product
-        $product = $this->model_facebook_facebookproduct->getProduct($product_id);
+        $product = $this->model_extension_facebookproduct->
+          getProduct($product_id);
         if ($product['status'] === 1) {
           $error = array('error' => 'Unable to retrieve facebook_product_id');
           $this->handleProductSyncFailure(
@@ -541,7 +546,7 @@ private function populateFacebookIdsForProductsSyncFromFeed(
       $facebook_catalog_id = $this->getFacebookCatalogId();
       $facebook_page_token = $this->getFacebookPageAccessToken();
       $product_availabilities =
-        $this->model_facebook_facebookproduct
+        $this->model_extension_facebookproduct
           ->getFacebookProductAvailabiltyStatus($product_ids);
       foreach ($product_availabilities as $product_availability) {
         if ($this->updateProductForAvailabilityChangeInFacebook(

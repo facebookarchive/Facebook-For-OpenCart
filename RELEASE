@@ -1,7 +1,13 @@
 Facebook Ads Extension
-Latest version: 1.0.14
+Latest version: 2.0.0
 
 Change log
+2.0.0 - 12 June 2018
+* Supported OpenCart v3.x
+** OpenCart v3.x users need to perform 1 more step - access Extensions -> Extensions -> Select Modules -> Click on the green Install button for Facebook Ads Extension
+* Deprecated facebookproduct/directcheckout endpoint for products in FB Page shop. All products will now be linked directly to their correspondents in the web store front
+* Extended the plugin validation checks to dashboard and product modules to ensure that the required files and database tables in Facebook Ads Extension module are intact
+
 1.0.14 - 21 May 2018
 * Provided support for 32bit server by converting bigint to varchar
 * Improved the robustness of initial product sync by falling back to API if the feed approach fail

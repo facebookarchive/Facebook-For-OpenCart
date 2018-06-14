@@ -5,7 +5,7 @@
 // This source code is licensed under the license found in the
 // LICENSE file in the root directory of this source tree.
 
-class ModelFacebookFacebookSetting extends Model {
+class ModelExtensionFacebookSetting extends Model {
   public function updateSettings($data) {
     foreach ($data as $key => $value) {
       $this->db->query("DELETE FROM `" .

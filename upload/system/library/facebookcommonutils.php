@@ -111,7 +111,7 @@ class FacebookCommonUtils {
   const PRODUCT_SYNC_EXCEPTION_MESSAGE =
     'The product sync on Facebook catalog is still ongoing. Please wait for the sync to complete before making any product changes.';
 
-  private $pluginVersion = '1.0.14';
+  private $pluginVersion = '2.0.0';
 
   public function __construct() {
 
@@ -193,13 +193,13 @@ class FacebookCommonUtils {
     // this is to allow reuse of existing codes instead of
     // duplicating the same to both catalog and admin folder
     require_once
-      DIR_APPLICATION . "../admin/controller/facebook/facebookproduct.php";
+      DIR_APPLICATION . "../admin/controller/extension/facebookproduct.php";
     $product_ids =
       array_unique(
         array_map(function($product) { return $product['product_id'];},
           $products));
     $facebook_product_controller =
-      new ControllerFacebookFacebookProduct($registry);
+      new ControllerExtensionFacebookProduct($registry);
     try {
       $facebook_product_controller->updateProductsForAvailabilityChange(
         $product_ids);

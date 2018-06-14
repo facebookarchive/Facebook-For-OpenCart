@@ -5,7 +5,7 @@
 // This source code is licensed under the license found in the
 // LICENSE file in the root directory of this source tree.
 
-class ModelFacebookFacebookProduct extends Model {
+class ModelExtensionFacebookProduct extends Model {
   public function addFacebookProduct(
     $product_id,
     $facebook_product_id,
@@ -173,15 +173,16 @@ class ModelFacebookFacebookProduct extends Model {
   // this function is a direct lifting from admin/model/catalog/product.php
   public function getProduct($product_id) {
     // this query change is similar to getProducts()
-    // with the inclusion of keyword in url_alias
+    // we are no longer left join the ua_link table as
+    // 1. we are not using the keyword from ua_link in our plugin
+    // 2. OpenCart v3 renamed this table to seo_link
     $query = $this->db->query(
       "SELECT " .
         "p.*, " .
         "pd.*, " .
         "m.name AS manufacturer_name, " .
         "fbp.facebook_product_id, " .
-        "ptc.category_name, " .
-        "ua.keyword " .
+        "ptc.category_name " .
       "FROM " . DB_PREFIX . "product p " .
       "LEFT JOIN " . DB_PREFIX . "product_description pd " .
         "ON (p.product_id = pd.product_id) " .
@@ -189,8 +190,6 @@ class ModelFacebookFacebookProduct extends Model {
         "ON (p.manufacturer_id = m.manufacturer_id) " .
       "LEFT JOIN " . DB_PREFIX . "facebook_product fbp " .
         "ON (p.product_id = fbp.product_id) " .
-      "LEFT JOIN " . DB_PREFIX . "url_alias ua " .
-        "ON (ua.query = 'product_id=" . (int)$product_id . "') " .
       "LEFT JOIN " .
         "(SELECT ptc.product_id, " .
           "ptc.category_id, " .

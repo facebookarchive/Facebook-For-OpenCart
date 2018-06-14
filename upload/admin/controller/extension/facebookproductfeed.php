@@ -5,10 +5,10 @@
 // This source code is licensed under the license found in the
 // LICENSE file in the root directory of this source tree.
 
-require_once('ControllerFacebookFacebookProductTrait.php');
+require_once('facebookproducttrait.php');
 
-class ControllerFacebookFacebookProductFeed extends Controller {
-  use ControllerFacebookFacebookProductTrait;
+class ControllerExtensionFacebookProductFeed extends Controller {
+  use ControllerExtensionFacebookProductTrait;
 
   const CATALOG_FEED_FILENAME = 'fae_product_catalog.csv';
   const FEED_NAME =
@@ -42,7 +42,7 @@ class ControllerFacebookFacebookProductFeed extends Controller {
       'start'           => 0,
       'limit'           => 12,
     );
-    $products = $this->model_facebook_facebookproduct->
+    $products = $this->model_extension_facebookproduct->
       getProducts($filter_data);
     $feed_items = array_map(function($product) {
       return $data = $this->facebooksampleproductfeedformatter->getProductData(
@@ -144,21 +144,21 @@ class ControllerFacebookFacebookProductFeed extends Controller {
   }
 
   private function updateFacebookFeedId($feed_id) {
-    $this->loadFacebookModel('facebook/facebooksetting');
-    $this->model_facebook_facebooksetting->updateSettings(
+    $this->loadFacebookModel('extension/facebooksetting');
+    $this->model_extension_facebooksetting->updateSettings(
       array(FacebookCommonUtils::FACEBOOK_FEED_ID => $feed_id));
   }
 
   private function updateFacebookUploadId($upload_id) {
-    $this->loadFacebookModel('facebook/facebooksetting');
-    $this->model_facebook_facebooksetting->updateSettings(
+    $this->loadFacebookModel('extension/facebooksetting');
+    $this->model_extension_facebooksetting->updateSettings(
       array(FacebookCommonUtils::FACEBOOK_UPLOAD_ID => $upload_id));
   }
 
   private function generateProductFeedFile($productFeedFilename) {
     $this->faeLog->write('Generating product feed file');
     $this->loadLibrariesForFacebookCatalog();
-    $products = $this->model_facebook_facebookproduct->getProducts();
+    $products = $this->model_extension_facebookproduct->getProducts();
     return $this->writeProductFeedFile(
       $products,
       $productFeedFilename);
@@ -266,8 +266,9 @@ class ControllerFacebookFacebookProductFeed extends Controller {
     $facebook_page_token = $this->getFacebookPageAccessToken();
     // Verify if the upload end time is tracked in the settings
     // if upload end time is present, will assume everything is ok
-    $this->loadFacebookModel('facebook/facebooksetting');
-    $facebook_setting = $this->model_facebook_facebooksetting->getSettings();
+    $this->loadFacebookModel('extension/facebooksetting');
+    $facebook_setting =
+      $this->model_extension_facebooksetting->getSettings();
     if (isset(
       $facebook_setting[FacebookCommonUtils::FACEBOOK_UPLOAD_END_TIME])) {
       return array('status' => self::INITIAL_PRODUCT_SYNC_STATUS_SUCCESS);
@@ -289,8 +290,8 @@ class ControllerFacebookFacebookProductFeed extends Controller {
   }
 
   private function updateFacebookUploadEndTime($end_time) {
-    $this->loadFacebookModel('facebook/facebooksetting');
-    $this->model_facebook_facebooksetting->updateSettings(
+    $this->loadFacebookModel('extension/facebooksetting');
+    $this->model_extension_facebooksetting->updateSettings(
       array(FacebookCommonUtils::FACEBOOK_UPLOAD_END_TIME => $end_time));
   }
 

@@ -32,7 +32,7 @@
       popupUrl = window.facebookAdsToolboxConfig.popupOrigin;
       var path = '/ads/dia';
 
-      if (debug) {
+      if (window.facebookAdsToolboxConfig.debug_url) {
         console.log(window.facebookAdsToolboxConfig);
       }
 
@@ -69,8 +69,8 @@
 
     var updateSettings = function(data, onSuccess) {
       $.ajax({
-        url: 'index.php?route=facebook/facebookadsextension/updatesettings' +
-          '&token=' + token,
+        url: 'index.php?route=extension/facebookadsextension/updatesettings&' +
+          window.facebookAdsToolboxConfig.token_string,
         type: 'post',
         data: data,
         dataType: 'json',
@@ -88,7 +88,7 @@
     };
 
     var showError = function(errorMessage) {
-      if (debug) {
+      if (window.facebookAdsToolboxConfig.debug_url) {
         console.log(errorMessage);
       }
     };
@@ -117,18 +117,16 @@
     };
 
     var clearAllFacebookProducts = function(onSuccess) {
-      $.ajax({
-        url: 'index.php?route=facebook/facebookadsextension/clearallfacebookproducts' +
-          '&token=' + token,
-        type: 'get',
-        dataType: 'json',
-        success: function(json) {
-          onSuccess();
-        },
-        error: function(xhr, ajaxOptions, thrownError) {
-          showError(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
-        }
-      });  
+      $.get(
+        'index.php?route=extension/facebookadsextension/clearallfacebookproducts&' +
+          window.facebookAdsToolboxConfig.token_string
+      )
+      .done(function(json) {
+        onSuccess();
+      })
+      .fail(function(xhr, ajaxOptions, thrownError) {
+        showError(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+      });
     };
 
     var setPixel = function(message) {
@@ -197,21 +195,19 @@
     };
 
     var syncAllProducts = function(onSuccess) {
-      $.ajax({
-        url: 'index.php?route=facebook/facebookadsextension/syncallproducts' +
-          '&token=' + token,
-        type: 'get',
-        dataType: 'json',
-        success: function(json) {
-          if (json.total_to_be_sync === json.successfully_sync) {
-            onSuccess();
-          } else {
-            window.sendToFacebook('fail catalog', json);
-          }
-        },
-        error: function(xhr, ajaxOptions, thrownError) {
-          showError(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+      $.get(
+        'index.php?route=extension/facebookadsextension/syncallproducts&' +
+          window.facebookAdsToolboxConfig.token_string
+      )
+      .done(function(json) {
+        if (json.total_to_be_sync === json.successfully_sync) {
+          onSuccess();
+        } else {
+          window.sendToFacebook('fail catalog', json);
         }
+      })
+      .fail(function(xhr, ajaxOptions, thrownError) {
+        showError(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
       });
     };
 
@@ -223,11 +219,8 @@
 
     var syncAllProductsUsingFeed = function(onSuccess) {
       $.get(
-        'index.php',
-        {
-          route: 'facebook/facebookadsextension/syncallproductsusingfeed',
-          token: token
-        }
+        'index.php?route=extension/facebookadsextension/syncallproductsusingfeed&' +
+          window.facebookAdsToolboxConfig.token_string
       )
       .done(function(json) {
         if (json.success === 'true') {
@@ -250,8 +243,8 @@
 
     var deleteSettings = function() {
       $.ajax({
-        url: 'index.php?route=facebook/facebookadsextension/deletesettings' +
-          '&token=' + token,
+        url: 'index.php?route=extension/facebookadsextension/deletesettings&' +
+          window.facebookAdsToolboxConfig.token_string,
         type: 'post',
         success: function(json) {
           if (json.success === 'true') {
@@ -287,11 +280,8 @@
     var monitorProductSyncStatus = function() {
       showCheckingUploadStatus();
       $.get(
-        'index.php',
-        {
-          route: 'facebook/facebookadsextension/getinitialproductsyncstatus',
-          token: token
-        }
+        'index.php?route=extension/facebookadsextension/getinitialproductsyncstatus&' +
+          window.facebookAdsToolboxConfig.token_string
       )
       .done(function(json) {
         switch (json.status) {
@@ -322,11 +312,8 @@
       $("#divProductSyncStatus").hide();
       $("#divProductSyncErrorText").hide();
       $.get(
-        'index.php',
-        {
-          route: 'facebook/facebookadsextension/iswritableproductfeedfolderavailable',
-          token: token
-        }
+        'index.php?route=extension/facebookadsextension/iswritableproductfeedfolderavailable&' +
+          window.facebookAdsToolboxConfig.token_string
       )
       .done(function(json) {
         if (json.available) {

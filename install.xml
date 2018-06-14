@@ -5,22 +5,27 @@
 <!-- This source code is licensed under the license found in the -->
 <!-- LICENSE file in the root directory of this source tree. -->
 
+<!-- system auto generated, DO NOT MODIFY. -->
 <modification>
-  <name>Facebook Ads Extension</name>
-  <code>facebook_ads_extension</code>
-  <version>1.0.14</version>
-  <author>Facebook</author>
-  <link></link>
+	<name>Facebook Ads Extension</name>
+	<code>facebook_ads_extension</code>
+	<version>2.0.0</version>
+	<author>Facebook</author>
+	<link></link>
 
   <!-- Admin panel settings -->
   <file path="admin/controller/common/column_left.php">
     <operation>
       <search><![CDATA[public function index() {]]></search>
       <add position="after"><![CDATA[
+        $token = (isset($this->session->data['user_token']))
+          ? $this->session->data['user_token']
+          : $this->session->data['token'];
+        $tokenString = 'token=' . $token . '&user_token=' . $token;
         $facebookAdsExtension = array();
         $facebookAdsExtension[] = array(
           'name'     => 'Facebook Ads Extension',
-          'href'     => $this->url->link('facebook/facebookadsextension', 'token=' . $this->session->data['token'], true),
+          'href'     => $this->url->link('extension/facebookadsextension', $tokenString, true),
           'children' => array()
         );
 
@@ -40,10 +45,20 @@
     <operation>
       <search><![CDATA[public function index() {]]></search>
       <add position="after"><![CDATA[
+        $this->load->language('common/dashboard');
         try {
           $operation = ', dashboard module';
+
+          // validates the plugin
+          $all_error_messages = $this->load->controller(
+            'extension/facebookadsextension/validateMissingFilesAndTables');
+          if (sizeof($all_error_messages) > 0) {
+            throw new Exception($this->language->get(
+              'text_warning_facebook_fae_install_problem'));
+          }
+
           $this->load->controller(
-            'facebook/facebookproduct/validateFAEAndCatalogSetupAndProductUploadComplete',
+            'extension/facebookproduct/validateFAEAndCatalogSetupAndProductUploadComplete',
             $operation);
         } catch (Exception $e) {
           $data['error_facebook_sync'] =
@@ -80,8 +95,12 @@
     <operation>
       <search><![CDATA[public function index() {]]></search>
       <add position="after"><![CDATA[
+        $token = (isset($this->session->data['user_token']))
+          ? $this->session->data['user_token']
+          : $this->session->data['token'];
+        $tokenString = 'token=' . $token . '&user_token=' . $token;
         $data['text_facebook_ads_extension'] = 'Facebook Ads Extension';
-        $data['facebookadsextension'] = $this->url->link('facebook/facebookadsextension', 'token=' . $this->session->data['token'], 'SSL');
+        $data['facebookadsextension'] = $this->url->link('extension/facebookadsextension', $tokenString, 'SSL');
       ]]></add>
     </operation>
   </file>
@@ -103,7 +122,6 @@
     </operation>
   </file>
 
-  <!-- Admin product settings -->
   <file path="admin/model/catalog/product.php">
     <!-- This operation is to store in the new product id -->
     <!-- in the request->post variable. -->
@@ -125,10 +143,20 @@
       <!-- a problem with the FAE setup -->
       <search><![CDATA[public function index() {]]></search>
       <add position="after"><![CDATA[
+        $this->load->language('catalog/product');
         try {
           $operation = ', access product module';
+
+          // validates the plugin
+          $all_error_messages = $this->load->controller(
+            'extension/facebookadsextension/validateMissingFilesAndTables');
+          if (sizeof($all_error_messages) > 0) {
+            throw new Exception($this->language->get(
+              'text_warning_facebook_fae_install_problem'));
+          }
+
           $this->load->controller(
-            'facebook/facebookproduct/validateFAEAndCatalogSetupAndProductUploadComplete',
+            'extension/facebookproduct/validateFAEAndCatalogSetupAndProductUploadComplete',
             $operation);
         } catch (Exception $e) {
           $this->session->data['error_facebook_sync'] =
@@ -152,7 +180,7 @@
         try {
           $product_id = $this->request->post['facebook_id_of_new_product'];
           $result = $this->load->controller(
-            'facebook/facebookproduct/syncProductForProductId',
+            'extension/facebookproduct/syncProductForProductId',
             $product_id);
           if (!isset($result['success_count'])
             || $result['success_count'] !== $result['total_count']) {
@@ -160,6 +188,7 @@
               $this->language->get('text_warning_facebook_sync');
           }
         } catch (Exception $e) {
+          $this->load->language('catalog/product');
           $this->session->data['error_facebook_sync'] =
             ($e->getCode() === FacebookGraphAPIError::ACCESS_TOKEN_EXCEPTION_CODE)
             ? $this->language->get('text_warning_facebook_access_token_problem')
@@ -173,7 +202,7 @@
       <add position="after"><![CDATA[
         try {
           $result = $this->load->controller(
-            'facebook/facebookproduct/syncProductForProductId',
+            'extension/facebookproduct/syncProductForProductId',
             $this->request->get['product_id']);
           if (!isset($result['success_count'])
             || $result['success_count'] !== $result['total_count']) {
@@ -181,6 +210,7 @@
               $this->language->get('text_warning_facebook_sync');
           }
         } catch (Exception $e) {
+          $this->load->language('catalog/product');
           $this->session->data['error_facebook_sync'] =
             ($e->getCode() === FacebookGraphAPIError::ACCESS_TOKEN_EXCEPTION_CODE)
             ? $this->language->get('text_warning_facebook_access_token_problem')
@@ -194,7 +224,7 @@
       <add position="after"><![CDATA[
         try {
           $result = $this->load->controller(
-            'facebook/facebookproduct/deleteProductsForProductId',
+            'extension/facebookproduct/deleteProductsForProductId',
             $this->request->post['selected']);
           if (!isset($result['success_count'])
             || $result['success_count'] !== $result['total_count']) {
@@ -202,6 +232,7 @@
               $this->language->get('text_warning_facebook_sync');
           }
         } catch (Exception $e) {
+          $this->load->language('catalog/product');
           $this->session->data['error_facebook_sync'] =
             ($e->getCode() === FacebookGraphAPIError::ACCESS_TOKEN_EXCEPTION_CODE)
             ? $this->language->get('text_warning_facebook_access_token_problem')
@@ -259,17 +290,16 @@
 
   <file path="admin/language/*/catalog/product.php">
     <operation>
-      <search><![CDATA[$_['text_success']           = 'Success: You have modified products!';]]></search>
+      <search><![CDATA[<?php]]></search>
       <add position="after"><![CDATA[
         $_['text_warning_facebook_sync']           = 'Warning: Encountered problem updating product(s) to Facebook. Please retry again. Check the error log file for more details';
         $_['text_warning_facebook_delete']           = 'Warning: Encountered problem deleting product(s) to Facebook. Check the error log file for more details.';
         $_['text_warning_facebook_access_token_problem'] = 'Warning: There is a problem with your Facebook access token. Please go to Facebook Ads Extension to refresh the access token.';
+        $_['text_warning_facebook_fae_install_problem'] = 'Warning: There is a problem with your Facebook Ads Extension installation. Please go to Facebook Ads Extension to view more details.';
       ]]></add>
     </operation>
   </file>
-  <!-- End Admin product settings -->
 
-  <!-- Admin panel - add/edit sales orders, this will sync up the product availability with Facebook -->
   <file path="catalog/controller/api/order.php">
     <!-- This is to handle for Adding of new orders -->
     <operation>
@@ -327,9 +357,6 @@
       ]]></add>
     </operation>
   </file>
-  <!-- Admin modify orders, this will sync up the product availability with Facebook -->
-
-  <!-- Facebook pixel base code -->
 
   <!-- Firing the pixel init and event code -->
   <!-- The facebook_pixel_event_params_FAE is retrieved from the request->post -->
@@ -392,7 +419,7 @@
     <operation>
       <search><![CDATA[</head>]]></search>
       <add position="before"><![CDATA[
-        <link rel="stylesheet" type="text/css" href="catalog/view/css/facebook/cookieconsent.min.css" />
+        <link rel="stylesheet" type="text/css" href="catalog/view/theme/css/facebook/cookieconsent.min.css" />
         <script type="text/javascript" src = "catalog/view/javascript/facebook/cookieconsent.min.js"></script>
         <script>
         window.addEventListener("load", function(){
@@ -470,7 +497,6 @@
       ]]></add>
     </operation>
   </file>
-  <!-- End Facebook pixel base code -->
 
   <!-- Facebook pixel ViewContent code -->
   <!-- This will prepare the params for ViewContent pixel -->
@@ -573,7 +599,6 @@
       ]]></add>
     </operation>
   </file>
-  <!-- End Facebook pixel AddToCart code -->
 
   <!-- Facebook pixel Purchase code -->
   <!-- This will prepare the params for Purchase pixel at Thank you page -->
@@ -756,8 +781,8 @@
           addslashes(json_encode($facebook_pixel_event_params_FAE));
       ]]></add>
     </operation>
-    <!-- End Facebook pixel Lead code -->
   </file>
+  <!-- End Facebook pixel Lead code -->
 
   <!-- Facebook pixel ViewBrand code -->
   <!-- this is preparing the params required for firing ViewBrand on the PHP side -->
@@ -783,4 +808,169 @@
     </operation>
   </file>
   <!-- End Facebook pixel ViewBrand code -->
+
+  <!-- The actual firing of the pixel code is done in the header file -->
+  <!-- The injection for the header file is based on locating -->
+  <!-- the tag </head> which should give the lowest chance to break -->
+  <!-- with custom plugins -->
+  <file path="catalog/view/theme/*/template/common/header.twig">
+    <operation>
+      <search><![CDATA[</head>]]></search>
+      <add position="before"><![CDATA[
+        <link rel="stylesheet" type="text/css" href="catalog/view/theme/css/facebook/cookieconsent.min.css" />
+        <script type="text/javascript" src = "catalog/view/javascript/facebook/cookieconsent.min.js"></script>
+        <script>
+        window.addEventListener("load", function(){
+          function setConsent() {
+            fbq(
+              'consent',
+              this.hasConsented() ? 'grant' : 'revoke'
+            );
+          }
+          window.cookieconsent.initialise({
+            palette: {
+              popup: {
+                background: '#237afc'
+              },
+              button: {
+                background: '#fff',
+                text: '#237afc'
+              }
+            },
+            cookie: {
+              name: fbq.consentCookieName
+            },
+            type: 'opt-out',
+            showLink: false,
+            content: {
+              dismiss: 'Agree',
+              deny: 'Opt Out',
+              header: 'Our Site Uses Cookies',
+              message: 'By clicking Agree, you agree to our <a class="cc-link" href="https://www.facebook.com/legal/terms/update" target="_blank">terms of service</a>, <a class="cc-link" href="https://www.facebook.com/policies/" target="_blank">privacy policy</a> and <a class="cc-link" href="https://www.facebook.com/policies/cookies/" target="_blank">cookies policy</a>.'
+            },
+            layout: 'basic-header',
+            location: true,
+            revokable: true,
+            onInitialise: setConsent,
+            onStatusChange: setConsent,
+            onRevokeChoice: setConsent
+          }, function (popup) {
+            // If this isn't open, we know that we can use cookies.
+            if (!popup.getStatus() && !popup.options.enabled) {
+              popup.setStatus(cookieconsent.status.dismiss);
+            }
+          });
+        });
+        </script>
+        <script type="text/javascript">
+          !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+          n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+          n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+          t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+          document,'script','https://connect.facebook.net/en_US/fbevents.js');
+          fbq.consentCookieName = 'fb_cookieconsent_status';
+
+          (function() {
+            function getCookie(t){var i=("; "+document.cookie).split("; "+t+"=");if(2==i.length)return i.pop().split(";").shift()}
+            var consentValue = getCookie(fbq.consentCookieName);
+            fbq('consent', consentValue === 'dismiss' ? 'grant' : 'revoke');
+          })();
+        </script>
+        <script type="text/javascript" src = "catalog/view/javascript/facebook/facebook_pixel.js"></script>
+        {% if facebook_pixel_id_FAE %}
+          <script type="text/javascript">
+            (function() {
+              var params = {{ facebook_pixel_params_FAE }};
+              _facebookAdsExtension.facebookPixel.init(
+                '{{ facebook_pixel_id_FAE }}',
+                {{ facebook_pixel_pii_FAE }},
+                params);
+              {% if facebook_pixel_event_params_FAE %}
+                _facebookAdsExtension.facebookPixel.firePixel(
+                  JSON.parse('{{facebook_pixel_event_params_FAE }}'));
+              {% endif %}
+            })();
+          </script>
+        {% endif %}
+      ]]></add>
+    </operation>
+  </file>
+
+  <!-- AddToCart at product details page -->
+  <!-- Uses jQuery to add new listener to button-cart.click -->
+  <!-- The code injection is set to match <?php echo $footer; ?> -->
+  <!-- which will reduce the chance of breakage with custom plugins -->
+  <file path="catalog/view/theme/*/template/product/product.twig">
+    <operation>
+      <search><![CDATA[{{ footer }}]]></search>
+      <add position="after"><![CDATA[
+        <input type='hidden' id='fbProductID' value='{{ product_id }}' />
+      ]]></add>
+    </operation>
+  </file>
+
+  <file path="admin/view/template/common/dashboard.twig">
+    <operation>
+      <search><![CDATA[<div class="container-fluid">{% if error_install %}]]></search>
+      <add position="before"><![CDATA[
+        {% if error_facebook_sync %}
+        <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> {{ error_facebook_sync }}
+          <button type="button" class="close" data-dismiss="alert">&times;</button>
+        </div>
+        {% endif %}
+      ]]></add>
+    </operation>
+  </file>
+
+  <file path="admin/view/template/catalog/product_list.twig">
+    <operation>
+      <search><![CDATA[<div class="container-fluid">{% if error_warning %}]]></search>
+      <add position="before"><![CDATA[
+        {% if error_facebook_sync %}
+        <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> {{ error_facebook_sync }}
+          <button type="button" class="close" data-dismiss="alert">&times;</button>
+        </div>
+        {% endif %}
+        {% if error_facebook_delete %}
+        <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> {{ error_facebook_delete }}
+          <button type="button" class="close" data-dismiss="alert">&times;</button>
+        </div>
+        {% endif %}
+      ]]></add>
+    </operation>
+  </file>
+
+  <file path="admin/language/*/common/dashboard.php">
+    <operation>
+      <search><![CDATA[<?php]]></search>
+      <add position="after"><![CDATA[
+        $_['text_warning_facebook_sync']           = 'Warning: Encountered problem updating product(s) to Facebook. Please retry again. Check the error log file for more details';
+        $_['text_warning_facebook_delete']           = 'Warning: Encountered problem deleting product(s) to Facebook. Check the error log file for more details.';
+        $_['text_warning_facebook_access_token_problem'] = 'Warning: There is a problem with your Facebook access token. Please go to Facebook Ads Extension to refresh the access token.';
+        $_['text_warning_facebook_fae_install_problem'] = 'Warning: There is a problem with your Facebook Ads Extension installation. Please go to Facebook Ads Extension to view more details.';
+      ]]></add>
+    </operation>
+  </file>
+
+  <file path="system/config/catalog.php">
+    <operation>
+      <search><![CDATA[$_['action_event'] = array(]]></search>
+      <add position="before"><![CDATA[
+        array_push($_['action_pre_action'], 'extension/facebookpageshopcheckoutredirect');
+      ]]></add>
+    </operation>
+  </file>
+
+  <file path="catalog/controller/common/maintenance.php">
+    <operation>
+      <search><![CDATA[public function index() {]]></search>
+      <add position="after"><![CDATA[
+        $target = 'facebook/facebookproduct/directcheckout';
+        if (isset($this->request->get['route'])
+          && substr((string)$this->request->get['route'], 0, strlen($target)) == $target) {
+        return new Action('extension/facebookpageshopcheckoutredirect');
+        }
+      ]]></add>
+    </operation>
+  </file>
 </modification>

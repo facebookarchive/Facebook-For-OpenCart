@@ -24,7 +24,7 @@
     padding: 0;
     margin: 10px 0; }
   #facebook-pixel-selector #header {
-    background-image: url(../../images/facebook/background.png);
+    background-image: url(../../image/facebook/background.png);
     background-repeat: repeat-x;
     background-size: 1px 42px;
     background-position: 0 0;
@@ -40,7 +40,7 @@
     color: #141823;
     line-height: 1.28; }
     #facebook-pixel-selector #header .logo {
-      background-image: url(../../images/facebook/fbicons.png);
+      background-image: url(../../image/facebook/fbicons.png);
       background-size: 104px 92px;
       background-repeat: no-repeat;
       display: inline-block;
@@ -49,7 +49,7 @@
       height: 24px;
       background-position: -9px -39px; }
   #facebook-pixel-selector #header:after {
-    background-image: url(../../images/facebook/background.png);
+    background-image: url(../../image/facebook/background.png);
     background-repeat: repeat-x;
     background-size: 1px 4px;
     background-position: 0 0;
@@ -62,7 +62,7 @@
   #facebook-pixel-selector .facebookButton {
     height: 37px; }
     #facebook-pixel-selector .facebookButton .logo {
-      background-image: url(../../images/facebook/fbicons.png);
+      background-image: url(../../image/facebook/fbicons.png);
       background-size: 104px 92px;
       background-repeat: no-repeat;
       display: inline-block;
@@ -112,7 +112,7 @@
       margin-top: 48px; }
   #facebook-pixel-selector button {
     background-color: #f6f7f8;
-    background-image: url(../../images/facebook/buttonbg.png);
+    background-image: url(../../image/facebook/buttonbg.png);
     background-repeat: repeat-x;
     border: 1px solid;
     border-radius: 2px;

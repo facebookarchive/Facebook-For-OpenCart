@@ -14,7 +14,11 @@ class FacebookProductAPIFormatter extends FacebookProductFormatter {
 
   protected function formatAdditionalImageUrls($product_image_urls) {
     // returns the additional image urls as a list in string format
+    // we need to escape the single quote for the image_url
    if ($product_image_urls) {
+      array_walk($product_image_urls, function(&$value, $key) {
+        $value = addslashes($value);
+      });
       return "['" . implode("','", $product_image_urls) . "']";
     } else {
       return "[]";
@@ -24,10 +28,5 @@ class FacebookProductAPIFormatter extends FacebookProductFormatter {
   protected function postFormatting($product_data) {
     // no further post formatting
     return $product_data;
-  }
-
-  protected function escapeImageUrl($image_url) {
-    // we need to escape the single quote from the image URL
-    return addslashes($image_url);
   }
 }

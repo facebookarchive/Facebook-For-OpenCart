@@ -32,7 +32,7 @@
 (function () {
   function fireProductInfoEvent(eventName, productID, quantity) {
     jQuery.get(
-      'index.php?route=facebook/facebookproduct/getproductinfoforfacebookpixel',
+      'index.php?route=extension/facebookproduct/getproductinfoforfacebookpixel',
       {
         event_name: eventName,
         product_id: productID,

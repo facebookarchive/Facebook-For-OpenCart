@@ -17,7 +17,7 @@
   color: #141823;
   font-family: helvetica, arial, sans-serif;
   font-size: 14px;
-  background-image: url(../../images/facebook/background.png);
+  background-image: url(../../image/facebook/background.png);
   background-repeat: repeat-x;
   background-size: 1px 42px;
   background-position: 0 0;
@@ -51,7 +51,7 @@
 
 
 #facebook-header .logo {
-  background-image: url(../../images/facebook/fbicons.png);
+  background-image: url(../../image/facebook/fbicons.png);
   background-size: 104px 92px;
   background-repeat: no-repeat;
   display: inline-block;
@@ -62,7 +62,7 @@
 }
 
 #facebook-header:after {
-  background-image: url(../../images/facebook/background.png);
+  background-image: url(../../image/facebook/background.png);
   background-repeat: repeat-x;
   background-size: 1px 4px;
   background-position: 0 0;
@@ -117,7 +117,7 @@ div.dia-flow-container a {
 
 div.dia-flow-container button {
   background-color: #f6f7f8;
-  background-image: url(../../images/facebook/buttonbg.png);
+  background-image: url(../../image/facebook/buttonbg.png);
   background-repeat: repeat-x;
   border: 1px solid;
   border-radius: 2px;

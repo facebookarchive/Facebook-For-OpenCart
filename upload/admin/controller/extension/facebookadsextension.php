@@ -5,7 +5,7 @@
 // This source code is licensed under the license found in the
 // LICENSE file in the root directory of this source tree.
 
-class ControllerFacebookFacebookAdsExtension extends Controller {
+class ControllerExtensionFacebookAdsExtension extends Controller {
   private $faeLog;
 
   public function __construct($registry) {
@@ -18,81 +18,71 @@ class ControllerFacebookFacebookAdsExtension extends Controller {
   }
 
   public function index() {
-    // perform a system check to ensure plugin is intact
-    // by tracking all the error messages
-    $all_error_messages = array();
+    $template_engine = $this->config->get('template_engine');
+    $template_file_extension =
+      (isset($template_engine) || $template_engine === 'twig')
+      ? ''
+      : '.tpl';
 
-    // 1. to ensure all required files are copied over to the webfolder
-    $folders_with_missing_files = $this->getFoldersWithMissingFiles();
-    $error_message_title = 'We have detected missing files for ' .
-      'Facebook Ads Extension. ' .
-      'Please enable read, write and execute access permissions ' .
-      'for these files and folders.' .
-      '<br/>';
-    $error_message = $this->getErrorMessageForMissingAssets(
-      $folders_with_missing_files,
-      $error_message_title);
-    if ($error_message) {
-      $all_error_messages[] = $error_message;
-    }
-
-    // 2. to ensure the required database tables are created
-    $missing_database_tables = $this->getMissingDatabaseTables();
-    $error_message_title = 'We have detected these missing database tables ' .
-      'for Facebook Ads Extension. ' .
-      'Please give the CREATE privilege for your database user.' .
-      '<br/>';
-    $error_message = $this->getErrorMessageForMissingAssets(
-      $missing_database_tables,
-      $error_message_title);
-    if ($error_message) {
-      $all_error_messages[] = $error_message;
-    }
+    // validates the plugin
+    $all_error_messages = $this->validateMissingFilesAndTables();
 
     if (sizeof($all_error_messages) > 0) {
       $data = $this->getDataForErrorView($all_error_messages);
       $this->response->setOutput(
-        $this->load->view('error/not_found.tpl', $data));
+        $this->load->view(
+          'error/not_found' . $template_file_extension,
+          $data));
       return;
     }
 
     $this->facebookcommonutils = new FacebookCommonUtils();
     $this->facebookgraphapi = new FacebookGraphAPI();
 
-    $this->load->language('facebook/facebookadsextension');
+    $this->load->language('extension/facebookadsextension');
     $this->document->setTitle($this->language->get('heading_title'));
 
     // Run currency update
     if ($this->config->get('config_currency_auto')) {
       $this->load->model('localisation/currency');
-      $this->model_localisation_currency->refresh();
+      if (method_exists($this->model_localisation_currency, 'refresh')) {
+        $this->model_localisation_currency->refresh();
+      }
     }
 
-    $this->load->model('facebook/facebooksetting');
-    $facebook_setting = $this->model_facebook_facebooksetting->getSettings();
+    $this->load->model('extension/facebooksetting');
+    $facebook_setting = $this->model_extension_facebooksetting->
+      getSettings();
 
     $data = array();
+
+    $data['token_string'] = $this->getTokenString();
+
     $data['heading_title'] = $this->language->get('heading_title');
     $data['breadcrumbs'] = array();
     $data['breadcrumbs'][] = array(
       'text' => $this->language->get('text_home'),
       'href' => $this->url->link(
       'common/dashboard',
-      'token=' . $this->session->data['token'],
+      $data['token_string'],
       true)
     );
     $data['breadcrumbs'][] = array(
       'text' => $this->language->get('heading_title'),
       'href' => $this->url->link(
-      'facebook/facebookadsextension',
-      'token=' . $this->session->data['token'],
+      'extension/facebookadsextension',
+      $data['token_string'],
       true)
     );
 
-    $data['token'] = $this->session->data['token'];
     $data['debug_url'] = (isset($this->request->get['debug_url']))
       ? $this->request->get['debug_url']
       : '';
+
+    $data['has_gzip_support'] = extension_loaded('zlib') ? 'true' : 'false';
+    $data['time_zone_id'] = date('Z');
+    $data['php_version'] = phpversion();
+
     $data[FacebookCommonUtils::FACEBOOK_DIA_SETTING_ID] =
       isset($facebook_setting[FacebookCommonUtils::FACEBOOK_DIA_SETTING_ID])
       ? $facebook_setting[FacebookCommonUtils::FACEBOOK_DIA_SETTING_ID]
@@ -107,17 +97,17 @@ class ControllerFacebookFacebookAdsExtension extends Controller {
     $data['plugin_version'] = $this->facebookcommonutils->getPluginVersion();
 
     $data['total_visible_products'] = $this->load->controller(
-      'facebook/facebookproduct/getTotalEnabledProducts');
+      'extension/facebookproduct/getTotalEnabledProducts');
 
     $data['sample_feed'] = $this->load->controller(
-      'facebook/facebookproduct/getSampleProductFeed');
+      'extension/facebookproduct/getSampleProductFeed');
     if (!$data['sample_feed']) {
       $data['sample_feed'] = '[[]]';
     }
 
     $data['download_log_link'] = $this->url->link(
-      'facebook/facebookadsextension/downloadfaelogfile',
-      'token=' . $this->session->data['token'],
+      'extension/facebookadsextension/downloadfaelogfile',
+      $data['token_string'],
       true);
 
     $data['sub_heading_title'] = $this->language->get('sub_heading_title');
@@ -147,7 +137,63 @@ class ControllerFacebookFacebookAdsExtension extends Controller {
       : 'false';
 
     $this->response->setOutput(
-      $this->load->view('facebook/facebookadsextension.tpl', $data));
+      $this->load->view(
+        'extension/facebookadsextension' . $template_file_extension,
+        $data));
+  }
+
+  public function validateMissingFilesAndTables() {
+    // performing a system check to ensure plugin is intact
+    // by tracking all the required files and database tables
+    $all_error_messages = array();
+
+    // 1. to ensure all required files are copied over to the webfolder
+    $folders_with_missing_files = $this->getFoldersWithMissingFiles();
+    $error_message_title = 'We have detected missing files for ' .
+      'Facebook Ads Extension. ' .
+      'Please enable read, write and execute access permissions ' .
+      'for these files and folders.' .
+      '<br/>';
+    $error_message = $this->getErrorMessageForMissingAssets(
+      $folders_with_missing_files,
+      $error_message_title);
+    if ($error_message) {
+      $all_error_messages[] = $error_message;
+    }
+
+    // 2. to ensure the required database tables are created
+    $missing_database_tables = $this->getMissingDatabaseTables();
+    $error_message_title = 'We have detected these missing database tables ' .
+      'for Facebook Ads Extension. ' .
+      'Please give the CREATE privilege for your database user.' .
+      '<br/>';
+    if (version_compare(VERSION, '3.0.0.0') >= 0) {
+      // provides an additional message to inform user
+      // to install the module for Opencart v3
+      $error_message_title = $error_message_title .
+        'Please also ensure Facebook Ads Extension module is installed. ' .
+        'Access Extensions -> Select Modules from dropdown list -> ' .
+        'Click on green install button for Facebook Ads Extension' .
+        '<br/><br/>';
+    }
+    $error_message = $this->getErrorMessageForMissingAssets(
+      $missing_database_tables,
+      $error_message_title);
+    if ($error_message) {
+      $all_error_messages[] = $error_message;
+    }
+
+    return $all_error_messages;
+  }
+
+  private function getToken() {
+    return (isset($this->session->data['user_token']))
+      ? $this->session->data['user_token']
+      : $this->session->data['token'];
+  }
+
+  private function getTokenString() {
+    return 'user_token=' . $this->getToken() . '&token=' . $this->getToken();
   }
 
   public function updateSettings() {
@@ -187,8 +233,8 @@ class ControllerFacebookFacebookAdsExtension extends Controller {
 
     $this->faeLog->write('Updating FAE settings - ' .
       implode(',', array_keys($data)));
-    $this->load->model('facebook/facebooksetting');
-    $this->model_facebook_facebooksetting->updateSettings($data);
+    $this->load->model('extension/facebooksetting');
+    $this->model_extension_facebooksetting->updateSettings($data);
 
     $json = array('success' => 'true');
     $this->response->addHeader('Content-Type: application/json');
@@ -198,7 +244,7 @@ class ControllerFacebookFacebookAdsExtension extends Controller {
 
   public function clearAllFacebookProducts() {
     $result = $this->load->controller(
-      'facebook/facebookproduct/clearAllFacebookProducts');
+      'extension/facebookproduct/clearAllFacebookProducts');
     $json = array('success' => 'true');
     $this->response->addHeader('Content-Type: application/json');
     $this->response->setOutput(json_encode($json));
@@ -206,15 +252,15 @@ class ControllerFacebookFacebookAdsExtension extends Controller {
 
   public function syncAllProducts() {
     $result = $this->load->controller(
-      'facebook/facebookproduct/syncAllProducts');
+      'extension/facebookproduct/syncAllProducts');
     $this->response->addHeader('Content-Type: application/json');
     $this->response->setOutput(json_encode($result));
   }
 
   public function deleteSettings() {
     $this->faeLog->write('Deleting FAE settings');
-    $this->load->model('facebook/facebooksetting');
-    $this->model_facebook_facebooksetting->deleteSettings();
+    $this->load->model('extension/facebooksetting');
+    $this->model_extension_facebooksetting->deleteSettings();
 
     $json = array('success' => 'true');
     $this->response->addHeader('Content-Type: application/json');
@@ -223,7 +269,7 @@ class ControllerFacebookFacebookAdsExtension extends Controller {
   }
 
   public function downloadFAELogFile() {
-    $this->load->language('facebook/facebookadsextension');
+    $this->load->language('extension/facebookadsextension');
     $file = DIR_LOGS . FacebookCommonUtils::FAE_LOG_FILENAME;
 
     if (file_exists($file) && filesize($file) > 0) {
@@ -246,8 +292,8 @@ class ControllerFacebookFacebookAdsExtension extends Controller {
           basename($file),
           '0B');
       $this->response->redirect($this->url->link(
-        'facebook/facebookadsextension',
-        'token=' . $this->session->data['token'],
+        'extension/facebookadsextension',
+        $this->getTokenString(),
         true));
     }
   }
@@ -255,11 +301,11 @@ class ControllerFacebookFacebookAdsExtension extends Controller {
   public function syncAllProductsUsingFeed() {
     try {
       $result = $this->load->controller(
-        'facebook/facebookproductfeed/syncAllProductsUsingFeed');
+        'extension/facebookproductfeed/syncAllProductsUsingFeed');
       if ($result['success'] !== 'true') {
         // checks if the total number of products is within threshold
         $total = $this->load->controller(
-          'facebook/facebookproduct/getTotalEnabledProducts');
+          'extension/facebookproduct/getTotalEnabledProducts');
         $this->faeLog->write('Total number of products = ' . $total);
         if ($total <=
           FacebookCommonUtils::FACEBOOK_THRESHOLD_FOR_INITIAL_SYNC_BY_API) {
@@ -271,7 +317,7 @@ class ControllerFacebookFacebookAdsExtension extends Controller {
 
           $this->updateSettingsToIndicateInitialSyncByAPI();
           $api_result = $this->load->controller(
-            'facebook/facebookproduct/syncAllProducts');
+            'extension/facebookproduct/syncAllProducts');
           $result =
             ($api_result['total_count'] === $api_result['success_count']);
           $this->faeLog->write('Complete Syncing using API as fallback' .
@@ -289,7 +335,7 @@ class ControllerFacebookFacebookAdsExtension extends Controller {
 
   private function updateSettingsToIndicateInitialSyncByAPI() {
     $this->faeLog->write('Updating FAE settings - ');
-    $this->load->model('facebook/facebooksetting');
+    $this->load->model('extension/facebooksetting');
     $data = array();
     $data[FacebookCommonUtils::FACEBOOK_FEED_ID] =
       'USING_API_FOR_INITIAL_SYNC';
@@ -297,13 +343,13 @@ class ControllerFacebookFacebookAdsExtension extends Controller {
       'USING_API_FOR_INITIAL_SYNC';
     $data[FacebookCommonUtils::FACEBOOK_UPLOAD_END_TIME] =
       'USING_API_FOR_INITIAL_SYNC';
-    $this->model_facebook_facebooksetting->updateSettings($data);
+    $this->model_extension_facebooksetting->updateSettings($data);
   }
 
   public function getInitialProductSyncStatus() {
     try {
       $result = $this->load->controller(
-        'facebook/facebookproductfeed/getInitialProductSyncStatus');
+        'extension/facebookproductfeed/getInitialProductSyncStatus');
       $this->response->addHeader('Content-Type: application/json');
       $this->response->setOutput(json_encode($result));
     } catch (Exception $e) {
@@ -314,7 +360,7 @@ class ControllerFacebookFacebookAdsExtension extends Controller {
   public function isWritableProductFeedFolderAvailable() {
     try {
       $result = $this->load->controller(
-        'facebook/facebookproductfeed/isWritableProductFeedFolderAvailable');
+        'extension/facebookproductfeed/isWritableProductFeedFolderAvailable');
       $this->response->addHeader('Content-Type: application/json');
       $this->response->setOutput(json_encode(array('available' => $result)));
     } catch (Exception $e) {
@@ -327,23 +373,27 @@ class ControllerFacebookFacebookAdsExtension extends Controller {
     // these are not the core opencart files modified through install.xml
     return array(
 // system auto generated, DO NOT MODIFY
-      DIR_APPLICATION . '/controller/facebook/ControllerFacebookFacebookProductTrait.php',
-      DIR_APPLICATION . '/controller/facebook/facebookadsextension.php',
-      DIR_APPLICATION . '/controller/facebook/facebookproduct.php',
-      DIR_APPLICATION . '/controller/facebook/facebookproductfeed.php',
-      DIR_APPLICATION . '/language/en-gb/facebook/facebookadsextension.php',
-      DIR_APPLICATION . '/language/english/facebook/facebookadsextension.php',
-      DIR_APPLICATION . '/model/facebook/facebookproduct.php',
-      DIR_APPLICATION . '/model/facebook/facebooksetting.php',
-      DIR_APPLICATION . '/view/images/facebook/background.png',
-      DIR_APPLICATION . '/view/images/facebook/buttonbg.png',
-      DIR_APPLICATION . '/view/images/facebook/fbicons.png',
-      DIR_APPLICATION . '/view/images/facebook/loadingicon.gif',
+      DIR_APPLICATION . '/controller/extension/facebookadsextension.php',
+      DIR_APPLICATION . '/controller/extension/facebookproduct.php',
+      DIR_APPLICATION . '/controller/extension/facebookproductfeed.php',
+      DIR_APPLICATION . '/controller/extension/facebookproducttrait.php',
+      DIR_APPLICATION . '/controller/extension/module/facebookadsextension_installer.php',
+      DIR_APPLICATION . '/language/en-gb/extension/facebookadsextension.php',
+      DIR_APPLICATION . '/language/en-gb/extension/module/facebookadsextension_installer.php',
+      DIR_APPLICATION . '/language/english/extension/facebookadsextension.php',
+      DIR_APPLICATION . '/language/english/extension/module/facebookadsextension_installer.php',
+      DIR_APPLICATION . '/model/extension/facebookproduct.php',
+      DIR_APPLICATION . '/model/extension/facebooksetting.php',
+      DIR_APPLICATION . '/view/image/facebook/background.png',
+      DIR_APPLICATION . '/view/image/facebook/buttonbg.png',
+      DIR_APPLICATION . '/view/image/facebook/fbicons.png',
+      DIR_APPLICATION . '/view/image/facebook/loadingicon.gif',
       DIR_APPLICATION . '/view/javascript/facebook/dia.js',
       DIR_APPLICATION . '/view/stylesheet/facebook/dia.css',
       DIR_APPLICATION . '/view/stylesheet/facebook/feed.css',
       DIR_APPLICATION . '/view/stylesheet/facebook/pixel.css',
-      DIR_APPLICATION . '/view/template/facebook/facebookadsextension.tpl',
+      DIR_APPLICATION . '/view/template/extension/facebookadsextension.tpl',
+      DIR_APPLICATION . '/view/template/extension/facebookadsextension.twig',
       DIR_SYSTEM . '/library/facebookcommonutils.php',
       DIR_SYSTEM . '/library/facebookgraphapi.php',
       DIR_SYSTEM . '/library/facebookgraphapierror.php',
@@ -352,10 +402,11 @@ class ControllerFacebookFacebookAdsExtension extends Controller {
       DIR_SYSTEM . '/library/facebookproductformatter.php',
       DIR_SYSTEM . '/library/facebooksampleproductfeedformatter.php',
       DIR_SYSTEM . '/library/facebooktax.php',
-      DIR_CATALOG . '/controller/facebook/facebookproduct.php',
-      DIR_CATALOG . '/view/css/facebook/cookieconsent.min.css',
+      DIR_CATALOG . '/controller/extension/facebookpageshopcheckoutredirect.php',
+      DIR_CATALOG . '/controller/extension/facebookproduct.php',
       DIR_CATALOG . '/view/javascript/facebook/cookieconsent.min.js',
       DIR_CATALOG . '/view/javascript/facebook/facebook_pixel.js',
+      DIR_CATALOG . '/view/theme/css/facebook/cookieconsent.min.css',
 // system auto generated, DO NOT MODIFY
       null
     );
@@ -462,7 +513,7 @@ class ControllerFacebookFacebookAdsExtension extends Controller {
   private function getDataForErrorView($error_messages) {
     // trying to load from language and default to fixed string
     // if we cant find the header
-    $this->load->language('facebook/facebookadsextension');
+    $this->load->language('extension/facebookadsextension');
     $this->document->setTitle($this->language->get('heading_title'));
     $heading_title = ($this->language->get('heading_title') == 'heading_title')
       ? $this->language->get('heading_title')
@@ -475,14 +526,14 @@ class ControllerFacebookFacebookAdsExtension extends Controller {
       'text' => $this->language->get('text_home'),
       'href' => $this->url->link(
       'common/dashboard',
-      'token=' . $this->session->data['token'],
+      $this->getTokenString(),
       true)
     );
     $data['breadcrumbs'][] = array(
       'text' => $heading_title,
       'href' => $this->url->link(
-      'facebook/facebookadsextension',
-      'token=' . $this->session->data['token'],
+      'extension/facebookadsextension',
+      $this->getTokenString(),
       true)
     );
     $data['header'] = $this->load->controller('common/header');

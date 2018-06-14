@@ -5,14 +5,14 @@
 // This source code is licensed under the license found in the
 // LICENSE file in the root directory of this source tree.
 
-trait ControllerFacebookFacebookProductTrait {
+trait ControllerExtensionFacebookProductTrait {
   private $faeLog;
 
   private function loadLibrariesForFacebookCatalog() {
     $this->faeLog = new Log(FacebookCommonUtils::FAE_LOG_FILENAME);
     $this->load->model('catalog/product');
     $this->load->model('localisation/currency');
-    $this->loadFacebookModel('facebook/facebookproduct');
+    $this->loadFacebookModel('extension/facebookproduct');
     $this->facebookcommonutils = new FacebookCommonUtils();
     $this->facebookgraphapierror = new FacebookGraphAPIError();
     $this->facebookgraphapi = new FacebookGraphAPI();
@@ -65,13 +65,13 @@ trait ControllerFacebookFacebookProductTrait {
       require_once
         DIR_APPLICATION . "../admin/model/" . $model_name . ".php";
       switch ($model_name) {
-        case "facebook/facebooksetting":
-          $this->model_facebook_facebooksetting =
-            new ModelFacebookFacebookSetting($this->registry);
+        case "extension/facebooksetting":
+          $this->model_extension_facebooksetting =
+            new ModelExtensionFacebookSetting($this->registry);
           break;
-        case "facebook/facebookproduct":
-          $this->model_facebook_facebookproduct =
-            new ModelFacebookFacebookProduct($this->registry);
+        case "extension/facebookproduct":
+          $this->model_extension_facebookproduct =
+            new ModelExtensionFacebookProduct($this->registry);
           break;
       }
     }
@@ -95,17 +95,19 @@ trait ControllerFacebookFacebookProductTrait {
   }
 
   private function getFacebookSetting($setting_key) {
-    $this->loadFacebookModel('facebook/facebooksetting');
-    $facebook_setting = $this->model_facebook_facebooksetting->getSettings();
+    $this->loadFacebookModel('extension/facebooksetting');
+    $facebook_setting = $this->model_extension_facebooksetting->
+      getSettings();
     return (isset($facebook_setting[$setting_key]))
       ? $facebook_setting[$setting_key]
       : null;
   }
 
   private function deleteFacebookSetting($setting_key) {
-    $this->loadFacebookModel('facebook/facebooksetting');
+    $this->loadFacebookModel('extension/facebooksetting');
     $facebook_setting =
-      $this->model_facebook_facebooksetting->deleteSetting($setting_key);
+      $this->model_extension_facebooksetting->
+        deleteSetting($setting_key);
   }
 
   private function logError(
@@ -148,8 +150,9 @@ trait ControllerFacebookFacebookProductTrait {
     $operation,
     $error_data = array('operation' => 'Access product module')) {
     // we are not using the getXXX methods to avoid repeated retrieval from DB
-    $this->loadFacebookModel('facebook/facebooksetting');
-    $facebook_setting = $this->model_facebook_facebooksetting->getSettings();
+    $this->loadFacebookModel('extension/facebooksetting');
+    $facebook_setting = $this->model_extension_facebooksetting->
+      getSettings();
 
     // Five step verification
 
@@ -223,7 +226,7 @@ trait ControllerFacebookFacebookProductTrait {
       $facebook_setting[FacebookCommonUtils::FACEBOOK_UPLOAD_ID],
       $facebook_setting[FacebookCommonUtils::FACEBOOK_PAGE_TOKEN]);
     if (isset($result['end_time'])) {
-      $this->model_facebook_facebooksetting->updateSettings(
+      $this->model_extension_facebooksetting->updateSettings(
         array(FacebookCommonUtils::FACEBOOK_UPLOAD_END_TIME =>
           $result['end_time']));
       return true;
@@ -241,7 +244,8 @@ trait ControllerFacebookFacebookProductTrait {
     $operation,
     $error_data = array('operation' => 'Access product module')) {
     $this->validateFAEAndCatalogSetup($operation, $error_data);
-    $facebook_setting = $this->model_facebook_facebooksetting->getSettings();
+    $facebook_setting = $this->model_extension_facebooksetting->
+      getSettings();
     if (!$this->isProductUploadComplete($facebook_setting)) {
       $this->logError(
         FacebookCommonUtils::UPLOAD_IN_PROGRESS_ERROR_MESSAGE . $operation,

@@ -46,9 +46,4 @@ class FacebookProductFeedFormatter extends FacebookProductFormatter {
 
     return $product_data;
   }
-
-  protected function escapeImageUrl($image_url) {
-    // no escape needed for feed format
-    return $image_url;
-  }
 }

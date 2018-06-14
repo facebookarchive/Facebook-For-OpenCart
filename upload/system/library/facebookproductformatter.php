@@ -179,10 +179,7 @@ abstract class FacebookProductFormatter {
   }
 
   public function getCheckoutUrl($product) {
-    return HTTP_CATALOG .
-      'index.php?route=facebook/facebookproduct/directcheckout' .
-      '&product_id=' .
-      $product['product_id'];
+    return $this->getUrl($product);
   }
 
   private function getDiscountPrice($product) {
@@ -243,7 +240,7 @@ abstract class FacebookProductFormatter {
     return (strncmp($image_url, "http://", 7) === 0
       || strncmp($image_url, "https://", 8) === 0)
       ? $image_url
-      : HTTP_CATALOG . "image/" . $this->escapeImageUrl($image_url);
+      : HTTP_CATALOG . "image/" . $image_url;
   }
 
   public function getAdditionalImageUrls($product) {
@@ -262,6 +259,4 @@ abstract class FacebookProductFormatter {
   protected abstract function formatAdditionalImageUrls($product_image_urls);
 
   protected abstract function postFormatting($product_data);
-
-  protected abstract function escapeImageUrl($image_url);
 }

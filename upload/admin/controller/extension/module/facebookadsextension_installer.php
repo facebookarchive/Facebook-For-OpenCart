@@ -4,6 +4,11 @@
 
 // This source code is licensed under the license found in the
 // LICENSE file in the root directory of this source tree.
+// Auto-generated. Do NOT modify
+class ControllerExtensionModuleFacebookAdsExtensionInstaller
+	extends Controller {
+
+	public function install() {
 
   // creates the facebook_product table
   $facebook_product_table_exists_sql = sprintf("SHOW TABLES IN `%s` " .
@@ -83,3 +88,6 @@
       "modify",
       "extension/facebookadsextension");
   }
+
+	}
+}

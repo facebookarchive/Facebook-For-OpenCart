@@ -5,7 +5,7 @@
 // This source code is licensed under the license found in the
 // LICENSE file in the root directory of this source tree.
 
-class ControllerFacebookFacebookProduct extends Controller {
+class ControllerExtensionFacebookProduct extends Controller {
   // this is a backend controller for syncing facebook products,
   // so there is no frontend UI involved
   public function index() {
@@ -43,33 +43,4 @@ class ControllerFacebookFacebookProduct extends Controller {
     $this->response->setOutput(json_encode($json));
   }
 
-  public function directCheckout() {
-    // redirect is defaulted to merchant's home page.
-    // This will be used if the we cant perform a direct checkout
-    // due to invalid or missing product_id
-    $url = $this->url->link('common/home', '', true);
-    $product_id = $this->request->get['product_id'];
-    if ($product_id) {
-      $this->loadLibrariesForFacebookCatalog();
-      $product_info = $this->model_catalog_product->getProduct($product_id);
-      if ($product_info) {
-        // attempts to add the product directly to cart
-        $this->request->post['product_id'] = $product_id;
-        $this->load->controller('checkout/cart/add');
-        $result = json_decode($this->response->getOutput(), true);
-        if (isset($result['success'])) {
-          // successfully added product to cart, redirect to checkout
-          $url = $this->url->link('checkout/checkout', '', true);
-        } else {
-          if (isset($result['redirect']) && $result['redirect']) {
-            // unable to add to cart directly
-            // 1 possibility is due to need to specify options for product
-            // in this case, redirect based on the redirect url
-            $url = $result['redirect'];
-          }
-        }
-      }
-    }
-    $this->response->redirect($url);
-  }
 }
