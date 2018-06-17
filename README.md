@@ -1,6 +1,10 @@
 Facebook Ads Extension for OpenCart v2.0.1.1 to v2.3.0.2
 ====
 
+====
+NOTICE: We found an incompatibility issue for our v2.0.0 plugin with vqmod. If you are facing error such as HTTP 500 or "Warning: require_once(facebookproducttrait.php): failed to open stream: No such file or directory", please uninstall the v2.0.0 plugin and revert to v1.0.14 plugin at https://github.com/facebookincubator/Facebook-For-OpenCart/releases/tag/v1.0.14
+====
+
 Source code for Facebook Ads Extension for OpenCart. This is for
 OpenCart v2.0.1.1 to v2.3.0.2 edition.
 
