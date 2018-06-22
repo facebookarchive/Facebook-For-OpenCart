@@ -1,7 +1,10 @@
 Facebook Ads Extension
-Latest version: 2.0.0
+Latest version: 2.0.1
 
 Change log
+2.0.1 - 22 June 2018
+* Support VQMod plugin for OpenCart v3.x
+
 2.0.0 - 12 June 2018
 * Supported OpenCart v3.x
 ** OpenCart v3.x users need to perform 1 more step - access Extensions -> Extensions -> Select Modules -> Click on the green Install button for Facebook Ads Extension

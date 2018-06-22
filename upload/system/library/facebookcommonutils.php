@@ -111,7 +111,7 @@ class FacebookCommonUtils {
   const PRODUCT_SYNC_EXCEPTION_MESSAGE =
     'The product sync on Facebook catalog is still ongoing. Please wait for the sync to complete before making any product changes.';
 
-  private $pluginVersion = '2.0.0';
+  private $pluginVersion = '2.0.1';
 
   public function __construct() {
 

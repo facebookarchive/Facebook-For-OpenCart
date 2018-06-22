@@ -5,7 +5,7 @@
 // This source code is licensed under the license found in the
 // LICENSE file in the root directory of this source tree.
 
-require_once('facebookproducttrait.php');
+require_once(DIR_APPLICATION.'/controller/extension/facebookproducttrait.php');
 
 class ControllerExtensionFacebookProductFeed extends Controller {
   use ControllerExtensionFacebookProductTrait;
