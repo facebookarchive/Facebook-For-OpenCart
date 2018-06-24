@@ -1,7 +1,10 @@
 Facebook Ads Extension
-Latest version: 2.0.1
+Latest version: 2.0.2
 
 Change log
+2.0.2 - 24 June 2018
+* Fixes a bug on the store front when doing checkout which results in "No such file or directory"
+
 2.0.1 - 22 June 2018
 * Support VQMod plugin for OpenCart v3.x
 

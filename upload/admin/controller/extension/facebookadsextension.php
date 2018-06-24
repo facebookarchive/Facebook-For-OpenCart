@@ -374,8 +374,8 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
     return array(
 // system auto generated, DO NOT MODIFY
       DIR_APPLICATION . '/controller/extension/facebookadsextension.php',
-      DIR_APPLICATION . '/controller/extension/facebookproductfeed.php',
       DIR_APPLICATION . '/controller/extension/facebookproduct.php',
+      DIR_APPLICATION . '/controller/extension/facebookproductfeed.php',
       DIR_APPLICATION . '/controller/extension/facebookproducttrait.php',
       DIR_APPLICATION . '/controller/extension/module/facebookadsextension_installer.php',
       DIR_APPLICATION . '/language/en-gb/extension/facebookadsextension.php',
@@ -395,8 +395,8 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
       DIR_APPLICATION . '/view/template/extension/facebookadsextension.tpl',
       DIR_APPLICATION . '/view/template/extension/facebookadsextension.twig',
       DIR_SYSTEM . '/library/facebookcommonutils.php',
-      DIR_SYSTEM . '/library/facebookgraphapierror.php',
       DIR_SYSTEM . '/library/facebookgraphapi.php',
+      DIR_SYSTEM . '/library/facebookgraphapierror.php',
       DIR_SYSTEM . '/library/facebookproductapiformatter.php',
       DIR_SYSTEM . '/library/facebookproductfeedformatter.php',
       DIR_SYSTEM . '/library/facebookproductformatter.php',
