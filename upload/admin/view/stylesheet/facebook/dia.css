@@ -208,7 +208,7 @@ div.dia-flow-container h1 {
   font-weight: normal;
   width: 400px;
   margin: 0 auto;
-  margin-top: 64px;
+  margin-top: 34px;
 }
 
 div.dia-flow-container h2 {
@@ -339,4 +339,11 @@ div.dia-flow-container .error-text {
   margin-top: 0px;
   margin-left: 16px;
   margin-right: 16px;
+}
+
+div.dia-flow-container .version {
+  margin-left:auto;
+  margin-right:0;
+  text-align: left;
+  font-size: 11px;
 }

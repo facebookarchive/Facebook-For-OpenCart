@@ -83,3 +83,10 @@
       "modify",
       "extension/facebookadsextension");
   }
+
+
+  // delete module folder to prevent path error in lower version
+  if (version_compare(VERSION , '2.0.3.1') <= 0) {
+    unlink(DIR_APPLICATION . '/controller/extension/module/facebookadsextension_installer.php');
+    rmdir(DIR_APPLICATION . '/controller/extension/module/');
+  }

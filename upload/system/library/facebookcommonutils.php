@@ -24,9 +24,12 @@ class DAPixelConfigParams {
     if (isset($params['isCustomEvent'])) {
       $this->isCustomEvent = $params['isCustomEvent'];
     }
-    if (isset($params['products'])) {
-      $this->products = $params['products'];
-    }
+    $this->products = (isset($params['products']))
+      ? $params['products']
+      : array();
+    $this->products = ($this->products)
+      ? $this->products
+      : array();
     if (isset($params['currency'])) {
       $this->currency = $params['currency'];
     }
@@ -111,7 +114,7 @@ class FacebookCommonUtils {
   const PRODUCT_SYNC_EXCEPTION_MESSAGE =
     'The product sync on Facebook catalog is still ongoing. Please wait for the sync to complete before making any product changes.';
 
-  private $pluginVersion = '2.0.2';
+  private $pluginVersion = '2.0.3';
 
   public function __construct() {
 
@@ -166,9 +169,11 @@ class FacebookCommonUtils {
     }
     $facebook_pixel_params = array();
     $facebook_pixel_params['event_name'] = $params->getEventName();
-    $facebook_pixel_params['content_type'] = 'product';
-    $facebook_pixel_params['content_ids']
-      = '[' . implode(',', $content_ids) . ']';
+    if (sizeof($content_ids)) {
+      $facebook_pixel_params['content_type'] = 'product';
+      $facebook_pixel_params['content_ids']
+        = '[' . implode(',', $content_ids) . ']';
+    }
     $facebook_pixel_params['value'] = $params->getCurrency()->format(
       $value,
       $params->getCurrencyCode(),

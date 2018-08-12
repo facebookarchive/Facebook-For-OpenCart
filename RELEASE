@@ -1,7 +1,15 @@
 Facebook Ads Extension
-Latest version: 2.0.2
+Latest version: 2.0.3
 
 Change log
+2.0.3 - 7 August 2018
+* Improves on the robustness of firing the Facebook pixels by using preactions (OpenCart v2.2.0.0 and higher) or tapping into the maintenance controller (lower than OpenCart v.2.2.0.0). This replaces almost all of the code-injection of Facebook pixel on the webstore front (files in catalog folder)
+* Changes the pixel event Lead to Contact when users reach out to your store via the Contact Us form
+* Added in a new pixel event, Subscribe, when users subscribe/unsubscribe to Newsletter
+* Fixes the error for conflicting admin/controller/extension/module folder for OpenCart v2.0.3.1
+* Fixes the console error for GDPR cookie consent due to outdated library files. Credits to Craig Jackson, @amplexus. https://github.com/facebookincubator/Facebook-For-OpenCart/issues/19
+* Fixes a warning due to usage of the dirname command
+
 2.0.2 - 24 June 2018
 * Fixes a bug on the store front when doing checkout which results in "No such file or directory"
 

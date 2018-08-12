@@ -25,7 +25,7 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
       : '.tpl';
 
     // validates the plugin
-    $all_error_messages = $this->validateMissingFilesAndTables();
+    $all_error_messages = $this->validate();
 
     if (sizeof($all_error_messages) > 0) {
       $data = $this->getDataForErrorView($all_error_messages);
@@ -140,6 +140,33 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
       $this->load->view(
         'extension/facebookadsextension' . $template_file_extension,
         $data));
+  }
+
+  private function logVersionsTologFile() {
+    $this->facebookcommonutils = new FacebookCommonUtils();
+    $this->faeLog->write('Facebook Ads Extension version = ' .
+      $this->facebookcommonutils->getPluginVersion());
+    $this->faeLog->write('OpenCart version = ' . VERSION);
+    $this->faeLog->write('PHP version = ' . PHP_VERSION);
+  }
+
+  public function validate() {
+    $php_version_error = $this->validatePHPVersion();
+    if (sizeof($php_version_error)) {
+      return $php_version_error;
+    }
+
+    return $this->validateMissingFilesAndTables();
+  }
+
+  private function validatePHPVersion() {
+    // our plugin supports from PHP 5.4 onwards, which is in sync with OpenCart
+    // http://docs.opencart.com/en-gb/requirements/
+    return (version_compare(PHP_VERSION, '5.4.0') >= 0)
+      ? array()
+      : array('Facebook Ads Extension supports only for PHP 5.4 or above. ' .
+        'Your PHP version is currently ' . PHP_VERSION . '. ' .
+        'Please upgrade your PHP to 5.4 or above.');
   }
 
   public function validateMissingFilesAndTables() {
@@ -273,6 +300,9 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
     $file = DIR_LOGS . FacebookCommonUtils::FAE_LOG_FILENAME;
 
     if (file_exists($file) && filesize($file) > 0) {
+      // logs the FAE, opencart and php versions for debugging
+      $this->logVersionsTologFile();
+
       $this->response->addheader('Pragma: public');
       $this->response->addheader('Expires: 0');
       $this->response->addheader('Content-Description: File Transfer');
@@ -402,6 +432,7 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
       DIR_SYSTEM . '/library/facebookproductformatter.php',
       DIR_SYSTEM . '/library/facebooksampleproductfeedformatter.php',
       DIR_SYSTEM . '/library/facebooktax.php',
+      DIR_CATALOG . '/controller/extension/facebookevents.php',
       DIR_CATALOG . '/controller/extension/facebookpageshopcheckoutredirect.php',
       DIR_CATALOG . '/controller/extension/facebookproduct.php',
       DIR_CATALOG . '/view/javascript/facebook/cookieconsent.min.js',
@@ -412,9 +443,28 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
     );
   }
 
+  private function getOmittedFiles($version) {
+    // get omitted folder check in different version to allow backward compatibility
+    $version_dir = array(
+      '2.0.3.1' => array(
+        DIR_APPLICATION . '/controller/extension/module/facebookadsextension_installer.php'
+      )
+    );
+
+    if (isset($version_dir[$version])) return $version_dir[$version];
+    else return array();
+  }
+
   private function getFoldersWithMissingFiles() {
     // retrieves all folders + parent folders which contain missing files
     $required_files = $this->getRequiredFiles();
+
+    // get omitted files for backward compatibility
+    if (version_compare(VERSION , '2.0.3.1') <= 0) {
+      $omitted_files = $this->getOmittedFiles('2.0.3.1');
+      $required_files = array_diff($required_files, $omitted_files);
+    }
+
     $folders_with_missing_files = array();
     array_walk(
       $required_files,
@@ -435,7 +485,7 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
         // and exclude facebook away as we want to get
         // the opencart core folder
         if (substr($folder, -8) === 'facebook') {
-          $folder = dirname($required_file, 2);
+          $folder = $this->dirnameRecursive($required_file, 2);
         }
 
 
@@ -453,11 +503,21 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
             break;
           } else {
             // goes up to the parent folder
-            $folder =  dirname($folder, 1);
+            $folder =  $this->dirnameRecursive($folder, 1);
           }
         } while ($folder !== $_SERVER['DOCUMENT_ROOT']);
       });
     return $folders_with_missing_files;
+  }
+
+  private function dirnameRecursive($path, $count=1) {
+    // avoid getting PHP warning for version < 7.
+    // this is a trivial backward compatibility fix and can be replace by dirname in the future
+    if ($count > 1) {
+       return dirname($this->dirnameRecursive($path, --$count));
+    } else {
+       return dirname($path);
+    }
   }
 
   private function getRequiredDatabaseTables() {

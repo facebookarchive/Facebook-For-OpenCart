@@ -25,29 +25,26 @@ OpenCart v2.0.1.1 to v2.3.0.2 edition.
 # Installing Facebook Ads Extension on a running OpenCart website
 Note: Prior to installing the extension, remove all existing pixel implementations from the website. Otherwise, it may cause duplicate pixel events fired.
 
-   1. To install the Facebook Ads Extension, you will need to either
+   1. To install the Facebook Ads Extension, you can either
 
-      - Enable FTP option.
+      - Option 1: Enable FTP option.
           - Go to the admin panel of OpenCart and click on Menu -> Settings.
           - Click on Edit button of your store.
           - Go to FTP tab and setup the details.
 
-      - Install Local copy OCMOD by iSenseLabs, which allows administrators to upload and install extensions without the need to enable FTP.
-          - Download the extension from https://www.opencart.com/index.php?route=marketplace/extension/info&extension_id=18892&filter_search=Local%20copy%20OCMOD%20by%20iSenseLabs.
-          - Upzip the file.
-          - Click on Menu -> Extension Installer.
-          - Click on Upload button and choose the file localcopy.ocmod.xml inside the unzipped folder.
-          - Click on Menu -> Modifications and click on the Refresh button on the top right.
+      - Option 2: Install Local copy OCMOD by iSenseLabs, which allows administrators to upload and install extensions without the need to enable FTP. [ Link ] ( https://www.opencart.com/index.php?route=marketplace/extension/info&extension_id=18892&filter_search=Local%20copy%20OCMOD%20by%20iSenseLabs )
 
    2. Click on Menu -> Extension Installer. Click on Upload button and choose the facebookadsextension.ocmod.zip file. Click on Continue button.
 
    3. Click on Menu -> Modifications and click on the Refresh button on the top right.
 
-   4. Click on Menu -> Facebook Ads Extension.
+   4. [Only for OpenCart v3.x] Click on Menu -> Extensions -> Extension. Select "Modules" from the Extension type dropdown list. Locate "Facebook Ads Extension" and click on the Install button on the right (this is a green button with "+")
 
-   5. Follow the onboarding wizard instructions to select the Page and Pixel.
+   5. Click on Menu -> Facebook Ads Extension.
 
-   6. Upon success, the plugin installation is complete.
+   6. Follow the onboarding wizard instructions to select the Page and Pixel.
+
+   7. Upon success, the plugin installation is complete.
 
 ## Building Facebook Ads Extension for OpenCart
   1. Zip up the entire folder and rename it to facebook_ads_extension.ocmod.zip
