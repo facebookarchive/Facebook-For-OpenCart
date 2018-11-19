@@ -6,6 +6,11 @@
 // LICENSE file in the root directory of this source tree.
 
 class ControllerExtensionFacebookProduct extends Controller {
+  public function __construct($registry) {
+    parent::__construct($registry);
+  }
+
+
   // this is a backend controller for syncing facebook products,
   // so there is no frontend UI involved
   public function index() {
@@ -42,5 +47,4 @@ class ControllerExtensionFacebookProduct extends Controller {
     $this->response->addHeader('Content-Type: application/json');
     $this->response->setOutput(json_encode($json));
   }
-
 }

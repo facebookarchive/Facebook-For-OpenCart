@@ -1,5 +1,22 @@
 Facebook Ads Extension
-Latest version: 2.0.3
+Latest version: 2.1.2
+
+Change log
+2.1.2 - 20 October 2018
+* Fixed a bug that pixels are not firing when coookie bar is disabled
+* Improved on the format of content_ids for pixels
+* Improved the robustness for AddToCart and AddToWishlist events
+
+2.1.1 - 17 October 2018
+* Added option to enable/disable cookie bar on store website
+* Fixed a bug where ViewContent, ViewCategory and ViewBrand pixel events are not firing for websites using SEO URL for OpenCart 2.1.0.2 and below
+
+2.1.0 - 24 August 2018
+* Added Messenger Customer Chat plugin module
+* Added feature to split up large product size into batches of 100 when generating the feed file
+* Added in display of version upgrade notification when there is a new version available on github
+* Improved on the robustness of the plugin by checking that required files must have been copied over to the webserver successfully so that the web store will not encounter errors due to missing files
+* Fixed a bug where a Search on the web store with empty search text will result in undefined index: filter_name
 
 Change log
 2.0.3 - 7 August 2018

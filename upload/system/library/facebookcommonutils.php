@@ -87,14 +87,24 @@ class FacebookCommonUtils {
   const FACEBOOK_DIA_SETTING_ID = 'facebook_dia_setting_id';
   const FACEBOOK_PIXEL_ID = 'facebook_pixel_id';
   const FACEBOOK_PIXEL_USE_PII = 'facebook_pixel_use_pii';
+  const FACEBOOK_PIXEL_SIGNATURE = 'facebook_pixel_signature';
   const FACEBOOK_CATALOG_ID = 'facebook_catalog_id';
   const FACEBOOK_PAGE_ID = 'facebook_page_id';
   const FACEBOOK_PAGE_TOKEN = 'facebook_page_token';
   const FACEBOOK_FEED_ID = 'facebook_feed_id';
   const FACEBOOK_UPLOAD_ID = 'facebook_upload_id';
   const FACEBOOK_UPLOAD_END_TIME = 'facebook_upload_end_time';
+  const FACEBOOK_MESSENGER = 'facebook_messenger_activated';
+  const FACEBOOK_JSSDK_VER = 'facebook_jssdk_version';
+  const FACEBOOK_LATEST_RELEASE_URL =
+    'https://api.github.com/repos/facebookincubator/Facebook-for-OpenCart/releases/latest';
+  const FACEBOOK_LAST_UPGRADE_CHECK_TIME = 'facebook_last_upgrade_check_time';
+  const FACEBOOK_ENABLE_COOKIE_BAR = 'facebook_enable_cookie_bar';
 
   const FACEBOOK_THRESHOLD_FOR_INITIAL_SYNC_BY_API = 1000;
+  const PRODUCT_COUNT_THRESHOLD = 50000;
+
+  const FACEBOOK_PRODUCT_QUERY_BATCH_COUNT = 100;
 
   const NO_CATALOG_ID_PAGE_ID_ACCESS_TOKEN_ERROR_MESSAGE =
     'Failure - no catalog, page or access token';
@@ -108,13 +118,18 @@ class FacebookCommonUtils {
   const FAE_NOT_SETUP_EXCEPTION_MESSAGE =
     'You have yet to setup Facebook Ads Extension. Please click on Facebook Ads Extension and Get Started.';
   const INITIAL_PRODUCT_SYNC_EXCEPTION_MESSAGE =
-    'There is an error with Facebook Ads Extension setup. Please click on Facebook Ads Extension, Manage Settings, go to Advanced options and click on Delete Settings to restart the setup.';
+    'There is an error with Facebook Ads Extension setup. Click on Facebook Ads Extension, Manage Settings, go to Advanced options and click on Delete Settings to restart the setup.<br/>Please contact Facebook via our <a href="https://github.com/facebookincubator/Facebook-For-OpenCart/issues" target="_blank">Github</a> if this error keeps showing.';
+  const LARGE_PRODUCT_CATALOG_EXCEPTION_MESSAGE = 'The sync failure of your products to Facebook may be because of the large number of products on your system (We detected %d products).';
   const ACCESS_TOKEN_INVALID_EXCEPTION_MESSAGE =
     'The Facebook access token is invalid. Please click on Facebook Ads Extension, Manage Settings, go to Advanced options and click on Update token.';
   const PRODUCT_SYNC_EXCEPTION_MESSAGE =
     'The product sync on Facebook catalog is still ongoing. Please wait for the sync to complete before making any product changes.';
-
-  private $pluginVersion = '2.0.3';
+  const REQUEST_PIXEL_SIGNATURE_ERROR_MESSAGE = 'There is an error requesting a signature key for your pixel, please try again later. Please contact Facebook via our <a href="https://github.com/facebookincubator/Facebook-For-OpenCart/issues" target="_blank">Github</a> if this error keeps showing up.';
+  const PLUGIN_UPGRADE_MESSAGE = 'A newer version of this plugin is available. To download it, go to <a href="https://github.com/facebookincubator/Facebook-For-OpenCart/releases" target="_blank">Github</a> or <a href="https://www.opencart.com/index.php?route=marketplace/extension/info&extension_id=32336" target="_blank">OpenCart marketplace</a>.';
+  private $pluginAgentName = 'exopencart';
+// system auto generated, DO NOT MODIFY
+private $pluginVersion = '2.1.2';
+// system auto generated, DO NOT MODIFY
 
   public function __construct() {
 
@@ -122,6 +137,20 @@ class FacebookCommonUtils {
 
   public function getPluginVersion() {
     return $this->pluginVersion;
+  }
+
+  public function getAgentString() {
+    $plugin_agent_name = $this->getPluginAgentName();
+    $opencart_version = VERSION;
+    $plugin_version = $this->getPluginVersion();
+
+    $agent_string = sprintf(
+      '%s-%s-%s',
+      $plugin_agent_name,
+      $opencart_version,
+      $plugin_version);
+
+    return $agent_string;
   }
 
   public function getProperFormattedString($text) {
@@ -149,13 +178,67 @@ class FacebookCommonUtils {
     return $text;
   }
 
-  public function getDAPixelParamsForProducts($params) {
+  public function getPii($config, $customer, $guest) {
+    $facebook_pixel_pii_fae = array();
+    if ($config->get('facebook_pixel_use_pii') === 'true') {
+      $email = '';
+      $firstname = '';
+      $lastname = '';
+      $telephone = '';
+
+      // use the logged in customer details
+      if ($customer->isLogged()) {
+        $email = $customer->getEmail();
+        $firstname = $customer->getFirstName();
+        $lastname = $customer->getLastName();
+        $telephone = $customer->getTelephone();
+      }
+
+      // use the guest log in details
+      if (isset($guest)) {
+        $email = (isset($guest['email']))
+          ? $guest['email']
+          : '';
+        $firstname = (isset($guest['firstname']))
+          ? $guest['firstname']
+          : '';
+        $lastname = (isset($guest['lastname']))
+          ? $guest['lastname']
+          : '';
+        $telephone = (isset($guest['telephone']))
+          ? $guest['telephone']
+          : '';
+      }
+
+      if ($email) {
+        $facebook_pixel_pii_fae['em'] =
+          $this->getEscapedString($email);
+      }
+      if ($firstname) {
+        $facebook_pixel_pii_fae['fn'] =
+          $this->getEscapedString($firstname);
+      }
+      if ($lastname) {
+        $facebook_pixel_pii_fae['ln'] =
+          $this->getEscapedString($lastname);
+      }
+      if ($telephone) {
+        $facebook_pixel_pii_fae['ph'] =
+          $this->getEscapedString($telephone);
+      }
+    }
+    return json_encode(
+      $facebook_pixel_pii_fae,
+      JSON_PRETTY_PRINT | JSON_FORCE_OBJECT);
+  }
+
+  public function getDAPixelParamsForProducts($params, $event_id = null) {
     $content_ids = array();
     $value = 0;
     $num_items = 0;
     $last_product_name = '';
     foreach ($params->getProducts() as $product) {
-      array_push($content_ids, "'" . (string)$product['product_id'] . "'");
+      array_push($content_ids, (string)$product['product_id']);
       $price = (isset($product['special']) && (float)$product['special'])
         ? (float)$product['special']
         : (float)$product['price'];
@@ -171,9 +254,8 @@ class FacebookCommonUtils {
     $facebook_pixel_params['event_name'] = $params->getEventName();
     if (sizeof($content_ids)) {
       $facebook_pixel_params['content_type'] = 'product';
-      $facebook_pixel_params['content_ids']
-        = '[' . implode(',', $content_ids) . ']';
     }
+    $facebook_pixel_params['content_ids'] = $content_ids;
     $facebook_pixel_params['value'] = $params->getCurrency()->format(
       $value,
       $params->getCurrencyCode(),
@@ -185,6 +267,9 @@ class FacebookCommonUtils {
       ? $this->getProperFormattedString($last_product_name)
       : "";
     $facebook_pixel_params['num_items'] = $num_items;
+    if (!empty($event_id)) {
+      $facebook_pixel_params['eid'] = $event_id;
+    }
     return $facebook_pixel_params;
   }
 
@@ -224,7 +309,7 @@ class FacebookCommonUtils {
       : true;
   }
 
-  public function getDAPixelParamsForProductListing($params) {
+  public function getDAPixelParamsForProductListing($params, $event_id = null) {
     $facebook_pixel_event_params_fae = array(
       'event_name' => $params->getEventName(),
       'num_items' => 0);
@@ -238,6 +323,9 @@ class FacebookCommonUtils {
         $params->getParamValueUsedInProductListing());
     $facebook_pixel_event_params_fae['is_custom_event'] =
       $params->isCustomEvent();
+    if (!empty($event_id)) {
+      $facebook_pixel_event_params_fae['eid'] = $event_id;
+    }
     return $facebook_pixel_event_params_fae;
   }
 
@@ -252,5 +340,37 @@ class FacebookCommonUtils {
       }
     }
     return $string;
+  }
+
+  private function getPluginAgentName() {
+    return $this->pluginAgentName;
+  }
+
+  public function getLatestPluginVersion() {
+    try {
+      $ch = curl_init();
+      curl_setopt($ch, CURLOPT_URL, self::FACEBOOK_LATEST_RELEASE_URL);
+      curl_setopt($ch, CURLOPT_HEADER, 0);
+      curl_setopt($ch, CURLOPT_USERAGENT, "curl");
+
+      ob_start();
+      curl_exec($ch);
+      curl_close($ch);
+      $lines = ob_get_contents();
+      ob_end_clean();
+      $json = json_decode($lines, true);
+
+      if (!$json || !isset($json['tag_name'])) {
+        return false;
+      }
+
+      $version_latest = $json['tag_name'];
+      return (substr($version_latest, 0, 1) == 'v')
+        ? substr($version_latest, 1)
+        : false;
+    } catch (Exception $e) {
+      $this->faeLog = new Log(self::FAE_LOG_FILENAME);
+      $this->faeLog->write($e->getMessage());
+    }
   }
 }

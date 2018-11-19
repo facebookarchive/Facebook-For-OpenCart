@@ -21,8 +21,8 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
     $template_engine = $this->config->get('template_engine');
     $template_file_extension =
       (isset($template_engine) || $template_engine === 'twig')
-      ? ''
-      : '.tpl';
+        ? ''
+        : '.tpl';
 
     // validates the plugin
     $all_error_messages = $this->validate();
@@ -51,8 +51,8 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
     }
 
     $this->load->model('extension/facebooksetting');
-    $facebook_setting = $this->model_extension_facebooksetting->
-      getSettings();
+    $facebook_setting = $this->model_extension_facebooksetting
+      ->getSettings();
 
     $data = array();
 
@@ -63,16 +63,16 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
     $data['breadcrumbs'][] = array(
       'text' => $this->language->get('text_home'),
       'href' => $this->url->link(
-      'common/dashboard',
-      $data['token_string'],
-      true)
+        'common/dashboard',
+        $data['token_string'],
+        true)
     );
     $data['breadcrumbs'][] = array(
       'text' => $this->language->get('heading_title'),
       'href' => $this->url->link(
-      'extension/facebookadsextension',
-      $data['token_string'],
-      true)
+        'extension/facebookadsextension',
+        $data['token_string'],
+        true)
     );
 
     $data['debug_url'] = (isset($this->request->get['debug_url']))
@@ -85,12 +85,12 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
 
     $data[FacebookCommonUtils::FACEBOOK_DIA_SETTING_ID] =
       isset($facebook_setting[FacebookCommonUtils::FACEBOOK_DIA_SETTING_ID])
-      ? $facebook_setting[FacebookCommonUtils::FACEBOOK_DIA_SETTING_ID]
-      : '';
+        ? $facebook_setting[FacebookCommonUtils::FACEBOOK_DIA_SETTING_ID]
+        : '';
     $data[FacebookCommonUtils::FACEBOOK_PIXEL_ID] =
       isset($facebook_setting[FacebookCommonUtils::FACEBOOK_PIXEL_ID])
-      ? $facebook_setting[FacebookCommonUtils::FACEBOOK_PIXEL_ID]
-      : '';
+        ? $facebook_setting[FacebookCommonUtils::FACEBOOK_PIXEL_ID]
+        : '';
     $data['base_currency'] = $this->config->get('config_currency');
     $data['store_name'] = $this->config->get('config_name');
     $data['opencart_version'] = VERSION;
@@ -125,16 +125,34 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
 
     $data['download_log_file_error_warning'] =
       isset($this->session->data['download_log_file_error_warning'])
-      ? $this->session->data['download_log_file_error_warning']
-      : '';
+        ? $this->session->data['download_log_file_error_warning']
+        : '';
     $this->session->data['download_log_file_error_warning'] = '';
 
     // checking if there is a facebook upload id
     // to decide if the initial product sync has taken place
     $data['initial_product_sync'] =
       isset($facebook_setting[FacebookCommonUtils::FACEBOOK_UPLOAD_ID])
-      ? 'true'
-      : 'false';
+        ? 'true'
+        : 'false';
+
+    // checking if there is a newer upgrade available
+    $data['plugin_upgrade_message'] = ($this->hasNewUpgradeAvailable())
+      ? FacebookCommonUtils::PLUGIN_UPGRADE_MESSAGE
+      : '';
+
+    // default the cookie bar to be enabled if the setting is not available
+    $data['enable_cookie_bar'] =
+      isset($facebook_setting[FacebookCommonUtils::FACEBOOK_ENABLE_COOKIE_BAR])
+      ? $facebook_setting[FacebookCommonUtils::FACEBOOK_ENABLE_COOKIE_BAR]
+      : 'true';
+    // this will control if the cookie bar checkbox is checked
+    $data['checked_enable_cookie_bar'] =
+      (strcmp($data['enable_cookie_bar'], 'true') === 0)
+      ? 'checked'
+      : '';
+    $data['enable_cookie_bar_text'] =
+      $this->language->get('enable_cookie_bar_text');
 
     $this->response->setOutput(
       $this->load->view(
@@ -256,6 +274,21 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
     if (isset($this->request->post[FacebookCommonUtils::FACEBOOK_PAGE_TOKEN])) {
       $data[FacebookCommonUtils::FACEBOOK_PAGE_TOKEN] =
         $this->request->post[FacebookCommonUtils::FACEBOOK_PAGE_TOKEN];
+    }
+
+    if (isset($this->request->post[FacebookCommonUtils::FACEBOOK_MESSENGER])) {
+      $data[FacebookCommonUtils::FACEBOOK_MESSENGER] =
+        $this->request->post[FacebookCommonUtils::FACEBOOK_MESSENGER];
+    }
+
+    if (isset($this->request->post[FacebookCommonUtils::FACEBOOK_JSSDK_VER])) {
+      $data[FacebookCommonUtils::FACEBOOK_JSSDK_VER] =
+        $this->request->post[FacebookCommonUtils::FACEBOOK_JSSDK_VER];
+    }
+
+    if (isset($this->request->post[FacebookCommonUtils::FACEBOOK_ENABLE_COOKIE_BAR])) {
+      $data[FacebookCommonUtils::FACEBOOK_ENABLE_COOKIE_BAR] =
+        $this->request->post[FacebookCommonUtils::FACEBOOK_ENABLE_COOKIE_BAR];
     }
 
     $this->faeLog->write('Updating FAE settings - ' .
@@ -432,7 +465,7 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
       DIR_SYSTEM . '/library/facebookproductformatter.php',
       DIR_SYSTEM . '/library/facebooksampleproductfeedformatter.php',
       DIR_SYSTEM . '/library/facebooktax.php',
-      DIR_CATALOG . '/controller/extension/facebookevents.php',
+      DIR_CATALOG . '/controller/extension/facebookeventparameters.php',
       DIR_CATALOG . '/controller/extension/facebookpageshopcheckoutredirect.php',
       DIR_CATALOG . '/controller/extension/facebookproduct.php',
       DIR_CATALOG . '/view/javascript/facebook/cookieconsent.min.js',
@@ -460,7 +493,7 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
     $required_files = $this->getRequiredFiles();
 
     // get omitted files for backward compatibility
-    if (version_compare(VERSION , '2.0.3.1') <= 0) {
+    if (version_compare(VERSION, '2.0.3.1') <= 0) {
       $omitted_files = $this->getOmittedFiles('2.0.3.1');
       $required_files = array_diff($required_files, $omitted_files);
     }
@@ -503,20 +536,20 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
             break;
           } else {
             // goes up to the parent folder
-            $folder =  $this->dirnameRecursive($folder, 1);
+            $folder = $this->dirnameRecursive($folder, 1);
           }
         } while ($folder !== $_SERVER['DOCUMENT_ROOT']);
       });
     return $folders_with_missing_files;
   }
 
-  private function dirnameRecursive($path, $count=1) {
+  private function dirnameRecursive($path, $count = 1) {
     // avoid getting PHP warning for version < 7.
     // this is a trivial backward compatibility fix and can be replace by dirname in the future
     if ($count > 1) {
-       return dirname($this->dirnameRecursive($path, --$count));
+      return dirname($this->dirnameRecursive($path, --$count));
     } else {
-       return dirname($path);
+      return dirname($path);
     }
   }
 
@@ -531,7 +564,7 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
     $missing_database_tables = array();
     array_walk(
       $required_tables,
-      function($required_table) use(&$missing_database_tables) {
+      function($required_table) use (&$missing_database_tables) {
         if (!$required_table) {
           return;
         }
@@ -560,8 +593,8 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
     $error_message_for_missing_assets = $error_message_title;
     array_walk(
       $missing_assets,
-      function($missing_asset)
-        use(&$error_message_for_missing_assets) {
+      function ($missing_asset)
+      use (&$error_message_for_missing_assets) {
         $error_message_for_missing_assets =
           $error_message_for_missing_assets .
           $missing_asset .
@@ -585,16 +618,16 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
     $data['breadcrumbs'][] = array(
       'text' => $this->language->get('text_home'),
       'href' => $this->url->link(
-      'common/dashboard',
-      $this->getTokenString(),
-      true)
+        'common/dashboard',
+        $this->getTokenString(),
+        true)
     );
     $data['breadcrumbs'][] = array(
       'text' => $heading_title,
       'href' => $this->url->link(
-      'extension/facebookadsextension',
-      $this->getTokenString(),
-      true)
+        'extension/facebookadsextension',
+        $this->getTokenString(),
+        true)
     );
     $data['header'] = $this->load->controller('common/header');
     $data['column_left'] = $this->load->controller('common/column_left');
@@ -607,18 +640,79 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
       '<ol>';
     array_walk(
       $error_messages,
-      function($error_message) use(&$data) {
+      function($error_message) use (&$data) {
         $data['text_not_found'] = $data['text_not_found'] .
           sprintf('<li>%s</li><br/>',
             $error_message);
       });
     $data['text_not_found'] = $data['text_not_found'] .
       sprintf('</ol><p style="color:red;"><strong>Please uninstall and reinstall ' .
-      'the Facebook Ads Extension after correcting the above %d step%s' .
-      '.</strong></p>',
-      sizeof($error_messages),
-      (sizeof($error_messages) > 1 ? 's' : ''));
+        'the Facebook Ads Extension after correcting the above %d step%s' .
+        '.</strong></p>',
+        sizeof($error_messages),
+        (sizeof($error_messages) > 1 ? 's' : ''));
 
     return $data;
+  }
+
+  public function hasNewUpgradeAvailable() {
+    // determines if we should do the check for new upgrades
+    if (!$this->shouldCheckForNewUpgrades()) {
+      return false;
+    }
+
+    // determines if the current plugin installed is most updated
+    // if so, we will update the last check time
+    if ($this->isCurrentVersionMostUpdated()) {
+      $this->updateLastUpgradeCheckTimeToCurrentDate();
+      return false;
+    }
+
+    // if we need to check for new upgrades
+    // and there is a newer version of the plugin, we will return true
+    // the last check time will also NOT be updated
+    return true;
+  }
+
+  private function getLastUpgradeCheckTime() {
+    // gets the last upgrade check time from database settings
+    $this->load->model('extension/facebooksetting');
+    $last_upgrade_check_time = $this->model_extension_facebooksetting
+      ->getSetting(FacebookCommonUtils::FACEBOOK_LAST_UPGRADE_CHECK_TIME);
+    if (!$last_upgrade_check_time) {
+      // the last upgrade check time is not available
+      // we are going to manually insert in a setting and put it as
+      // a very old date, eg 1970-01-01
+      $last_upgrade_check_time = '1970-01-01';
+      $data = array(
+        FacebookCommonUtils::FACEBOOK_LAST_UPGRADE_CHECK_TIME
+          => $last_upgrade_check_time);
+      $this->model_extension_facebooksetting->updateSettings($data);
+    }
+    return $last_upgrade_check_time;
+  }
+
+  private function shouldCheckForNewUpgrades() {
+    $last_upgrade_check_time = $this->getLastUpgradeCheckTime();
+    // we are going to do the check for new upgrades only if
+    // current date > last check time
+    return (strcmp(date("Y-m-d"), $last_upgrade_check_time) > 0);
+  }
+
+  private function isCurrentVersionMostUpdated() {
+    // gets the latest version of the plugin
+    $latest_version = $this->facebookcommonutils->getLatestPluginVersion();
+    return (version_compare(
+      $this->facebookcommonutils->getPluginVersion(),
+      $latest_version) >= 0);
+  }
+
+  private function updateLastUpgradeCheckTimeToCurrentDate() {
+    $data =
+    $this->load->model('extension/facebooksetting');
+    $data = array(
+      FacebookCommonUtils::FACEBOOK_LAST_UPGRADE_CHECK_TIME
+        => date("Y-m-d"));
+    $this->model_extension_facebooksetting->updateSettings($data);
   }
 }

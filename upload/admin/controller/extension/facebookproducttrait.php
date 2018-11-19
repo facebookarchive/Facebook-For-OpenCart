@@ -196,19 +196,38 @@ trait ControllerExtensionFacebookProductTrait {
 
     // 4. Verify if feed id is present
     if (!isset($facebook_setting[FacebookCommonUtils::FACEBOOK_FEED_ID])) {
+      $exception_message = $this->getExceptionMessageDueToProductSyncError();
       $this->logError(
         FacebookCommonUtils::FEED_NOT_CREATED_ERROR_MESSAGE . $operation,
         $error_data,
-        FacebookCommonUtils::INITIAL_PRODUCT_SYNC_EXCEPTION_MESSAGE);
+        $exception_message);
     }
 
     // 5. Verify if upload id is present
     if (!isset($facebook_setting[FacebookCommonUtils::FACEBOOK_UPLOAD_ID])) {
+      $exception_message = $this->getExceptionMessageDueToProductSyncError();
       $this->logError(
         FacebookCommonUtils::UPLOAD_NOT_CREATED_ERROR_MESSAGE . $operation,
         $error_data,
-        FacebookCommonUtils::INITIAL_PRODUCT_SYNC_EXCEPTION_MESSAGE);
+        $exception_message);
     }
+  }
+
+  private function getExceptionMessageDueToProductSyncError() {
+    $exception_message =
+      FacebookCommonUtils::INITIAL_PRODUCT_SYNC_EXCEPTION_MESSAGE;
+    INITIAL_PRODUCT_SYNC_EXCEPTION_MESSAGE;
+    // we will show an extra message indicating if the product count is large
+    $product_count = $this->model_catalog_product->getTotalProducts(
+      array('filter_status' => 1));
+    if ($product_count > FacebookCommonUtils::PRODUCT_COUNT_THRESHOLD) {
+      $exception_message = $exception_message .
+        '<br/>' .
+        sprintf(
+          FacebookCommonUtils::LARGE_PRODUCT_CATALOG_EXCEPTION_MESSAGE,
+          $product_count);
+    }
+    return $exception_message;
   }
 
   // checks if the product upload is completed

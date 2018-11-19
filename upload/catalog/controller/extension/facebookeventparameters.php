@@ -8,61 +8,88 @@
 /*
  * Builds up the event data for the request in a single place
  */
-class ControllerExtensionFacebookEvents extends Controller {
+class ControllerExtensionFacebookEventParameters extends Controller {
+
+  public function __construct($registry) {
+    parent::__construct($registry);
+    if (!$this->areRequiredFilesPresent()) {
+      return;
+    }
+  }
+
   public function index() {
-    $data = array();
-    $this->fbutils = new FacebookCommonUtils();
+    // if the required files are not present, we should return
+    if (!$this->areRequiredFilesPresent()) {
+      return;
+    }
 
-    // we are storing all the pixel data in the fbevents parameters
-    // this fbevents will be sent over to the header.php
-    // which will then be sent to the header.tpl as $data to be
-    // fired as FB pixel events via javascript
-    $data['facebook_pixel_id_FAE'] = $this->config->get('facebook_pixel_id');
-    $data['facebook_pixel_params_FAE'] = $this->getAgentParameters();
-    $data['facebook_pixel_pii_FAE'] = $this->getPii();
-    $data['facebook_pixel_event_params_FAE'] = $this->getEventParameters();
+    try {
+      $data = array();
+      $this->fbutils = new FacebookCommonUtils();
 
-    $this->fbevents = $data;
+      // we are storing all the pixel data in the fbevents parameters
+      // this fbevents will be sent over to the header.php
+      // which will then be sent to the header.tpl as $data to be
+      // fired as FB pixel events via javascript
+      $data['facebook_pixel_id_FAE'] = $this->config->get('facebook_pixel_id');
+      $data['facebook_pixel_params_FAE'] = $this->getAgentParameters();
+      $data['facebook_pixel_pii_FAE'] = $this->fbutils->getPii(
+        $this->config,
+        $this->customer,
+        $this->getGuestLogin());
+      $data['facebook_pixel_event_params_FAE'] = $this->getEventParameters();
+      $data['facebook_enable_cookie_bar'] =
+        ($this->config->get(FacebookCommonUtils::FACEBOOK_ENABLE_COOKIE_BAR))
+        ? $this->config->get(FacebookCommonUtils::FACEBOOK_ENABLE_COOKIE_BAR)
+        : 'true';
 
-    // note that the $this->session->data['facebook_pixel_event_params_FAE']
-    // is unset in the header.php instead of this location as there may be
-    // redirects of the webpages
+      $this->fbevents = $data;
+    } catch (Exception $e) {
+      error_log($e->getMessage());
+    }
+  }
+
+  private function getGuestLogin() {
+    return (isset($this->session->data['guest']))
+      ? $this->session->data['guest']
+      : null;
+  }
+
+  private function getRequiredFiles() {
+    return array(
+// system auto generated, DO NOT MODIFY
+      DIR_SYSTEM . '/library/facebookcommonutils.php',
+      DIR_SYSTEM . '/library/facebookgraphapi.php',
+      DIR_SYSTEM . '/library/facebookgraphapierror.php',
+      DIR_SYSTEM . '/library/facebookproductapiformatter.php',
+      DIR_SYSTEM . '/library/facebookproductfeedformatter.php',
+      DIR_SYSTEM . '/library/facebookproductformatter.php',
+      DIR_SYSTEM . '/library/facebooksampleproductfeedformatter.php',
+      DIR_SYSTEM . '/library/facebooktax.php',
+      DIR_APPLICATION . '/controller/extension/facebookeventparameters.php',
+      DIR_APPLICATION . '/controller/extension/facebookpageshopcheckoutredirect.php',
+      DIR_APPLICATION . '/controller/extension/facebookproduct.php',
+      DIR_APPLICATION . '/view/javascript/facebook/cookieconsent.min.js',
+      DIR_APPLICATION . '/view/javascript/facebook/facebook_pixel.js',
+      DIR_APPLICATION . '/view/theme/css/facebook/cookieconsent.min.css',
+// system auto generated, DO NOT MODIFY
+      '');
+  }
+
+  private function areRequiredFilesPresent() {
+    foreach ($this->getRequiredFiles() as $filename) {
+      if ($filename && !is_file($filename)) {
+        return false;
+      }
+    }
+    return true;
   }
 
   private function getAgentParameters() {
-    $source = 'exopencart';
-    $opencart_version = VERSION;
-    $plugin_version = $this->fbutils->getPluginVersion();
-    $agent_string = sprintf(
-      '%s-%s-%s',
-      $source,
-      $opencart_version,
-      $plugin_version);
+    $agent_string = $this->fbutils->getAgentString();
     $facebook_pixel_params_fae = array('agent' => $agent_string);
     return json_encode(
       $facebook_pixel_params_fae,
-      JSON_PRETTY_PRINT | JSON_FORCE_OBJECT);
-  }
-
-  private function getPii() {
-    $facebook_pixel_pii_fae = array();
-    if ($this->config->get('facebook_pixel_use_pii') === 'true'
-      && $this->customer->isLogged()) {
-      $facebook_pixel_pii_fae['em'] =
-        $this->fbutils->getEscapedString(
-          $this->customer->getEmail());
-      $facebook_pixel_pii_fae['fn'] =
-        $this->fbutils->getEscapedString(
-          $this->customer->getFirstName());
-      $facebook_pixel_pii_fae['ln'] =
-        $this->fbutils->getEscapedString(
-          $this->customer->getLastName());
-      $facebook_pixel_pii_fae['ph'] =
-        $this->fbutils->getEscapedString(
-          $this->customer->getTelephone());
-    }
-    return json_encode(
-      $facebook_pixel_pii_fae,
       JSON_PRETTY_PRINT | JSON_FORCE_OBJECT);
   }
 
@@ -155,16 +182,6 @@ class ControllerExtensionFacebookEvents extends Controller {
       case 'product/manufacturer/info': {
         $facebook_pixel_event_params_fae =
           $this->getViewBrandEventParameters();
-        break;
-      }
-
-      case 'account/newsletter': {
-        $facebook_pixel_event_params_fae =
-          $this->getSubscribeEventParameters();
-        // storing this into the session as the newsletter subscription is
-        // redirected back to the account/account page
-        $this->session->data['facebook_pixel_event_params_FAE'] =
-          $facebook_pixel_event_params_fae;
         break;
       }
     }
@@ -318,14 +335,14 @@ class ControllerExtensionFacebookEvents extends Controller {
   }
 
   private function getSearchEventParameters() {
-    if (!isset($this->request->get['search'])
-      && isset($this->request->get['tag'])) {
-      return null;
+    if (isset($this->request->get['search'])
+      || isset($this->request->get['tag'])) {
+      $filter_data = $this->getSearchFilterParameters();
+      $this->load->model('catalog/product');
+      $products = $this->model_catalog_product->getProducts($filter_data);
+    } else {
+      $products = array();
     }
-
-    $filter_data = $this->getSearchFilterParameters();
-    $this->load->model('catalog/product');
-    $products = $this->model_catalog_product->getProducts($filter_data);
 
     $params = new DAPixelConfigParams(array(
       'eventName' => 'Search',
@@ -335,7 +352,9 @@ class ControllerExtensionFacebookEvents extends Controller {
       'hasQuantity' => false,
       'isCustomEvent' => false,
       'paramNameUsedInProductListing' => 'search_string',
-      'paramValueUsedInProductListing' => $filter_data['filter_name']));
+      'paramValueUsedInProductListing' => (isset($filter_data['filter_name']))
+        ? $filter_data['filter_name']
+        : ''));
     return $this->fbutils->getDAPixelParamsForProductListing($params);
   }
 
@@ -397,10 +416,10 @@ class ControllerExtensionFacebookEvents extends Controller {
     if (version_compare(VERSION , '2.0.3.1') <= 0) {
       $wishlist = (isset($this->session->data['wishlist']))
         ? array_map(
-            function($product_id) {
-              return array('product_id' => $product_id);
-            },
-            $this->session->data['wishlist'])
+          function($product_id) {
+            return array('product_id' => $product_id);
+          },
+          $this->session->data['wishlist'])
         : array();
     } else {
       $this->load->model('account/wishlist');
@@ -480,17 +499,6 @@ class ControllerExtensionFacebookEvents extends Controller {
     return $this->fbutils->getDAPixelParamsForProductListing($params);
   }
 
-  private function getSubscribeEventParameters() {
-    return ($this->request->server['REQUEST_METHOD'] == 'POST'
-      && isset($this->request->post['newsletter']))
-      ? array(
-        'event_name' => 'Subscribe',
-        'status' => ($this->request->post['newsletter'])
-          ? 'Subscribe newsletter'
-          : 'Unsubscribe newsletter')
-      : null;
-  }
-
   private function generateEventParameters(
     $products,
     $event_name,
@@ -506,5 +514,6 @@ class ControllerExtensionFacebookEvents extends Controller {
       'currencyCode' => $this->session->data['currency'],
       'hasQuantity' => $has_quantity));
     return $this->fbutils->getDAPixelParamsForProducts($params);
+
   }
 }
