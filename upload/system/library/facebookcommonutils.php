@@ -128,7 +128,7 @@ class FacebookCommonUtils {
   const PLUGIN_UPGRADE_MESSAGE = 'A newer version of this plugin is available. To download it, go to <a href="https://github.com/facebookincubator/Facebook-For-OpenCart/releases" target="_blank">Github</a> or <a href="https://www.opencart.com/index.php?route=marketplace/extension/info&extension_id=32336" target="_blank">OpenCart marketplace</a>.';
   private $pluginAgentName = 'exopencart';
 // system auto generated, DO NOT MODIFY
-private $pluginVersion = '2.1.2';
+private $pluginVersion = '2.1.3';
 // system auto generated, DO NOT MODIFY
 
   public function __construct() {

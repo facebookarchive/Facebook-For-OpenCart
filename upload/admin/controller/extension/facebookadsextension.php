@@ -91,8 +91,8 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
       isset($facebook_setting[FacebookCommonUtils::FACEBOOK_PIXEL_ID])
         ? $facebook_setting[FacebookCommonUtils::FACEBOOK_PIXEL_ID]
         : '';
-    $data['base_currency'] = $this->config->get('config_currency');
-    $data['store_name'] = $this->config->get('config_name');
+    $data['base_currency'] = addslashes($this->config->get('config_currency'));
+    $data['store_name'] = addslashes($this->config->get('config_name'));
     $data['opencart_version'] = VERSION;
     $data['plugin_version'] = $this->facebookcommonutils->getPluginVersion();
 

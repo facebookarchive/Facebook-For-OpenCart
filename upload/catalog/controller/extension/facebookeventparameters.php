@@ -299,11 +299,16 @@ class ControllerExtensionFacebookEventParameters extends Controller {
       ? $this->request->get['search']
       : '';
 
-    $tag = (isset($this->request->get['tag']))
-      ? $this->request->get['tag']
-      : (isset($this->request->get['search']))
+    // ternary operation does not work in here
+    // reverted to regular nested if-else conditions
+    $tag = '';
+    if (isset($this->request->get['tag'])) {
+      $tag = $this->request->get['tag'];
+    } else {
+      $tag = (isset($this->request->get['search']))
         ? $this->request->get['search']
         : '';
+    }
 
     $description = (isset($this->request->get['description']))
       ? $this->request->get['description']

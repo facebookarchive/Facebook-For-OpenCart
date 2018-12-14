@@ -9,7 +9,7 @@
 <modification>
 	<name>Facebook Ads Extension</name>
 	<code>facebook_ads_extension</code>
-	<version>2.1.2</version>
+	<version>2.1.3</version>
 	<author>Facebook</author>
 	<link></link>
 
@@ -286,14 +286,18 @@
       ]]></add>
     </operation>
 
-    <operation>
+    <!-- Removes away this modification from the plugin -->
+    <!-- as this is only used primarily for debugging -->
+    <!-- This is also due to incompatibility with external plugins -->
+    <!-- https://github.com/facebookincubator/Facebook-For-OpenCart/issues/52 -->
+<!--     <operation>
       <search><![CDATA[$url = '';]]></search>
       <add position="after"><![CDATA[
         if (isset($this->request->get['debug_facebook_sync_error'])) {
           $url .= '&debug_facebook_sync_error=1';
         }
       ]]></add>
-    </operation>
+    </operation> -->
   </file>
 
   <file path="admin/view/template/catalog/product_list.tpl">
@@ -423,88 +427,126 @@
     <operation>
       <search><![CDATA[</head>]]></search>
       <add position="before"><![CDATA[
-        <link rel="stylesheet" type="text/css" href="catalog/view/theme/css/facebook/cookieconsent.min.css" />
-        <script type="text/javascript" src = "catalog/view/javascript/facebook/cookieconsent.min.js"></script>
-        <script>
-          var enableCookieBar = '<?= $facebook_enable_cookie_bar ?>';
-          if (enableCookieBar === 'true') {
-            window.addEventListener("load", function(){
-              function setConsent() {
-                fbq(
-                  'consent',
-                  this.hasConsented() ? 'grant' : 'revoke'
-                );
-              }
-              window.cookieconsent.initialise({
-                palette: {
-                  popup: {
-                    background: '#237afc'
-                  },
-                  button: {
-                    background: '#fff',
-                    text: '#237afc'
-                  }
-                },
-                cookie: {
-                  name: fbq.consentCookieName
-                },
-                type: 'opt-out',
-                showLink: false,
-                content: {
-                  dismiss: 'Agree',
-                  deny: 'Opt Out',
-                  header: 'Our Site Uses Cookies',
-                  message: 'By clicking Agree, you agree to our <a class="cc-link" href="https://www.facebook.com/legal/terms/update" target="_blank">terms of service</a>, <a class="cc-link" href="https://www.facebook.com/policies/" target="_blank">privacy policy</a> and <a class="cc-link" href="https://www.facebook.com/policies/cookies/" target="_blank">cookies policy</a>.'
-                },
-                layout: 'basic-header',
-                location: true,
-                revokable: true,
-                onInitialise: setConsent,
-                onStatusChange: setConsent,
-                onRevokeChoice: setConsent
-              }, function (popup) {
-                // If this isn't open, we know that we can use cookies.
-                if (!popup.getStatus() && !popup.options.enabled) {
-                  popup.setStatus(cookieconsent.status.dismiss);
-                }
-              });
-            });
-          }
-        </script>
         <script type="text/javascript">
-          !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-          n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
-          n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
-          t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
-          document,'script','https://connect.facebook.net/en_US/fbevents.js');
+          function facebook_loadScript(url, callback) {
+            var script = document.createElement("script");
+            script.type = "text/javascript";
+            if(script.readyState) {  // only required for IE <9
+              script.onreadystatechange = function() {
+                if (script.readyState === "loaded" || script.readyState === "complete") {
+                  script.onreadystatechange = null;
+                  if (callback) {
+                    callback();
+                  }
+                }
+              };
+            } else {  //Others
+              if (callback) {
+                script.onload = callback;
+              }
+            }
 
-          var enableCookieBar = '<?= $facebook_enable_cookie_bar ?>';
-          if (enableCookieBar === 'true') {
-            fbq.consentCookieName = 'fb_cookieconsent_status';
-
-            (function() {
-              function getCookie(t){var i=("; "+document.cookie).split("; "+t+"=");if(2==i.length)return i.pop().split(";").shift()}
-              var consentValue = getCookie(fbq.consentCookieName);
-              fbq('consent', consentValue === 'dismiss' ? 'grant' : 'revoke');
-            })();
+            script.src = url;
+            document.getElementsByTagName("head")[0].appendChild(script);
           }
         </script>
-        <script type="text/javascript" src = "catalog/view/javascript/facebook/facebook_pixel.js"></script>
-        <?php if ($facebook_pixel_id_FAE) { ?>
-          <script type="text/javascript">
-            (function() {
-              var params = <?= $facebook_pixel_params_FAE ?>;
-              _facebookAdsExtension.facebookPixel.init(
-                '<?= $facebook_pixel_id_FAE ?>',
-                <?= $facebook_pixel_pii_FAE ?>,
-                params);
-              <?php if ($facebook_pixel_event_params_FAE) { ?>
-                _facebookAdsExtension.facebookPixel.firePixel(
-                  JSON.parse('<?= $facebook_pixel_event_params_FAE ?>'));
-              <?php } ?>
-            })();
-          </script>
-        <?php } ?>
+
+        <script type="text/javascript">
+          (function() {
+            var enableCookieBar = '<?= $facebook_enable_cookie_bar ?>';
+            if (enableCookieBar === 'true') {
+              facebook_loadScript("catalog/view/javascript/facebook/cookieconsent.min.js");
+
+              // loading the css file
+              var css = document.createElement("link");
+              css.setAttribute("rel", "stylesheet");
+              css.setAttribute("type", "text/css");
+              css.setAttribute(
+                "href",
+                "catalog/view/theme/css/facebook/cookieconsent.min.css");
+              document.getElementsByTagName("head")[0].appendChild(css);
+
+              window.addEventListener("load", function(){
+                function setConsent() {
+                  fbq(
+                    'consent',
+                    this.hasConsented() ? 'grant' : 'revoke'
+                  );
+                }
+                window.cookieconsent.initialise({
+                  palette: {
+                    popup: {
+                      background: '#237afc'
+                    },
+                    button: {
+                      background: '#fff',
+                      text: '#237afc'
+                    }
+                  },
+                  cookie: {
+                    name: fbq.consentCookieName
+                  },
+                  type: 'opt-out',
+                  showLink: false,
+                  content: {
+                    dismiss: 'Agree',
+                    deny: 'Opt Out',
+                    header: 'Our Site Uses Cookies',
+                    message: 'By clicking Agree, you agree to our <a class="cc-link" href="https://www.facebook.com/legal/terms/update" target="_blank">terms of service</a>, <a class="cc-link" href="https://www.facebook.com/policies/" target="_blank">privacy policy</a> and <a class="cc-link" href="https://www.facebook.com/policies/cookies/" target="_blank">cookies policy</a>.'
+                  },
+                  layout: 'basic-header',
+                  location: true,
+                  revokable: true,
+                  onInitialise: setConsent,
+                  onStatusChange: setConsent,
+                  onRevokeChoice: setConsent
+                }, function (popup) {
+                  // If this isn't open, we know that we can use cookies.
+                  if (!popup.getStatus() && !popup.options.enabled) {
+                    popup.setStatus(cookieconsent.status.dismiss);
+                  }
+                });
+              });
+            }
+          })();
+        </script>
+
+        <script type="text/javascript">
+          (function() {
+            !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+            n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+            n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+            t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+            document,'script','https://connect.facebook.net/en_US/fbevents.js');
+
+            var enableCookieBar = '<?= $facebook_enable_cookie_bar ?>';
+            if (enableCookieBar === 'true') {
+              fbq.consentCookieName = 'fb_cookieconsent_status';
+
+              (function() {
+                function getCookie(t){var i=("; "+document.cookie).split("; "+t+"=");if(2==i.length)return i.pop().split(";").shift()}
+                var consentValue = getCookie(fbq.consentCookieName);
+                fbq('consent', consentValue === 'dismiss' ? 'grant' : 'revoke');
+              })();
+            }
+
+            <?php if ($facebook_pixel_id_FAE) { ?>
+              facebook_loadScript(
+                "catalog/view/javascript/facebook/facebook_pixel.js",
+                function() {
+                  var params = <?= $facebook_pixel_params_FAE ?>;
+                  _facebookAdsExtension.facebookPixel.init(
+                    '<?= $facebook_pixel_id_FAE ?>',
+                    <?= $facebook_pixel_pii_FAE ?>,
+                    params);
+                  <?php if ($facebook_pixel_event_params_FAE) { ?>
+                    _facebookAdsExtension.facebookPixel.firePixel(
+                      JSON.parse('<?= $facebook_pixel_event_params_FAE ?>'));
+                  <?php } ?>
+                });
+            <?php } ?>
+          })();
+        </script>
       ]]></add>
     </operation>
   </file>
@@ -549,88 +591,126 @@
     <operation>
       <search><![CDATA[</head>]]></search>
       <add position="before"><![CDATA[
-        <link rel="stylesheet" type="text/css" href="catalog/view/theme/css/facebook/cookieconsent.min.css" />
-        <script type="text/javascript" src = "catalog/view/javascript/facebook/cookieconsent.min.js"></script>
-        <script>
-          var enableCookieBar = '{{ facebook_enable_cookie_bar }}';
-          if (enableCookieBar === 'true') {
-            window.addEventListener("load", function(){
-              function setConsent() {
-                fbq(
-                  'consent',
-                  this.hasConsented() ? 'grant' : 'revoke'
-                );
-              }
-              window.cookieconsent.initialise({
-                palette: {
-                  popup: {
-                    background: '#237afc'
-                  },
-                  button: {
-                    background: '#fff',
-                    text: '#237afc'
-                  }
-                },
-                cookie: {
-                  name: fbq.consentCookieName
-                },
-                type: 'opt-out',
-                showLink: false,
-                content: {
-                  dismiss: 'Agree',
-                  deny: 'Opt Out',
-                  header: 'Our Site Uses Cookies',
-                  message: 'By clicking Agree, you agree to our <a class="cc-link" href="https://www.facebook.com/legal/terms/update" target="_blank">terms of service</a>, <a class="cc-link" href="https://www.facebook.com/policies/" target="_blank">privacy policy</a> and <a class="cc-link" href="https://www.facebook.com/policies/cookies/" target="_blank">cookies policy</a>.'
-                },
-                layout: 'basic-header',
-                location: true,
-                revokable: true,
-                onInitialise: setConsent,
-                onStatusChange: setConsent,
-                onRevokeChoice: setConsent
-              }, function (popup) {
-                // If this isn't open, we know that we can use cookies.
-                if (!popup.getStatus() && !popup.options.enabled) {
-                  popup.setStatus(cookieconsent.status.dismiss);
-                }
-              });
-            });
-          }
-        </script>
         <script type="text/javascript">
-          !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-          n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
-          n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
-          t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
-          document,'script','https://connect.facebook.net/en_US/fbevents.js');
+          function facebook_loadScript(url, callback) {
+            var script = document.createElement("script");
+            script.type = "text/javascript";
+            if(script.readyState) {  // only required for IE <9
+              script.onreadystatechange = function() {
+                if (script.readyState === "loaded" || script.readyState === "complete") {
+                  script.onreadystatechange = null;
+                  if (callback) {
+                    callback();
+                  }
+                }
+              };
+            } else {  //Others
+              if (callback) {
+                script.onload = callback;
+              }
+            }
 
-          var enableCookieBar = '{{ facebook_enable_cookie_bar }}';
-          if (enableCookieBar === 'true') {
-            fbq.consentCookieName = 'fb_cookieconsent_status';
-
-            (function() {
-              function getCookie(t){var i=("; "+document.cookie).split("; "+t+"=");if(2==i.length)return i.pop().split(";").shift()}
-              var consentValue = getCookie(fbq.consentCookieName);
-              fbq('consent', consentValue === 'dismiss' ? 'grant' : 'revoke');
-            })();
+            script.src = url;
+            document.getElementsByTagName("head")[0].appendChild(script);
           }
         </script>
-        <script type="text/javascript" src = "catalog/view/javascript/facebook/facebook_pixel.js"></script>
-        {% if facebook_pixel_id_FAE %}
-          <script type="text/javascript">
-            (function() {
-              var params = {{ facebook_pixel_params_FAE }};
-              _facebookAdsExtension.facebookPixel.init(
-                '{{ facebook_pixel_id_FAE }}',
-                {{ facebook_pixel_pii_FAE }},
-                params);
-              {% if facebook_pixel_event_params_FAE %}
-                _facebookAdsExtension.facebookPixel.firePixel(
-                  JSON.parse('{{facebook_pixel_event_params_FAE }}'));
-              {% endif %}
-            })();
-          </script>
-        {% endif %}
+
+        <script type="text/javascript">
+          (function() {
+            var enableCookieBar = '{{ facebook_enable_cookie_bar }}';
+            if (enableCookieBar === 'true') {
+              facebook_loadScript("catalog/view/javascript/facebook/cookieconsent.min.js");
+
+              // loading the css file
+              var css = document.createElement("link");
+              css.setAttribute("rel", "stylesheet");
+              css.setAttribute("type", "text/css");
+              css.setAttribute(
+                "href",
+                "catalog/view/theme/css/facebook/cookieconsent.min.css");
+              document.getElementsByTagName("head")[0].appendChild(css);
+
+              window.addEventListener("load", function(){
+                function setConsent() {
+                  fbq(
+                    'consent',
+                    this.hasConsented() ? 'grant' : 'revoke'
+                  );
+                }
+                window.cookieconsent.initialise({
+                  palette: {
+                    popup: {
+                      background: '#237afc'
+                    },
+                    button: {
+                      background: '#fff',
+                      text: '#237afc'
+                    }
+                  },
+                  cookie: {
+                    name: fbq.consentCookieName
+                  },
+                  type: 'opt-out',
+                  showLink: false,
+                  content: {
+                    dismiss: 'Agree',
+                    deny: 'Opt Out',
+                    header: 'Our Site Uses Cookies',
+                    message: 'By clicking Agree, you agree to our <a class="cc-link" href="https://www.facebook.com/legal/terms/update" target="_blank">terms of service</a>, <a class="cc-link" href="https://www.facebook.com/policies/" target="_blank">privacy policy</a> and <a class="cc-link" href="https://www.facebook.com/policies/cookies/" target="_blank">cookies policy</a>.'
+                  },
+                  layout: 'basic-header',
+                  location: true,
+                  revokable: true,
+                  onInitialise: setConsent,
+                  onStatusChange: setConsent,
+                  onRevokeChoice: setConsent
+                }, function (popup) {
+                  // If this isn't open, we know that we can use cookies.
+                  if (!popup.getStatus() && !popup.options.enabled) {
+                    popup.setStatus(cookieconsent.status.dismiss);
+                  }
+                });
+              });
+            }
+          })();
+        </script>
+
+        <script type="text/javascript">
+          (function() {
+            !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+            n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+            n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+            t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+            document,'script','https://connect.facebook.net/en_US/fbevents.js');
+
+            var enableCookieBar = '{{ facebook_enable_cookie_bar }}';
+            if (enableCookieBar === 'true') {
+              fbq.consentCookieName = 'fb_cookieconsent_status';
+
+              (function() {
+                function getCookie(t){var i=("; "+document.cookie).split("; "+t+"=");if(2==i.length)return i.pop().split(";").shift()}
+                var consentValue = getCookie(fbq.consentCookieName);
+                fbq('consent', consentValue === 'dismiss' ? 'grant' : 'revoke');
+              })();
+            }
+
+            {% if facebook_pixel_id_FAE %}
+              facebook_loadScript(
+                "catalog/view/javascript/facebook/facebook_pixel.js",
+                function() {
+                  var params = {{ facebook_pixel_params_FAE }};
+                  _facebookAdsExtension.facebookPixel.init(
+                    '{{ facebook_pixel_id_FAE }}',
+                    {{ facebook_pixel_pii_FAE }},
+                    params);
+                  {% if facebook_pixel_event_params_FAE %}
+                    _facebookAdsExtension.facebookPixel.firePixel(
+                      JSON.parse('{{facebook_pixel_event_params_FAE }}'));
+                  {% endif %}
+                });
+            {% endif %}
+          })();
+        </script>
       ]]></add>
     </operation>
   </file>
