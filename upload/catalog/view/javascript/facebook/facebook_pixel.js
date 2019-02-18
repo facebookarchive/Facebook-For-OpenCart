@@ -38,7 +38,7 @@
         product_id: productID,
         quantity: quantity,
       },
-      function (json) {
+        function (json) {
         if (json.facebook_pixel_event_params_FAE) {
           _facebookAdsExtension.facebookPixel.firePixel(
             json.facebook_pixel_event_params_FAE);
@@ -46,28 +46,6 @@
       }
     );
   }
-
-  // catalog/view/javascript/common.js has a cart variable which is used by
-  // various product listing pages to add product to cart directly.
-  // We will like to modify and inject AddToCart event in the cart.add() method.
-  // However, OpenCart's modification system does not support js and css files
-  // as they are not accessible from the front end.
-  // https://github.com/vqmod/vqmod/wiki/About-vQmod
-  // Instead, we modify the existing cart.add method and fire off addToCart.
-  // A ajax call is fire to the URl endpoint /getproductinfoforfacebookpixel
-  // to get the price and name of the product
-  var oldCartAdd = cart.add;
-  cart.add = function(productID, quantity) {
-    fireProductInfoEvent('AddToCart', productID, quantity);
-    oldCartAdd.apply(oldCartAdd, [productID, quantity]);
-  };
-
-  // adopting the same cart.add strategy for wishlist.add
-  var oldWishlist = wishlist.add;
-  wishlist.add = function(productID) {
-    fireProductInfoEvent('AddToWishlist', productID);
-    oldWishlist.apply(oldWishlist, [productID]);
-  };
 
   jQuery(function ($) {
     $('#button-cart').on('click', function() {
@@ -78,5 +56,38 @@
       var productID = $('#fbProductID').val();
       fireProductInfoEvent('AddToCart', productID, quantity);
     });
+
+    // catalog/view/javascript/common.js has a cart variable which is used by
+    // various product listing pages to add product to cart directly.
+    // We will like to modify and inject AddToCart event in the cart.add() method.
+    // However, OpenCart's modification system does not support js and css files
+    // as they are not accessible from the front end.
+    // https://github.com/vqmod/vqmod/wiki/About-vQmod
+    // Instead, we modify the existing cart.add method and fire off addToCart.
+    // A ajax call is fire to the URl endpoint /getproductinfoforfacebookpixel
+    // to get the price and name of the product
+    // added defensive checks to ensure the cart is loaded
+    if (typeof cart !== 'undefined') {
+      var oldCartAdd = cart.add;
+      cart.add = function(productID, quantity) {
+        fireProductInfoEvent('AddToCart', productID, quantity);
+        oldCartAdd.apply(oldCartAdd, [productID, quantity]);
+      };
+    } else {
+      console.log('cart variable is not available, AddToCart event is not able to be fired');
+    }
+
+
+    // adopting the same cart.add strategy for wishlist.add
+    // added defensive checks to ensure the wishlist is loaded
+    if (typeof wishlist !== 'undefined') {
+      var oldWishlist = wishlist.add;
+      wishlist.add = function(productID) {
+        fireProductInfoEvent('AddToWishlist', productID);
+        oldWishlist.apply(oldWishlist, [productID]);
+      };
+    } else {
+      console.log('wishlist variable is not available, AddToWishlist event is not able to be fired');
+    }
   });
 })();

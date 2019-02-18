@@ -18,6 +18,7 @@
 
     window.facebookAdsToolboxConfig = {
       hasGzipSupport: '{{ has_gzip_support }}',
+      enabledPlugins: ['MESSENGER_CHAT'],
       popupOrigin: 'https://' + fb_url,
       feedWasDisabled: 'true',
       platform: 'OpenCart',
@@ -64,12 +65,14 @@
       </ul>
     </div>
   </div>
-  {% if download_log_file_error_warning %}
-    <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> {{ download_log_file_error_warning }}
-      <button type="button" class="close" data-dismiss="alert">&times;</button>
-    </div>
-{% endif %}
   <div class="container-fluid">
+    <div class="alert alert-danger" id="divErrorText">
+    </div>  
+    {% if download_log_file_error_warning %}
+      <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> {{ download_log_file_error_warning }}
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+      </div>
+{% endif %}
     <div class="panel panel-default">
       <div class="panel-body">
         <div id="facebook-header">
@@ -109,10 +112,6 @@
               The product sync status check will be performed every 30 secs.
             </div>
           </div>
-          <div
-            class="error-text"
-            id="divErrorText">
-          </div>
           <div>
             <button
               type="button"
@@ -123,6 +122,14 @@
               {{ resync_text }}
             </button>
           </div>
+          <h2>
+            <input
+              type="checkbox"
+              onchange="_facebookAdsExtension.dia.setEnableCookieBar(this.checked)"
+              {{ checked_enable_cookie_bar }} >
+              {{ enable_cookie_bar_text }}
+          </h2>
+          <h2>{{ plugin_upgrade_message }}</h2>
           <div class="download">
             <a class="download" href="{{ download_log_link }}">
               {{ download_log_file_text }}

@@ -34,6 +34,17 @@ class ModelExtensionFacebookSetting extends Model {
     return $settings;
   }
 
+  public function getSetting($setting_key) {
+    $settings = array();
+    $query = $this->db->query("SELECT * FROM " .
+      DB_PREFIX .
+      "setting WHERE `code` = 'facebook' " .
+      "AND `key` = '" . $setting_key . "'");
+    return (isset($query->row['value']))
+      ? $query->row['value']
+      : '';
+  }
+
   public function deleteSettings() {
     $this->db->query("DELETE FROM `" .
       DB_PREFIX .

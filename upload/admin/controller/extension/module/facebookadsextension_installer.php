@@ -89,12 +89,35 @@ class ControllerExtensionModuleFacebookAdsExtensionInstaller
       "extension/facebookadsextension");
   }
 
+  // creates the facebook_events table
+  $facebook_events_table = 'facebook_events';
+  $facebook_events_table_exists_sql = sprintf("SHOW TABLES IN `%s` " .
+    "LIKE '%s'",
+    DB_DATABASE,
+    DB_PREFIX.$facebook_events_table);
+  $data = $this->db->query($facebook_events_table_exists_sql)->rows;
+  // checks if the table exist
+  if (sizeof($data) == 0) {
+    $create_facebook_events_sql = sprintf('CREATE TABLE `%s`.' .
+      '`%s` (' .
+      '`id` INT NOT NULL AUTO_INCREMENT, ' .
+      '`data` NVARCHAR (4092) NOT NULL, ' .
+      '`ts` DATETIME NOT NULL, ' .
+      'PRIMARY KEY (`id`))',
+      DB_DATABASE,
+      DB_PREFIX.$facebook_events_table);
+    $this->db->query($create_facebook_events_sql);
+  }
 
   // delete module folder to prevent path error in lower version
   if (version_compare(VERSION , '2.0.3.1') <= 0) {
     unlink(DIR_APPLICATION . '/controller/extension/module/facebookadsextension_installer.php');
     rmdir(DIR_APPLICATION . '/controller/extension/module/');
   }
+
+    // generates the pixel signature if FAE is setup
+  $this->load->controller(
+    'extension/facebookadsextension/updatePixelSignature');
 
 	}
 }

@@ -194,6 +194,31 @@
       );
     };
 
+    var setMessenger = function(message) {
+      updateSettings(
+        {
+          'facebook_page_id': message.params.page_id,
+          'facebook_messenger_activated': message.params.is_messenger_chat_plugin_enabled,
+          'facebook_jssdk_version': message.params.facebook_jssdk_version
+        },
+        function() {
+          // messenager would only have 2 options, only toggling on and off
+          window.sendToFacebook('ack msger chat', message.params);
+
+        }
+      );
+    };
+
+    var setEnableCookieBar = function(enable_cookie_bar) {
+      updateSettings(
+        {
+          'facebook_enable_cookie_bar': enable_cookie_bar
+        },
+        function() {
+        }
+      );
+    };
+
     var syncAllProducts = function(onSuccess) {
       $.get(
         'index.php?route=extension/facebookadsextension/syncallproducts&' +
@@ -382,6 +407,9 @@
         case 'reset':
           deleteSettings();
           break;
+        case 'set msger chat':
+          setMessenger(event.data);
+          break;
       }
     };
 
@@ -414,7 +442,8 @@
       launchDiaWizard: launchDiaWizard,
       addEventListenerForDIA: addEventListenerForDIA,
       resyncAllProducts: resyncAllProducts,
-      refreshUIForDiaSettings: refreshUIForDiaSettings
+      refreshUIForDiaSettings: refreshUIForDiaSettings,
+      setEnableCookieBar: setEnableCookieBar
     };
   }());
 }(window._facebookAdsExtension = window._facebookAdsExtension || {}, window, document));

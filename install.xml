@@ -9,7 +9,7 @@
 <modification>
 	<name>Facebook Ads Extension</name>
 	<code>facebook_ads_extension</code>
-	<version>2.0.3</version>
+	<version>2.1.3</version>
 	<author>Facebook</author>
 	<link></link>
 
@@ -60,6 +60,13 @@
           $this->load->controller(
             'extension/facebookproduct/validateFAEAndCatalogSetupAndProductUploadComplete',
             $operation);
+
+          $hasNewUpgradeAvailable = $this->load->controller(
+            'extension/facebookadsextension/hasNewUpgradeAvailable',
+            $operation);
+          $data['plugin_upgrade_message'] = ($hasNewUpgradeAvailable)
+            ? FacebookCommonUtils::PLUGIN_UPGRADE_MESSAGE
+            : '';
         } catch (Exception $e) {
           $data['error_facebook_sync'] =
             ($e->getCode() === FacebookGraphAPIError::ACCESS_TOKEN_EXCEPTION_CODE)
@@ -74,8 +81,13 @@
     <operation>
       <search><![CDATA[<?php if ($error_install) { ?>]]></search>
       <add position="before"><![CDATA[
-        <?php if (isset($error_facebook_sync)) {?>
+        <?php if (isset($error_facebook_sync) && !!($error_facebook_sync)) {?>
         <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> <?= $error_facebook_sync; ?>
+          <button type="button" class="close" data-dismiss="alert">&times;</button>
+        </div>
+        <?php } ?>
+        <?php if (isset($plugin_upgrade_message) && !!($plugin_upgrade_message)) {?>
+        <div class="alert alert-info"><i class="fa fa-exclamation-circle"></i> <?= $plugin_upgrade_message; ?>
           <button type="button" class="close" data-dismiss="alert">&times;</button>
         </div>
         <?php } ?>
@@ -158,6 +170,13 @@
           $this->load->controller(
             'extension/facebookproduct/validateFAEAndCatalogSetupAndProductUploadComplete',
             $operation);
+
+          $hasNewUpgradeAvailable = $this->load->controller(
+            'extension/facebookadsextension/hasNewUpgradeAvailable',
+            $operation);
+          $this->session->data['plugin_upgrade_message'] = ($hasNewUpgradeAvailable)
+            ? FacebookCommonUtils::PLUGIN_UPGRADE_MESSAGE
+            : '';
         } catch (Exception $e) {
           $this->session->data['error_facebook_sync'] =
             ($e->getCode() === FacebookGraphAPIError::ACCESS_TOKEN_EXCEPTION_CODE)
@@ -257,30 +276,46 @@
         } else {
           $data['error_facebook_delete'] = '';
         }
+
+        if (isset($this->session->data['plugin_upgrade_message'])) {
+          $data['plugin_upgrade_message'] = $this->session->data['plugin_upgrade_message'];
+          unset($this->session->data['plugin_upgrade_message']);
+        } else {
+          $data['plugin_upgrade_message'] = '';
+        }
       ]]></add>
     </operation>
 
-    <operation>
+    <!-- Removes away this modification from the plugin -->
+    <!-- as this is only used primarily for debugging -->
+    <!-- This is also due to incompatibility with external plugins -->
+    <!-- https://github.com/facebookincubator/Facebook-For-OpenCart/issues/52 -->
+<!--     <operation>
       <search><![CDATA[$url = '';]]></search>
       <add position="after"><![CDATA[
         if (isset($this->request->get['debug_facebook_sync_error'])) {
           $url .= '&debug_facebook_sync_error=1';
         }
       ]]></add>
-    </operation>
+    </operation> -->
   </file>
 
   <file path="admin/view/template/catalog/product_list.tpl">
     <operation>
       <search><![CDATA[    <?php if ($error_warning) { ?>]]></search>
       <add position="before"><![CDATA[
-        <?php if ($error_facebook_sync) {?>
+        <?php if (isset($error_facebook_sync) && !!($error_facebook_sync)) {?>
         <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> <?= $error_facebook_sync; ?>
           <button type="button" class="close" data-dismiss="alert">&times;</button>
         </div>
         <?php } ?>
-        <?php if ($error_facebook_delete) {?>
+        <?php if (isset($error_facebook_delete) && !!($error_facebook_delete)) {?>
         <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> <?= $error_facebook_delete; ?>
+          <button type="button" class="close" data-dismiss="alert">&times;</button>
+        </div>
+        <?php } ?>
+        <?php if (isset($plugin_upgrade_message) && !!($plugin_upgrade_message)) {?>
+        <div class="alert alert-info"><i class="fa fa-exclamation-circle"></i> <?= $plugin_upgrade_message; ?>
           <button type="button" class="close" data-dismiss="alert">&times;</button>
         </div>
         <?php } ?>
@@ -374,6 +409,8 @@
           $this->fbevents['facebook_pixel_params_FAE'];
         $data['facebook_pixel_event_params_FAE'] =
           $this->fbevents['facebook_pixel_event_params_FAE'];
+        $data['facebook_enable_cookie_bar'] =
+          $this->fbevents['facebook_enable_cookie_bar'];
 
         // remove away the facebook_pixel_event_params_FAE in session data
         // to avoid duplicate firing after the 1st fire
@@ -390,81 +427,126 @@
     <operation>
       <search><![CDATA[</head>]]></search>
       <add position="before"><![CDATA[
-        <link rel="stylesheet" type="text/css" href="catalog/view/theme/css/facebook/cookieconsent.min.css" />
-        <script type="text/javascript" src = "catalog/view/javascript/facebook/cookieconsent.min.js"></script>
-        <script>
-        window.addEventListener("load", function(){
-          function setConsent() {
-            fbq(
-              'consent',
-              this.hasConsented() ? 'grant' : 'revoke'
-            );
-          }
-          window.cookieconsent.initialise({
-            palette: {
-              popup: {
-                background: '#237afc'
-              },
-              button: {
-                background: '#fff',
-                text: '#237afc'
-              }
-            },
-            cookie: {
-              name: fbq.consentCookieName
-            },
-            type: 'opt-out',
-            showLink: false,
-            content: {
-              dismiss: 'Agree',
-              deny: 'Opt Out',
-              header: 'Our Site Uses Cookies',
-              message: 'By clicking Agree, you agree to our <a class="cc-link" href="https://www.facebook.com/legal/terms/update" target="_blank">terms of service</a>, <a class="cc-link" href="https://www.facebook.com/policies/" target="_blank">privacy policy</a> and <a class="cc-link" href="https://www.facebook.com/policies/cookies/" target="_blank">cookies policy</a>.'
-            },
-            layout: 'basic-header',
-            location: true,
-            revokable: true,
-            onInitialise: setConsent,
-            onStatusChange: setConsent,
-            onRevokeChoice: setConsent
-          }, function (popup) {
-            // If this isn't open, we know that we can use cookies.
-            if (!popup.getStatus() && !popup.options.enabled) {
-              popup.setStatus(cookieconsent.status.dismiss);
-            }
-          });
-        });
-        </script>
         <script type="text/javascript">
-          !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-          n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
-          n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
-          t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
-          document,'script','https://connect.facebook.net/en_US/fbevents.js');
-          fbq.consentCookieName = 'fb_cookieconsent_status';
+          function facebook_loadScript(url, callback) {
+            var script = document.createElement("script");
+            script.type = "text/javascript";
+            if(script.readyState) {  // only required for IE <9
+              script.onreadystatechange = function() {
+                if (script.readyState === "loaded" || script.readyState === "complete") {
+                  script.onreadystatechange = null;
+                  if (callback) {
+                    callback();
+                  }
+                }
+              };
+            } else {  //Others
+              if (callback) {
+                script.onload = callback;
+              }
+            }
 
+            script.src = url;
+            document.getElementsByTagName("head")[0].appendChild(script);
+          }
+        </script>
+
+        <script type="text/javascript">
           (function() {
-            function getCookie(t){var i=("; "+document.cookie).split("; "+t+"=");if(2==i.length)return i.pop().split(";").shift()}
-            var consentValue = getCookie(fbq.consentCookieName);
-            fbq('consent', consentValue === 'dismiss' ? 'grant' : 'revoke');
+            var enableCookieBar = '<?= $facebook_enable_cookie_bar ?>';
+            if (enableCookieBar === 'true') {
+              facebook_loadScript("catalog/view/javascript/facebook/cookieconsent.min.js");
+
+              // loading the css file
+              var css = document.createElement("link");
+              css.setAttribute("rel", "stylesheet");
+              css.setAttribute("type", "text/css");
+              css.setAttribute(
+                "href",
+                "catalog/view/theme/css/facebook/cookieconsent.min.css");
+              document.getElementsByTagName("head")[0].appendChild(css);
+
+              window.addEventListener("load", function(){
+                function setConsent() {
+                  fbq(
+                    'consent',
+                    this.hasConsented() ? 'grant' : 'revoke'
+                  );
+                }
+                window.cookieconsent.initialise({
+                  palette: {
+                    popup: {
+                      background: '#237afc'
+                    },
+                    button: {
+                      background: '#fff',
+                      text: '#237afc'
+                    }
+                  },
+                  cookie: {
+                    name: fbq.consentCookieName
+                  },
+                  type: 'opt-out',
+                  showLink: false,
+                  content: {
+                    dismiss: 'Agree',
+                    deny: 'Opt Out',
+                    header: 'Our Site Uses Cookies',
+                    message: 'By clicking Agree, you agree to our <a class="cc-link" href="https://www.facebook.com/legal/terms/update" target="_blank">terms of service</a>, <a class="cc-link" href="https://www.facebook.com/policies/" target="_blank">privacy policy</a> and <a class="cc-link" href="https://www.facebook.com/policies/cookies/" target="_blank">cookies policy</a>.'
+                  },
+                  layout: 'basic-header',
+                  location: true,
+                  revokable: true,
+                  onInitialise: setConsent,
+                  onStatusChange: setConsent,
+                  onRevokeChoice: setConsent
+                }, function (popup) {
+                  // If this isn't open, we know that we can use cookies.
+                  if (!popup.getStatus() && !popup.options.enabled) {
+                    popup.setStatus(cookieconsent.status.dismiss);
+                  }
+                });
+              });
+            }
           })();
         </script>
-        <script type="text/javascript" src = "catalog/view/javascript/facebook/facebook_pixel.js"></script>
-        <?php if ($facebook_pixel_id_FAE) { ?>
-          <script type="text/javascript">
-            (function() {
-              var params = <?= $facebook_pixel_params_FAE ?>;
-              _facebookAdsExtension.facebookPixel.init(
-                '<?= $facebook_pixel_id_FAE ?>',
-                <?= $facebook_pixel_pii_FAE ?>,
-                params);
-              <?php if ($facebook_pixel_event_params_FAE) { ?>
-                _facebookAdsExtension.facebookPixel.firePixel(
-                  JSON.parse('<?= $facebook_pixel_event_params_FAE ?>'));
-              <?php } ?>
-            })();
-          </script>
-        <?php } ?>
+
+        <script type="text/javascript">
+          (function() {
+            !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+            n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+            n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+            t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+            document,'script','https://connect.facebook.net/en_US/fbevents.js');
+
+            var enableCookieBar = '<?= $facebook_enable_cookie_bar ?>';
+            if (enableCookieBar === 'true') {
+              fbq.consentCookieName = 'fb_cookieconsent_status';
+
+              (function() {
+                function getCookie(t){var i=("; "+document.cookie).split("; "+t+"=");if(2==i.length)return i.pop().split(";").shift()}
+                var consentValue = getCookie(fbq.consentCookieName);
+                fbq('consent', consentValue === 'dismiss' ? 'grant' : 'revoke');
+              })();
+            }
+
+            <?php if ($facebook_pixel_id_FAE) { ?>
+              facebook_loadScript(
+                "catalog/view/javascript/facebook/facebook_pixel.js",
+                function() {
+                  var params = <?= $facebook_pixel_params_FAE ?>;
+                  _facebookAdsExtension.facebookPixel.init(
+                    '<?= $facebook_pixel_id_FAE ?>',
+                    <?= $facebook_pixel_pii_FAE ?>,
+                    params);
+                  <?php if ($facebook_pixel_event_params_FAE) { ?>
+                    _facebookAdsExtension.facebookPixel.firePixel(
+                      JSON.parse('<?= $facebook_pixel_event_params_FAE ?>'));
+                  <?php } ?>
+                });
+            <?php } ?>
+          })();
+        </script>
       ]]></add>
     </operation>
   </file>
@@ -509,81 +591,126 @@
     <operation>
       <search><![CDATA[</head>]]></search>
       <add position="before"><![CDATA[
-        <link rel="stylesheet" type="text/css" href="catalog/view/theme/css/facebook/cookieconsent.min.css" />
-        <script type="text/javascript" src = "catalog/view/javascript/facebook/cookieconsent.min.js"></script>
-        <script>
-        window.addEventListener("load", function(){
-          function setConsent() {
-            fbq(
-              'consent',
-              this.hasConsented() ? 'grant' : 'revoke'
-            );
-          }
-          window.cookieconsent.initialise({
-            palette: {
-              popup: {
-                background: '#237afc'
-              },
-              button: {
-                background: '#fff',
-                text: '#237afc'
-              }
-            },
-            cookie: {
-              name: fbq.consentCookieName
-            },
-            type: 'opt-out',
-            showLink: false,
-            content: {
-              dismiss: 'Agree',
-              deny: 'Opt Out',
-              header: 'Our Site Uses Cookies',
-              message: 'By clicking Agree, you agree to our <a class="cc-link" href="https://www.facebook.com/legal/terms/update" target="_blank">terms of service</a>, <a class="cc-link" href="https://www.facebook.com/policies/" target="_blank">privacy policy</a> and <a class="cc-link" href="https://www.facebook.com/policies/cookies/" target="_blank">cookies policy</a>.'
-            },
-            layout: 'basic-header',
-            location: true,
-            revokable: true,
-            onInitialise: setConsent,
-            onStatusChange: setConsent,
-            onRevokeChoice: setConsent
-          }, function (popup) {
-            // If this isn't open, we know that we can use cookies.
-            if (!popup.getStatus() && !popup.options.enabled) {
-              popup.setStatus(cookieconsent.status.dismiss);
-            }
-          });
-        });
-        </script>
         <script type="text/javascript">
-          !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-          n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
-          n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
-          t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
-          document,'script','https://connect.facebook.net/en_US/fbevents.js');
-          fbq.consentCookieName = 'fb_cookieconsent_status';
+          function facebook_loadScript(url, callback) {
+            var script = document.createElement("script");
+            script.type = "text/javascript";
+            if(script.readyState) {  // only required for IE <9
+              script.onreadystatechange = function() {
+                if (script.readyState === "loaded" || script.readyState === "complete") {
+                  script.onreadystatechange = null;
+                  if (callback) {
+                    callback();
+                  }
+                }
+              };
+            } else {  //Others
+              if (callback) {
+                script.onload = callback;
+              }
+            }
 
+            script.src = url;
+            document.getElementsByTagName("head")[0].appendChild(script);
+          }
+        </script>
+
+        <script type="text/javascript">
           (function() {
-            function getCookie(t){var i=("; "+document.cookie).split("; "+t+"=");if(2==i.length)return i.pop().split(";").shift()}
-            var consentValue = getCookie(fbq.consentCookieName);
-            fbq('consent', consentValue === 'dismiss' ? 'grant' : 'revoke');
+            var enableCookieBar = '{{ facebook_enable_cookie_bar }}';
+            if (enableCookieBar === 'true') {
+              facebook_loadScript("catalog/view/javascript/facebook/cookieconsent.min.js");
+
+              // loading the css file
+              var css = document.createElement("link");
+              css.setAttribute("rel", "stylesheet");
+              css.setAttribute("type", "text/css");
+              css.setAttribute(
+                "href",
+                "catalog/view/theme/css/facebook/cookieconsent.min.css");
+              document.getElementsByTagName("head")[0].appendChild(css);
+
+              window.addEventListener("load", function(){
+                function setConsent() {
+                  fbq(
+                    'consent',
+                    this.hasConsented() ? 'grant' : 'revoke'
+                  );
+                }
+                window.cookieconsent.initialise({
+                  palette: {
+                    popup: {
+                      background: '#237afc'
+                    },
+                    button: {
+                      background: '#fff',
+                      text: '#237afc'
+                    }
+                  },
+                  cookie: {
+                    name: fbq.consentCookieName
+                  },
+                  type: 'opt-out',
+                  showLink: false,
+                  content: {
+                    dismiss: 'Agree',
+                    deny: 'Opt Out',
+                    header: 'Our Site Uses Cookies',
+                    message: 'By clicking Agree, you agree to our <a class="cc-link" href="https://www.facebook.com/legal/terms/update" target="_blank">terms of service</a>, <a class="cc-link" href="https://www.facebook.com/policies/" target="_blank">privacy policy</a> and <a class="cc-link" href="https://www.facebook.com/policies/cookies/" target="_blank">cookies policy</a>.'
+                  },
+                  layout: 'basic-header',
+                  location: true,
+                  revokable: true,
+                  onInitialise: setConsent,
+                  onStatusChange: setConsent,
+                  onRevokeChoice: setConsent
+                }, function (popup) {
+                  // If this isn't open, we know that we can use cookies.
+                  if (!popup.getStatus() && !popup.options.enabled) {
+                    popup.setStatus(cookieconsent.status.dismiss);
+                  }
+                });
+              });
+            }
           })();
         </script>
-        <script type="text/javascript" src = "catalog/view/javascript/facebook/facebook_pixel.js"></script>
-        {% if facebook_pixel_id_FAE %}
-          <script type="text/javascript">
-            (function() {
-              var params = {{ facebook_pixel_params_FAE }};
-              _facebookAdsExtension.facebookPixel.init(
-                '{{ facebook_pixel_id_FAE }}',
-                {{ facebook_pixel_pii_FAE }},
-                params);
-              {% if facebook_pixel_event_params_FAE %}
-                _facebookAdsExtension.facebookPixel.firePixel(
-                  JSON.parse('{{facebook_pixel_event_params_FAE }}'));
-              {% endif %}
-            })();
-          </script>
-        {% endif %}
+
+        <script type="text/javascript">
+          (function() {
+            !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+            n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+            n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+            t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+            document,'script','https://connect.facebook.net/en_US/fbevents.js');
+
+            var enableCookieBar = '{{ facebook_enable_cookie_bar }}';
+            if (enableCookieBar === 'true') {
+              fbq.consentCookieName = 'fb_cookieconsent_status';
+
+              (function() {
+                function getCookie(t){var i=("; "+document.cookie).split("; "+t+"=");if(2==i.length)return i.pop().split(";").shift()}
+                var consentValue = getCookie(fbq.consentCookieName);
+                fbq('consent', consentValue === 'dismiss' ? 'grant' : 'revoke');
+              })();
+            }
+
+            {% if facebook_pixel_id_FAE %}
+              facebook_loadScript(
+                "catalog/view/javascript/facebook/facebook_pixel.js",
+                function() {
+                  var params = {{ facebook_pixel_params_FAE }};
+                  _facebookAdsExtension.facebookPixel.init(
+                    '{{ facebook_pixel_id_FAE }}',
+                    {{ facebook_pixel_pii_FAE }},
+                    params);
+                  {% if facebook_pixel_event_params_FAE %}
+                    _facebookAdsExtension.facebookPixel.firePixel(
+                      JSON.parse('{{facebook_pixel_event_params_FAE }}'));
+                  {% endif %}
+                });
+            {% endif %}
+          })();
+        </script>
       ]]></add>
     </operation>
   </file>
@@ -610,6 +737,11 @@
           <button type="button" class="close" data-dismiss="alert">&times;</button>
         </div>
         {% endif %}
+        {% if plugin_upgrade_message %}
+        <div class="alert alert-info"><i class="fa fa-exclamation-circle"></i> {{ plugin_upgrade_message }}
+          <button type="button" class="close" data-dismiss="alert">&times;</button>
+        </div>
+        {% endif %}        
       ]]></add>
     </operation>
   </file>
@@ -628,6 +760,11 @@
           <button type="button" class="close" data-dismiss="alert">&times;</button>
         </div>
         {% endif %}
+        {% if plugin_upgrade_message %}
+        <div class="alert alert-info"><i class="fa fa-exclamation-circle"></i> {{ plugin_upgrade_message }}
+          <button type="button" class="close" data-dismiss="alert">&times;</button>
+        </div>
+        {% endif %}        
       ]]></add>
     </operation>
   </file>
@@ -649,9 +786,17 @@
       <!-- this is to cater for OpenCart v2.2.0.0 and higher -->
       <search><![CDATA[$_['action_event'] = array(]]></search>
       <add position="before"><![CDATA[
-        array_push($_['action_pre_action'], 'extension/facebookpageshopcheckoutredirect');
-        // preparing the data for pixel events to be fired
-        array_push($_['action_pre_action'], 'extension/facebookevents');
+        // added in defensive checks to ensure the
+        // controller class is available and accessible
+        if (is_file(
+          DIR_APPLICATION . '/controller/extension/facebookpageshopcheckoutredirect.php')) {
+          array_push($_['action_pre_action'], 'extension/facebookpageshopcheckoutredirect');
+        }
+        if (is_file(
+          DIR_APPLICATION . '/controller/extension/facebookeventparameters.php')) {
+          // preparing the data for pixel events to be fired
+          array_push($_['action_pre_action'], 'extension/facebookeventparameters');
+        }
       ]]></add>
     </operation>
   </file>
@@ -661,14 +806,136 @@
       <!-- this is to cater for versions below OpenCart v2.2.0.0 -->
       <search><![CDATA[public function index() {]]></search>
       <add position="after"><![CDATA[
-        $target = 'facebook/facebookproduct/directcheckout';
-        if (isset($this->request->get['route'])
-          && substr((string)$this->request->get['route'], 0, strlen($target)) == $target) {
-          return new Action('extension/facebookpageshopcheckoutredirect');
+        // added in defensive checks to ensure the
+        // controller class is available and accessible
+        if (is_file(
+          DIR_APPLICATION . '/controller/extension/facebookpageshopcheckoutredirect.php')) {
+          $target = 'facebook/facebookproduct/directcheckout';
+          if (isset($this->request->get['route'])
+            && substr((string)$this->request->get['route'], 0, strlen($target)) == $target) {
+            return new Action('extension/facebookpageshopcheckoutredirect');
+          }
         }
 
-        // preparing the data for pixel events to be fired
-        $this->load->controller('extension/facebookevents');      
+        if (is_file(
+          DIR_APPLICATION . '/controller/extension/facebookeventparameters.php')) {
+          // preparing the data for pixel events to be fired
+          $this->load->controller('extension/facebookeventparameters');
+        }
+      ]]></add>
+    </operation>
+  </file>
+
+  <!-- Insert Messenger customer chat -->
+  <file path="catalog/view/theme/*/template/common/footer.tpl">
+    <operation>
+      <search><![CDATA[</footer>]]></search>
+      <add position="before"><![CDATA[
+
+        <?php if ($facebook_messenger_enabled_FAE == 'true') { ?>
+        <!-- Facebook JSSDK -->
+        <script>
+          window.fbAsyncInit = function() {
+            FB.init({
+              appId            : '',
+              autoLogAppEvents : true,
+              xfbml            : true,
+              version          : '<?= $facebook_jssdk_version_FAE ?>'
+            });
+          };
+
+          (function(d, s, id){
+             var js, fjs = d.getElementsByTagName(s)[0];
+             if (d.getElementById(id)) {return;}
+             js = d.createElement(s); js.id = id;
+             js.src = "https://connect.facebook.net/en_US/sdk.js";
+             fjs.parentNode.insertBefore(js, fjs);
+           }(document, 'script', 'facebook-jssdk'));
+        </script>
+        <div
+          class="fb-customerchat"
+          attribution="fbe_opencart"
+          page_id="<?= $facebook_page_id_FAE ?>"
+        />
+        <?php } ?>
+      ]]></add>
+    </operation>
+  </file>
+
+
+  <!-- Firing the pixel init and event code -->
+  <!-- The facebook_pixel_event_params_FAE is retrieved from the request->post -->
+  <file path="catalog/controller/common/footer.php">
+    <operation>
+      <search><![CDATA[public function index()]]></search>
+      <add position="after"><![CDATA[
+        $data['facebook_page_id_FAE'] = $this->config->get('facebook_page_id');
+        $data['facebook_jssdk_version_FAE'] = $this->config->get('facebook_jssdk_version');
+        $data['facebook_messenger_enabled_FAE'] = $this->config->get('facebook_messenger_activated');
+      ]]></add>
+    </operation>
+  </file>
+
+  <!-- Insert Messenger customer chat -->
+  <file path="catalog/view/theme/*/template/common/footer.twig">
+    <operation>
+      <search><![CDATA[</footer>]]></search>
+      <add position="before"><![CDATA[
+
+        {% if facebook_messenger_enabled_FAE == 'true' %}
+        <!-- Facebook JSSDK -->
+        <script>
+          window.fbAsyncInit = function() {
+            FB.init({
+              appId            : '',
+              autoLogAppEvents : true,
+              xfbml            : true,
+              version          : '{{ facebook_jssdk_version_FAE }}'
+            });
+          };
+
+          (function(d, s, id){
+             var js, fjs = d.getElementsByTagName(s)[0];
+             if (d.getElementById(id)) {return;}
+             js = d.createElement(s); js.id = id;
+             js.src = "https://connect.facebook.net/en_US/sdk.js";
+             fjs.parentNode.insertBefore(js, fjs);
+           }(document, 'script', 'facebook-jssdk'));
+        </script>
+        <div
+          class="fb-customerchat"
+          attribution="fbe_opencart"
+          page_id="{{ facebook_page_id_FAE }}"
+        />
+        {% endif %}
+      ]]></add>
+    </operation>
+  </file>
+
+
+  <file path="catalog/controller/common/seo_url.php">
+    <operation>
+      <!-- this is to cater for versions below OpenCart v2.2.0.0 -->
+      <search><![CDATA[if (!isset($this->request->get['route'])) {]]></search>
+      <add position="before"><![CDATA[
+        // added in defensive checks to ensure the
+        // controller class is available and accessible
+        if (is_file(
+          DIR_APPLICATION . '/controller/extension/facebookeventparameters.php')) {
+          if (!isset($this->request->get['route'])) {
+            if (isset($this->request->get['product_id'])) {
+              $this->request->get['route'] = 'product/product';
+            } elseif (isset($this->request->get['path'])) {
+              $this->request->get['route'] = 'product/category';
+            } elseif (isset($this->request->get['manufacturer_id'])) {
+              $this->request->get['route'] = 'product/manufacturer/info';
+            } elseif (isset($this->request->get['information_id'])) {
+              $this->request->get['route'] = 'information/information';
+            }
+            // preparing the data for pixel events to be fired
+            $this->load->controller('extension/facebookeventparameters');
+          }
+        }
       ]]></add>
     </operation>
   </file>

@@ -19,3 +19,4 @@ $_['resync_confirm_text'] = 'Facebook for OpenCart automatically syncs your prod
 $_['download_log_file_text'] = 'Download Log File';
 $_['download_log_file_error_warning'] = 'Warning: ' .
     'Your error log file %s is %s!';
+$_['enable_cookie_bar_text'] = 'Show cookie bar on store website';

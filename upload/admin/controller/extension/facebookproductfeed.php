@@ -76,12 +76,22 @@ class ControllerExtensionFacebookProductFeed extends Controller {
           $this->getFeedFolderNotWritableExceptionMessage());
       }
 
+      // remove the file if it exists
+      // this is because we are switching to append mode
+      // when writing the file and to avoid writing into existing content
+      if (is_file($productFeedFullFilename)) {
+        $this->faeLog->write(
+          'Sync all products using feed, remove existing feed file');
+        unlink($productFeedFullFilename);
+      }
+
       if (!$this->generateProductFeedFile($productFeedFullFilename)) {
         $this->logError(
           self::FEED_FILE_NOT_GENERATED_ERROR_MESSAGE . $operation,
           $error_data,
           FacebookCommonUtils::INITIAL_PRODUCT_SYNC_EXCEPTION_MESSAGE);
       }
+
       $this->faeLog->write('Sync all products using feed, feed file generated');
 
       $feed_id = $this->createFeed(
@@ -93,8 +103,16 @@ class ControllerExtensionFacebookProductFeed extends Controller {
           $error_data,
           FacebookCommonUtils::INITIAL_PRODUCT_SYNC_EXCEPTION_MESSAGE);
       }
-      $this->faeLog->write(
-        'Sync all products using feed, facebook feed created');
+
+      // performs a last check if the feed file is successfully generated
+      if (is_file($productFeedFullFilename)) {
+        $this->faeLog->write(
+          'Sync all products using feed, facebook feed created');
+      } else {
+        $this->faeLog->write(
+          'Sync all products using feed, feed file not created successfully');
+        return false;
+      }
 
       $upload_id = $this->createUpload(
         $feed_id,
@@ -157,20 +175,80 @@ class ControllerExtensionFacebookProductFeed extends Controller {
 
   private function generateProductFeedFile($productFeedFilename) {
     $this->faeLog->write('Generating product feed file');
-    $this->loadLibrariesForFacebookCatalog();
-    $products = $this->model_extension_facebookproduct->getProducts();
-    return $this->writeProductFeedFile(
-      $products,
-      $productFeedFilename);
+
+    try {
+      // opens up the feed file and close inside the main method
+      // to avoid the extra overhead of file opening and closing
+      error_log('feed file = ' . $productFeedFilename);
+      $feed_file = fopen($productFeedFilename, "ab");
+
+      $this->faeLog->write('Generating product feed file header');
+      if (!$this->writeProductFeedFileHeader($feed_file)) {
+        // something wrong happened, return false
+        fclose($feed_file);
+        $this->faeLog->write('Unable to generate the product feed file header');
+        return false;
+      }
+
+      $this->loadLibrariesForFacebookCatalog();
+      // queries and writes the products in batches
+      // this is to handle for large product catalogs
+      $total_products = $this->model_catalog_product->getTotalProducts(
+        array('filter_status' => 1));
+      $total_batches = (int)($total_products / FacebookCommonUtils::FACEBOOK_PRODUCT_QUERY_BATCH_COUNT) + 1;
+      for ($batch_number = 0; $batch_number <= $total_batches; $batch_number++) {
+        $this->faeLog->write(
+          sprintf('Generating product feed file for batch %d', $batch_number));
+        $filter_data = array(
+          'start' => $batch_number *
+            FacebookCommonUtils::FACEBOOK_PRODUCT_QUERY_BATCH_COUNT,
+          'limit' => FacebookCommonUtils::FACEBOOK_PRODUCT_QUERY_BATCH_COUNT
+        );
+        $products =
+          $this->model_extension_facebookproduct->getProducts($filter_data);
+        if (isset($products) && sizeof($products) > 0) {
+          if (!$this->writeProductFeedFile(
+            $products,
+            $feed_file)) {
+            // something wrong happened, return false
+            $this->faeLog->write(sprintf(
+              'Error with generating product feed file for batch %d',
+              $batch_number));
+            fclose($feed_file);
+            return false;
+          }
+        }
+      }
+
+      // feed file is generated successfully
+      fclose($feed_file);
+
+      return true;
+    } catch (Exception $e) {
+      // handles any exceptions during the feed file generation
+      if (isset($feed_file) && !!($feed_file)) {
+        fclose($feed_file);
+      }
+      $this->faeLog->write(json_encode($e->getMessage()));
+      return false;
+    }
+  }
+
+  private function writeProductFeedFileHeader($feed_file) {
+    try {
+      fputs($feed_file, "\xEF\xBB\xBF");
+      fwrite($feed_file, $this->getProductFeedHeaderRow());
+      return true;
+    } catch (Exception $e) {
+      $this->faeLog->write(json_encode($e->getMessage()));
+      return false;
+    }
   }
 
   private function writeProductFeedFile(
     $products,
-    $feed_filename) {
+    $feed_file) {
     try {
-      $feed_file = fopen($feed_filename, "wb");
-      fputs($feed_file, "\xEF\xBB\xBF");
-      fwrite($feed_file, $this->getProductFeedHeaderRow());
       array_walk(
         $products,
         function($product) use($feed_file) {
@@ -183,7 +261,6 @@ class ControllerExtensionFacebookProductFeed extends Controller {
             fwrite($feed_file, $product_data_as_feed_row);
           }
         });
-      fclose($feed_file);
       return true;
     } catch (Exception $e) {
       $this->faeLog->write(json_encode($e->getMessage()));
