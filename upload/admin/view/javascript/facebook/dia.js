@@ -88,9 +88,7 @@
     };
 
     var showError = function(errorMessage) {
-      if (window.facebookAdsToolboxConfig.debug_url) {
-        console.log(errorMessage);
-      }
+      console.log(errorMessage);
     };
 
     var setCatalog = function(message) {

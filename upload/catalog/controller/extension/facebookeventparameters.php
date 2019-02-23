@@ -58,20 +58,20 @@ class ControllerExtensionFacebookEventParameters extends Controller {
   private function getRequiredFiles() {
     return array(
 // system auto generated, DO NOT MODIFY
-      DIR_SYSTEM . '/library/facebookcommonutils.php',
-      DIR_SYSTEM . '/library/facebookgraphapi.php',
-      DIR_SYSTEM . '/library/facebookgraphapierror.php',
-      DIR_SYSTEM . '/library/facebookproductapiformatter.php',
-      DIR_SYSTEM . '/library/facebookproductfeedformatter.php',
-      DIR_SYSTEM . '/library/facebookproductformatter.php',
-      DIR_SYSTEM . '/library/facebooksampleproductfeedformatter.php',
-      DIR_SYSTEM . '/library/facebooktax.php',
-      DIR_APPLICATION . '/controller/extension/facebookeventparameters.php',
-      DIR_APPLICATION . '/controller/extension/facebookpageshopcheckoutredirect.php',
-      DIR_APPLICATION . '/controller/extension/facebookproduct.php',
-      DIR_APPLICATION . '/view/javascript/facebook/cookieconsent.min.js',
-      DIR_APPLICATION . '/view/javascript/facebook/facebook_pixel.js',
-      DIR_APPLICATION . '/view/theme/css/facebook/cookieconsent.min.css',
+      DIR_APPLICATION . '/../system/library/facebookcommonutils.php',
+      DIR_APPLICATION . '/../system/library/facebookgraphapi.php',
+      DIR_APPLICATION . '/../system/library/facebookgraphapierror.php',
+      DIR_APPLICATION . '/../system/library/facebookproductapiformatter.php',
+      DIR_APPLICATION . '/../system/library/facebookproductfeedformatter.php',
+      DIR_APPLICATION . '/../system/library/facebookproductformatter.php',
+      DIR_APPLICATION . '/../system/library/facebooksampleproductfeedformatter.php',
+      DIR_APPLICATION . '/../system/library/facebooktax.php',
+      DIR_APPLICATION . '/../catalog/controller/extension/facebookeventparameters.php',
+      DIR_APPLICATION . '/../catalog/controller/extension/facebookpageshopcheckoutredirect.php',
+      DIR_APPLICATION . '/../catalog/controller/extension/facebookproduct.php',
+      DIR_APPLICATION . '/../catalog/view/javascript/facebook/cookieconsent.min.js',
+      DIR_APPLICATION . '/../catalog/view/javascript/facebook/facebook_pixel.js',
+      DIR_APPLICATION . '/../catalog/view/theme/css/facebook/cookieconsent.min.css',
 // system auto generated, DO NOT MODIFY
       '');
   }

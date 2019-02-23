@@ -4,12 +4,11 @@
 
 // This source code is licensed under the license found in the
 // LICENSE file in the root directory of this source tree.
-// Auto-generated. Do NOT modify
 class ControllerExtensionModuleFacebookAdsExtensionInstaller
-	extends Controller {
+  extends Controller {
 
-	public function install() {
-
+  public function install() {
+    // system auto generated, DO NOT MODIFY
   // creates the facebook_product table
   $facebook_product_table_exists_sql = sprintf("SHOW TABLES IN `%s` " .
     "LIKE '%sfacebook_product'",
@@ -119,5 +118,63 @@ class ControllerExtensionModuleFacebookAdsExtensionInstaller
   $this->load->controller(
     'extension/facebookadsextension/updatePixelSignature');
 
-	}
+    // system auto generated, DO NOT MODIFY
+  }
+
+  public function index() {
+    $template_engine = $this->config->get('template_engine');
+    $template_file_extension =
+      (isset($template_engine) || $template_engine === 'twig')
+        ? ''
+        : '.tpl';
+
+    $this->load->language('extension/module/facebookadsextension_installer');
+    $this->document->setTitle($this->language->get('heading_title'));
+
+    $data = array();
+
+    $data['token_string'] = $this->getTokenString();
+
+    $data['heading_title'] = $this->language->get('heading_title');
+    $data['breadcrumbs'] = array();
+    $data['breadcrumbs'][] = array(
+      'text' => $this->language->get('text_home'),
+      'href' => $this->url->link(
+        'common/dashboard',
+        $data['token_string'],
+        true)
+    );
+    $data['breadcrumbs'][] = array(
+      'text' => $this->language->get('heading_title'),
+      'href' => $this->url->link(
+        'extension/module/facebookadsextension_installer',
+        $data['token_string'],
+        true)
+    );
+    // this is the actual link for the Facebook Ads Extension
+    // that we will be linking from this module
+    $data['fae_link'] = $this->url->link(
+        'extension/facebookadsextension',
+        $data['token_string'],
+        true);
+
+    $data['header'] = $this->load->controller('common/header');
+    $data['column_left'] = $this->load->controller('common/column_left');
+    $data['footer'] = $this->load->controller('common/footer');
+
+    $this->response->setOutput(
+      $this->load->view(
+        'extension/module/facebookadsextension_installer' . $template_file_extension,
+        $data));
+  }
+
+  private function getTokenString() {
+    return 'user_token=' . $this->getToken() . '&token=' . $this->getToken();
+  }
+
+  private function getToken() {
+    return (isset($this->session->data['user_token']))
+      ? $this->session->data['user_token']
+      : $this->session->data['token'];
+  }
 }

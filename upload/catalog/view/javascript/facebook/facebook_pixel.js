@@ -54,6 +54,11 @@
       );
       quantity = isNaN(quantity) || quantity <= 0 ? 1 : quantity;
       var productID = $('#fbProductID').val();
+      if (typeof productID === 'undefined') {
+        // unable to locate plugin's fbProductID
+        // fall back to product_id available in opencart's default template
+        productID = $('input[name=product_id]').val()
+      }
       fireProductInfoEvent('AddToCart', productID, quantity);
     });
 

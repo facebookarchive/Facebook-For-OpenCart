@@ -168,6 +168,60 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
     $this->faeLog->write('PHP version = ' . PHP_VERSION);
   }
 
+  private function logFAESettingsAvailability() {
+    $this->load->model('extension/facebooksetting');
+    $facebook_setting = $this->model_extension_facebooksetting
+      ->getSettings();
+    $this->faeLog->write(
+      'Verifying Availability of Facebook Ads Extension Settings Availability');
+    $this->faeLog->write('FAE Setting ID = ' .
+      $this->isFAESettingAvailableAsString(
+        $facebook_setting,
+        FacebookCommonUtils::FACEBOOK_DIA_SETTING_ID));
+    $this->faeLog->write('Pixel ID = ' .
+      $this->isFAESettingAvailableAsString(
+        $facebook_setting,
+        FacebookCommonUtils::FACEBOOK_PIXEL_ID));
+    $this->faeLog->write('Pixel use PII = ' .
+      $this->isFAESettingAvailableAsString(
+        $facebook_setting,
+        FacebookCommonUtils::FACEBOOK_PIXEL_USE_PII));
+    $this->faeLog->write('Catalog ID = ' .
+      $this->isFAESettingAvailableAsString(
+        $facebook_setting,
+        FacebookCommonUtils::FACEBOOK_CATALOG_ID));
+    $this->faeLog->write('Page ID = ' .
+      $this->isFAESettingAvailableAsString(
+        $facebook_setting,
+        FacebookCommonUtils::FACEBOOK_PAGE_ID));
+    $this->faeLog->write('Page Token = ' .
+      $this->isFAESettingAvailableAsString(
+        $facebook_setting,
+        FacebookCommonUtils::FACEBOOK_PAGE_TOKEN));
+    $this->faeLog->write('Feed ID = ' .
+      $this->isFAESettingAvailableAsString(
+        $facebook_setting,
+        FacebookCommonUtils::FACEBOOK_FEED_ID));
+    $this->faeLog->write('Upload ID = ' .
+      $this->isFAESettingAvailableAsString(
+        $facebook_setting,
+        FacebookCommonUtils::FACEBOOK_UPLOAD_ID));
+    $this->faeLog->write('Upload end time = ' .
+      $this->isFAESettingAvailableAsString(
+        $facebook_setting,
+        FacebookCommonUtils::FACEBOOK_UPLOAD_END_TIME));
+    $this->faeLog->write('Messenger plugin = ' .
+      $this->isFAESettingAvailableAsString(
+        $facebook_setting,
+        FacebookCommonUtils::FACEBOOK_MESSENGER));
+  }
+
+  private function isFAESettingAvailableAsString(
+    $facebook_setting,
+    $fae_setting) {
+    return (isset($facebook_setting[$fae_setting])) ? 'true' : 'false';
+  }
+
   public function validate() {
     $php_version_error = $this->validatePHPVersion();
     if (sizeof($php_version_error)) {
@@ -336,6 +390,9 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
       // logs the FAE, opencart and php versions for debugging
       $this->logVersionsTologFile();
 
+      // logs the availability of each FAE settings for debugging
+      $this->logFAESettingsAvailability();
+
       $this->response->addheader('Pragma: public');
       $this->response->addheader('Expires: 0');
       $this->response->addheader('Content-Description: File Transfer');
@@ -416,6 +473,9 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
       $this->response->addHeader('Content-Type: application/json');
       $this->response->setOutput(json_encode($result));
     } catch (Exception $e) {
+      $this->faeLog->write(
+        'Error with getting the initial product sync status '
+        . $e->getMessage());
       header("HTTP/1.1 400 " . $e->getMessage());
     }
   }
@@ -436,41 +496,43 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
     // these are not the core opencart files modified through install.xml
     return array(
 // system auto generated, DO NOT MODIFY
-      DIR_APPLICATION . '/controller/extension/facebookadsextension.php',
-      DIR_APPLICATION . '/controller/extension/facebookproduct.php',
-      DIR_APPLICATION . '/controller/extension/facebookproductfeed.php',
-      DIR_APPLICATION . '/controller/extension/facebookproducttrait.php',
-      DIR_APPLICATION . '/controller/extension/module/facebookadsextension_installer.php',
-      DIR_APPLICATION . '/language/en-gb/extension/facebookadsextension.php',
-      DIR_APPLICATION . '/language/en-gb/extension/module/facebookadsextension_installer.php',
-      DIR_APPLICATION . '/language/english/extension/facebookadsextension.php',
-      DIR_APPLICATION . '/language/english/extension/module/facebookadsextension_installer.php',
-      DIR_APPLICATION . '/model/extension/facebookproduct.php',
-      DIR_APPLICATION . '/model/extension/facebooksetting.php',
-      DIR_APPLICATION . '/view/image/facebook/background.png',
-      DIR_APPLICATION . '/view/image/facebook/buttonbg.png',
-      DIR_APPLICATION . '/view/image/facebook/fbicons.png',
-      DIR_APPLICATION . '/view/image/facebook/loadingicon.gif',
-      DIR_APPLICATION . '/view/javascript/facebook/dia.js',
-      DIR_APPLICATION . '/view/stylesheet/facebook/dia.css',
-      DIR_APPLICATION . '/view/stylesheet/facebook/feed.css',
-      DIR_APPLICATION . '/view/stylesheet/facebook/pixel.css',
-      DIR_APPLICATION . '/view/template/extension/facebookadsextension.tpl',
-      DIR_APPLICATION . '/view/template/extension/facebookadsextension.twig',
-      DIR_SYSTEM . '/library/facebookcommonutils.php',
-      DIR_SYSTEM . '/library/facebookgraphapi.php',
-      DIR_SYSTEM . '/library/facebookgraphapierror.php',
-      DIR_SYSTEM . '/library/facebookproductapiformatter.php',
-      DIR_SYSTEM . '/library/facebookproductfeedformatter.php',
-      DIR_SYSTEM . '/library/facebookproductformatter.php',
-      DIR_SYSTEM . '/library/facebooksampleproductfeedformatter.php',
-      DIR_SYSTEM . '/library/facebooktax.php',
-      DIR_CATALOG . '/controller/extension/facebookeventparameters.php',
-      DIR_CATALOG . '/controller/extension/facebookpageshopcheckoutredirect.php',
-      DIR_CATALOG . '/controller/extension/facebookproduct.php',
-      DIR_CATALOG . '/view/javascript/facebook/cookieconsent.min.js',
-      DIR_CATALOG . '/view/javascript/facebook/facebook_pixel.js',
-      DIR_CATALOG . '/view/theme/css/facebook/cookieconsent.min.css',
+      DIR_APPLICATION . '/../admin/controller/extension/facebookadsextension.php',
+      DIR_APPLICATION . '/../admin/controller/extension/facebookproduct.php',
+      DIR_APPLICATION . '/../admin/controller/extension/facebookproductfeed.php',
+      DIR_APPLICATION . '/../admin/controller/extension/facebookproducttrait.php',
+      DIR_APPLICATION . '/../admin/controller/extension/module/facebookadsextension_installer.php',
+      DIR_APPLICATION . '/../admin/language/en-gb/extension/facebookadsextension.php',
+      DIR_APPLICATION . '/../admin/language/en-gb/extension/module/facebookadsextension_installer.php',
+      DIR_APPLICATION . '/../admin/language/english/extension/facebookadsextension.php',
+      DIR_APPLICATION . '/../admin/language/english/extension/module/facebookadsextension_installer.php',
+      DIR_APPLICATION . '/../admin/model/extension/facebookproduct.php',
+      DIR_APPLICATION . '/../admin/model/extension/facebooksetting.php',
+      DIR_APPLICATION . '/../admin/view/image/facebook/background.png',
+      DIR_APPLICATION . '/../admin/view/image/facebook/buttonbg.png',
+      DIR_APPLICATION . '/../admin/view/image/facebook/fbicons.png',
+      DIR_APPLICATION . '/../admin/view/image/facebook/loadingicon.gif',
+      DIR_APPLICATION . '/../admin/view/javascript/facebook/dia.js',
+      DIR_APPLICATION . '/../admin/view/stylesheet/facebook/dia.css',
+      DIR_APPLICATION . '/../admin/view/stylesheet/facebook/feed.css',
+      DIR_APPLICATION . '/../admin/view/stylesheet/facebook/pixel.css',
+      DIR_APPLICATION . '/../admin/view/template/extension/facebookadsextension.tpl',
+      DIR_APPLICATION . '/../admin/view/template/extension/facebookadsextension.twig',
+      DIR_APPLICATION . '/../admin/view/template/extension/module/facebookadsextension_installer.tpl',
+      DIR_APPLICATION . '/../admin/view/template/extension/module/facebookadsextension_installer.twig',
+      DIR_APPLICATION . '/../system/library/facebookcommonutils.php',
+      DIR_APPLICATION . '/../system/library/facebookgraphapi.php',
+      DIR_APPLICATION . '/../system/library/facebookgraphapierror.php',
+      DIR_APPLICATION . '/../system/library/facebookproductapiformatter.php',
+      DIR_APPLICATION . '/../system/library/facebookproductfeedformatter.php',
+      DIR_APPLICATION . '/../system/library/facebookproductformatter.php',
+      DIR_APPLICATION . '/../system/library/facebooksampleproductfeedformatter.php',
+      DIR_APPLICATION . '/../system/library/facebooktax.php',
+      DIR_APPLICATION . '/../catalog/controller/extension/facebookeventparameters.php',
+      DIR_APPLICATION . '/../catalog/controller/extension/facebookpageshopcheckoutredirect.php',
+      DIR_APPLICATION . '/../catalog/controller/extension/facebookproduct.php',
+      DIR_APPLICATION . '/../catalog/view/javascript/facebook/cookieconsent.min.js',
+      DIR_APPLICATION . '/../catalog/view/javascript/facebook/facebook_pixel.js',
+      DIR_APPLICATION . '/../catalog/view/theme/css/facebook/cookieconsent.min.css',
 // system auto generated, DO NOT MODIFY
       null
     );
@@ -480,7 +542,7 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
     // get omitted folder check in different version to allow backward compatibility
     $version_dir = array(
       '2.0.3.1' => array(
-        DIR_APPLICATION . '/controller/extension/module/facebookadsextension_installer.php'
+        DIR_APPLICATION . '/../admin/controller/extension/module/facebookadsextension_installer.php'
       )
     );
 
@@ -521,13 +583,12 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
           $folder = $this->dirnameRecursive($required_file, 2);
         }
 
-
         // loops through the entire folder tree to detect which
         // folders are not accessible
         do {
           // keeps if this is a first occurrence of the folder
           if (!in_array($folder, $folders_with_missing_files)) {
-            $folders_with_missing_files[] = $folder;
+            $folders_with_missing_files[] = realpath($folder);
           }
 
           if (file_exists($folder)) {
@@ -647,8 +708,8 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
       });
     $data['text_not_found'] = $data['text_not_found'] .
       sprintf('</ol><p style="color:red;"><strong>Please uninstall and reinstall ' .
-        'the Facebook Ads Extension after correcting the above %d step%s' .
-        '.</strong></p>',
+        'the Facebook Ads Extension after correcting the above %d step%s<br/>' .
+        'Click <a href="https://github.com/facebookincubator/Facebook-For-OpenCart/blob/master/INSTALL_GUIDE.md" target="_blank">here</a> for details on the plugin installation.</strong></p>',
         sizeof($error_messages),
         (sizeof($error_messages) > 1 ? 's' : ''));
 

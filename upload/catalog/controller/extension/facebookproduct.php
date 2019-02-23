@@ -23,27 +23,39 @@ class ControllerExtensionFacebookProduct extends Controller {
   }
 
   public function getProductInfoForFacebookPixel() {
-    $this->loadLibrariesForFacebookCatalog();
-    $json = array();
-    $product_id = $this->request->get['product_id'];
-    if ($product_id) {
-      $product_info = $this->model_catalog_product->getProduct($product_id);
-      if ($product_info) {
-        $event_name = $this->request->get['event_name'];
-        $product_info['quantity'] = isset($this->request->get['quantity'])
-          ? $this->request->get['quantity']
-          : 1;
-        $params = new DAPixelConfigParams(array(
-          'eventName' => $event_name,
-          'products' => array($product_info),
-          'currency' => $this->currency,
-          'currencyCode' => $this->session->data['currency'],
-          'hasQuantity' => true));
-        $facebook_pixel_params =
-          $this->facebookcommonutils->getDAPixelParamsForProducts($params);
-        $json['facebook_pixel_event_params_FAE'] = $facebook_pixel_params;
+    $event_name = (isset($this->request->get['event_name']))
+      ? $this->request->get['event_name']
+      : '';
+
+    // creating a default facebook_pixel_params with just the event_name
+    // and empty parameters
+    // this is to guard against cases
+    // where the product is not found
+    // or the product_id is not available
+    $facebook_pixel_params = array('event_name' => $event_name);
+
+    if (isset($this->request->get['product_id'])) {
+      $product_id = $this->request->get['product_id'];
+      if ($product_id) {
+        $this->loadLibrariesForFacebookCatalog();
+        $product_info = $this->model_catalog_product->getProduct($product_id);
+        if ($product_info) {
+          $product_info['quantity'] = isset($this->request->get['quantity'])
+            ? $this->request->get['quantity']
+            : 1;
+          // only pass in the parameters if able to retrieve the product
+          $params = new DAPixelConfigParams(array(
+            'eventName' => $event_name,
+            'products' => array($product_info),
+            'currency' => $this->currency,
+            'currencyCode' => $this->session->data['currency'],
+            'hasQuantity' => true));
+          $facebook_pixel_params =
+            $this->facebookcommonutils->getDAPixelParamsForProducts($params);
+        }
       }
     }
+    $json = array('facebook_pixel_event_params_FAE' => $facebook_pixel_params);
     $this->response->addHeader('Content-Type: application/json');
     $this->response->setOutput(json_encode($json));
   }

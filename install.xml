@@ -9,7 +9,7 @@
 <modification>
 	<name>Facebook Ads Extension</name>
 	<code>facebook_ads_extension</code>
-	<version>2.1.3</version>
+	<version>2.1.4</version>
 	<author>Facebook</author>
 	<link></link>
 
@@ -50,6 +50,10 @@
           $operation = ', dashboard module';
 
           // validates the plugin
+          if (!is_file(DIR_APPLICATION . '/controller/extension/facebookadsextension.php')) {
+            throw new Exception($this->language->get(
+              'text_warning_facebook_missing_facebookadsextension'));
+          }
           $all_error_messages = $this->load->controller(
             'extension/facebookadsextension/validate');
           if (sizeof($all_error_messages) > 0) {
@@ -160,6 +164,10 @@
           $operation = ', access product module';
 
           // validates the plugin
+          if (!$this->validateFacebookAdsExtensionFilePresent()) {
+            throw new Exception($this->language->get(
+              'text_warning_facebook_missing_facebookadsextension'));
+          }
           $all_error_messages = $this->load->controller(
             'extension/facebookadsextension/validate');
           if (sizeof($all_error_messages) > 0) {
@@ -197,6 +205,18 @@
       <search><![CDATA[$this->model_catalog_product->addProduct($this->request->post);]]></search>
       <add position="after"><![CDATA[
         try {
+          // validates the plugin
+          if (!$this->validateFacebookAdsExtensionFilePresent()) {
+            throw new Exception($this->language->get(
+              'text_warning_facebook_missing_facebookadsextension'));
+          }
+          $all_error_messages = $this->load->controller(
+            'extension/facebookadsextension/validate');
+          if (sizeof($all_error_messages) > 0) {
+            throw new Exception($this->language->get(
+              'text_warning_facebook_fae_install_problem'));
+          }
+
           $product_id = $this->request->post['facebook_id_of_new_product'];
           $result = $this->load->controller(
             'extension/facebookproduct/syncProductForProductId',
@@ -220,6 +240,18 @@
       <search><![CDATA[$this->model_catalog_product->editProduct($this->request->get['product_id'], $this->request->post);]]></search>
       <add position="after"><![CDATA[
         try {
+          // validates the plugin
+          if (!$this->validateFacebookAdsExtensionFilePresent()) {
+            throw new Exception($this->language->get(
+              'text_warning_facebook_missing_facebookadsextension'));
+          }
+          $all_error_messages = $this->load->controller(
+            'extension/facebookadsextension/validate');
+          if (sizeof($all_error_messages) > 0) {
+            throw new Exception($this->language->get(
+              'text_warning_facebook_fae_install_problem'));
+          }
+
           $result = $this->load->controller(
             'extension/facebookproduct/syncProductForProductId',
             $this->request->get['product_id']);
@@ -242,6 +274,18 @@
       <search><![CDATA[if (isset($this->request->post['selected']) && $this->validateDelete()) {]]></search>
       <add position="after"><![CDATA[
         try {
+          // validates the plugin
+          if (!$this->validateFacebookAdsExtensionFilePresent()) {
+            throw new Exception($this->language->get(
+              'text_warning_facebook_missing_facebookadsextension'));
+          }
+          $all_error_messages = $this->load->controller(
+            'extension/facebookadsextension/validate');
+          if (sizeof($all_error_messages) > 0) {
+            throw new Exception($this->language->get(
+              'text_warning_facebook_fae_install_problem'));
+          }
+
           $result = $this->load->controller(
             'extension/facebookproduct/deleteProductsForProductId',
             $this->request->post['selected']);
@@ -298,6 +342,15 @@
         }
       ]]></add>
     </operation> -->
+
+    <operation>
+      <search><![CDATA[public function index() {]]></search>
+      <add position="before"><![CDATA[
+        private function validateFacebookAdsExtensionFilePresent() {
+          return is_file(DIR_APPLICATION . '/controller/extension/facebookadsextension.php');
+        }
+      ]]></add>
+    </operation>
   </file>
 
   <file path="admin/view/template/catalog/product_list.tpl">
@@ -331,6 +384,7 @@
         $_['text_warning_facebook_delete']           = 'Warning: Encountered problem deleting product(s) to Facebook. Check the error log file for more details.';
         $_['text_warning_facebook_access_token_problem'] = 'Warning: There is a problem with your Facebook access token. Please go to Facebook Ads Extension to refresh the access token.';
         $_['text_warning_facebook_fae_install_problem'] = 'Warning: There is a problem with your Facebook Ads Extension installation. Please go to Facebook Ads Extension to view more details.';
+        $_['text_warning_facebook_missing_facebookadsextension'] = 'Warning: There is a problem with your Facebook Ads Extension installation. We are unable to locate the admin/controller/extension/facebookadsextension.php file on your webserver. Please ensure that you have given read+write+execute permission to the admin/controller folder and reinstall the plugin again. Click <a href="https://github.com/facebookincubator/Facebook-For-OpenCart/blob/master/INSTALL_GUIDE.md" target="_blank">here</a> for details on the plugin installation.';
       ]]></add>
     </operation>
   </file>
@@ -340,12 +394,33 @@
     <operation>
       <search><![CDATA[$this->model_checkout_order->addOrderHistory($json['order_id'], $order_status_id);]]></search>
       <add position="after"><![CDATA[
-        $products = $this->cart->getProducts();
-        if ($products && sizeof($products)) {
-          $this->facebookcommonutils = new FacebookCommonUtils();
-          $this->facebookcommonutils->updateProductAvailability(
-            $this->registry,
-            $products);
+        try {
+          // validates the plugin
+          $facebookadsextensionFilename =
+            DIR_APPLICATION . '../admin/controller/extension/facebookadsextension.php';
+          if (!is_file($facebookadsextensionFilename)) {
+            throw new Exception($this->language->get(
+              'text_warning_facebook_missing_facebookadsextension'));
+          }
+
+          require_once $facebookadsextensionFilename;
+          $facebookadsextensionController =
+            new ControllerExtensionFacebookAdsExtension($this->registry);
+          $all_error_messages = $facebookadsextensionController->validate();
+          if (sizeof($all_error_messages) > 0) {
+            throw new Exception($this->language->get(
+              'text_warning_facebook_fae_install_problem'));
+          }
+
+          $products = $this->cart->getProducts();
+          if ($products && sizeof($products)) {
+            $this->facebookcommonutils = new FacebookCommonUtils();
+            $this->facebookcommonutils->updateProductAvailability(
+              $this->registry,
+              $products);
+          }
+        } catch (Exception $e) {
+          error_log($e->getMessage());
         }
       ]]></add>
     </operation>
@@ -368,13 +443,34 @@
     <operation>
       <search><![CDATA[$this->model_checkout_order->addOrderHistory($order_id, $order_status_id);]]></search>
       <add position="after"><![CDATA[
-        $products_post_edit = $this->cart->getProducts();
-        $this->facebookcommonutils = new FacebookCommonUtils();
-        $products_for_availabilty_update =
-          array_merge($products_pre_edit, $products_post_edit);
-        $this->facebookcommonutils->updateProductAvailability(
-          $this->registry,
-          $products_for_availabilty_update);
+        try {
+          // validates the plugin
+          $facebookadsextensionFilename =
+            DIR_APPLICATION . '../admin/controller/extension/facebookadsextension.php';
+          if (!is_file($facebookadsextensionFilename)) {
+            throw new Exception($this->language->get(
+              'text_warning_facebook_missing_facebookadsextension'));
+          }
+
+          require_once $facebookadsextensionFilename;
+          $facebookadsextensionController =
+            new ControllerExtensionFacebookAdsExtension($this->registry);
+          $all_error_messages = $facebookadsextensionController->validate();
+          if (sizeof($all_error_messages) > 0) {
+            throw new Exception($this->language->get(
+              'text_warning_facebook_fae_install_problem'));
+          }
+
+          $products_post_edit = $this->cart->getProducts();
+          $this->facebookcommonutils = new FacebookCommonUtils();
+          $products_for_availabilty_update =
+            array_merge($products_pre_edit, $products_post_edit);
+          $this->facebookcommonutils->updateProductAvailability(
+            $this->registry,
+            $products_for_availabilty_update);
+        } catch (Exception $e) {
+          error_log($e->getMessage());
+        }
       ]]></add>
     </operation>
   </file>
@@ -558,7 +654,7 @@
   <file path="catalog/view/theme/*/template/product/product.tpl">
     <operation>
       <search><![CDATA[<?php echo $footer; ?>]]></search>
-      <add position="after"><![CDATA[
+      <add position="before"><![CDATA[
         <input type='hidden' id='fbProductID' value='<?= $product_id ?>' />
       ]]></add>
     </operation>
@@ -570,13 +666,35 @@
     <operation>
       <search><![CDATA[public function index()]]></search>
       <add position="after"><![CDATA[
-        $this->facebookcommonutils = new FacebookCommonUtils();
-        $products = $this->cart->getProducts();
-        if (sizeof($products)) {
-          // update the product availability on Facebook
-          $this->facebookcommonutils->updateProductAvailability(
-            $this->registry,
-            $products);
+        $this->load->language('checkout/success');
+        try {
+          // validates the plugin
+          $facebookadsextensionFilename =
+            DIR_APPLICATION . '../admin/controller/extension/facebookadsextension.php';
+          if (!is_file($facebookadsextensionFilename)) {
+            throw new Exception($this->language->get(
+              'text_warning_facebook_missing_facebookadsextension'));
+          }
+
+          require_once $facebookadsextensionFilename;
+          $facebookadsextensionController =
+            new ControllerExtensionFacebookAdsExtension($this->registry);
+          $all_error_messages = $facebookadsextensionController->validate();
+          if (sizeof($all_error_messages) > 0) {
+            throw new Exception($this->language->get(
+              'text_warning_facebook_fae_install_problem'));
+          }
+
+          $this->facebookcommonutils = new FacebookCommonUtils();
+          $products = $this->cart->getProducts();
+          if (sizeof($products)) {
+            // update the product availability on Facebook
+            $this->facebookcommonutils->updateProductAvailability(
+              $this->registry,
+              $products);
+          }
+        } catch (Exception $e) {
+          error_log($e->getMessage());
         }
       ]]></add>
     </operation>
@@ -722,7 +840,7 @@
   <file path="catalog/view/theme/*/template/product/product.twig">
     <operation>
       <search><![CDATA[{{ footer }}]]></search>
-      <add position="after"><![CDATA[
+      <add position="before"><![CDATA[
         <input type='hidden' id='fbProductID' value='{{ product_id }}' />
       ]]></add>
     </operation>
@@ -777,51 +895,7 @@
         $_['text_warning_facebook_delete']           = 'Warning: Encountered problem deleting product(s) to Facebook. Check the error log file for more details.';
         $_['text_warning_facebook_access_token_problem'] = 'Warning: There is a problem with your Facebook access token. Please go to Facebook Ads Extension to refresh the access token.';
         $_['text_warning_facebook_fae_install_problem'] = 'Warning: There is a problem with your Facebook Ads Extension installation. Please go to Facebook Ads Extension to view more details.';
-      ]]></add>
-    </operation>
-  </file>
-
-  <file path="system/config/catalog.php">
-    <operation>
-      <!-- this is to cater for OpenCart v2.2.0.0 and higher -->
-      <search><![CDATA[$_['action_event'] = array(]]></search>
-      <add position="before"><![CDATA[
-        // added in defensive checks to ensure the
-        // controller class is available and accessible
-        if (is_file(
-          DIR_APPLICATION . '/controller/extension/facebookpageshopcheckoutredirect.php')) {
-          array_push($_['action_pre_action'], 'extension/facebookpageshopcheckoutredirect');
-        }
-        if (is_file(
-          DIR_APPLICATION . '/controller/extension/facebookeventparameters.php')) {
-          // preparing the data for pixel events to be fired
-          array_push($_['action_pre_action'], 'extension/facebookeventparameters');
-        }
-      ]]></add>
-    </operation>
-  </file>
-
-  <file path="catalog/controller/common/maintenance.php">
-    <operation>
-      <!-- this is to cater for versions below OpenCart v2.2.0.0 -->
-      <search><![CDATA[public function index() {]]></search>
-      <add position="after"><![CDATA[
-        // added in defensive checks to ensure the
-        // controller class is available and accessible
-        if (is_file(
-          DIR_APPLICATION . '/controller/extension/facebookpageshopcheckoutredirect.php')) {
-          $target = 'facebook/facebookproduct/directcheckout';
-          if (isset($this->request->get['route'])
-            && substr((string)$this->request->get['route'], 0, strlen($target)) == $target) {
-            return new Action('extension/facebookpageshopcheckoutredirect');
-          }
-        }
-
-        if (is_file(
-          DIR_APPLICATION . '/controller/extension/facebookeventparameters.php')) {
-          // preparing the data for pixel events to be fired
-          $this->load->controller('extension/facebookeventparameters');
-        }
+        $_['text_warning_facebook_missing_facebookadsextension'] = 'Warning: There is a problem with your Facebook Ads Extension installation. We are unable to locate the admin/controller/extension/facebookadsextension.php file on your webserver. Please ensure that you have given read+write+execute permission to the admin/controller folder and reinstall the plugin again. Click <a href="https://github.com/facebookincubator/Facebook-For-OpenCart/blob/master/INSTALL_GUIDE.md" target="_blank">here</a> for details on the plugin installation.';
       ]]></add>
     </operation>
   </file>
@@ -848,7 +922,7 @@
              var js, fjs = d.getElementsByTagName(s)[0];
              if (d.getElementById(id)) {return;}
              js = d.createElement(s); js.id = id;
-             js.src = "https://connect.facebook.net/en_US/sdk.js";
+             js.src = "https://connect.facebook.net/en_US/sdk/xfbml.customerchat.js";
              fjs.parentNode.insertBefore(js, fjs);
            }(document, 'script', 'facebook-jssdk'));
         </script>
@@ -898,7 +972,7 @@
              var js, fjs = d.getElementsByTagName(s)[0];
              if (d.getElementById(id)) {return;}
              js = d.createElement(s); js.id = id;
-             js.src = "https://connect.facebook.net/en_US/sdk.js";
+             js.src = "https://connect.facebook.net/en_US/sdk/xfbml.customerchat.js";
              fjs.parentNode.insertBefore(js, fjs);
            }(document, 'script', 'facebook-jssdk'));
         </script>
@@ -913,29 +987,92 @@
   </file>
 
 
-  <file path="catalog/controller/common/seo_url.php">
+  <file path="system/engine/router.php">
     <operation>
-      <!-- this is to cater for versions below OpenCart v2.2.0.0 -->
-      <search><![CDATA[if (!isset($this->request->get['route'])) {]]></search>
+      <!-- helper method to run actions required for Facebook plugin -->
+      <search><![CDATA[public function __construct($registry) {]]></search>
       <add position="before"><![CDATA[
-        // added in defensive checks to ensure the
-        // controller class is available and accessible
-        if (is_file(
-          DIR_APPLICATION . '/controller/extension/facebookeventparameters.php')) {
-          if (!isset($this->request->get['route'])) {
-            if (isset($this->request->get['product_id'])) {
-              $this->request->get['route'] = 'product/product';
-            } elseif (isset($this->request->get['path'])) {
-              $this->request->get['route'] = 'product/category';
-            } elseif (isset($this->request->get['manufacturer_id'])) {
-              $this->request->get['route'] = 'product/manufacturer/info';
-            } elseif (isset($this->request->get['information_id'])) {
-              $this->request->get['route'] = 'information/information';
+        private function runAction($actionName) {
+          // added in defensive checks to ensure the
+          // controller class is available and accessible
+          try {
+            if (is_file(
+              DIR_APPLICATION . '/controller/' . $actionName . '.php')) {
+              $facebookAction = new Action($actionName);
+              $facebookAction->execute($this->registry);
             }
-            // preparing the data for pixel events to be fired
-            $this->load->controller('extension/facebookeventparameters');
+          } catch (Exception $e) {
+            error_log($e->getMessage());
           }
         }
+      ]]></add>
+    </operation>
+    
+    <operation>
+      <!-- this is to cater for OpenCart v3.x -->
+      <search><![CDATA[while ($action instanceof Action) {]]></search>
+      <add position="before"><![CDATA[
+        // redirecting the direct checkout URL to product details page
+        $this->runAction('extension/facebookpageshopcheckoutredirect');
+
+        // building up the information for pixel firing
+        $this->runAction('extension/facebookeventparameters');
+      ]]></add>
+    </operation>
+  </file>
+
+  <file path="system/engine/front.php">
+    <operation>
+      <!-- helper method to run actions required for Facebook plugin -->
+      <search><![CDATA[public function __construct($registry) {]]></search>
+      <add position="before"><![CDATA[
+        private function runAction($actionName) {
+          // added in defensive checks to ensure the
+          // controller class is available and accessible
+          try {
+            if (is_file(
+              DIR_APPLICATION . '/controller/' . $actionName . '.php')) {
+              $facebookAction = new Action($actionName);
+              $facebookAction->execute($this->registry);
+            }
+          } catch (Exception $e) {
+            error_log($e->getMessage());
+          }
+        }
+      ]]></add>
+    </operation>
+
+    <operation>
+      <!-- this is to cater for OpenCart v2.2.0.0 to v2.3.0.2 -->
+      <search><![CDATA[while ($action instanceof Action) {]]></search>
+      <add position="before"><![CDATA[
+        // redirecting the direct checkout URL to product details page
+        $this->runAction('extension/facebookpageshopcheckoutredirect');
+
+        // building up the information for pixel firing
+        $this->runAction('extension/facebookeventparameters');
+      ]]></add>
+    </operation>
+
+    <operation>
+      <!-- this is to cater for OpenCart v2.0.3.1 to v2.1.0.2  -->
+      <search><![CDATA[while ($action) {]]></search>
+      <add position="before"><![CDATA[
+        // redirecting the direct checkout URL to product details page
+        $this->runAction('extension/facebookpageshopcheckoutredirect');
+
+        // building up the information for pixel firing
+        $this->runAction('extension/facebookeventparameters');
+      ]]></add>
+    </operation>
+  </file>
+
+  <file path="catalog/language/*/checkout/success.php">
+    <operation>
+      <search><![CDATA[<?php]]></search>
+      <add position="after"><![CDATA[
+        $_['text_warning_facebook_fae_install_problem'] = 'Warning: There is a problem with your Facebook Ads Extension installation. Please go to Facebook Ads Extension to view more details.';
+        $_['text_warning_facebook_missing_facebookadsextension'] = 'Warning: There is a problem with your Facebook Ads Extension installation. We are unable to locate the admin/controller/extension/facebookadsextension.php file on your webserver. Please ensure that you have given read+write+execute permission to the admin/controller folder and reinstall the plugin again.';
       ]]></add>
     </operation>
   </file>

@@ -190,6 +190,7 @@ trait ControllerExtensionFacebookProductTrait {
     } catch (Exception $e) {
       // not using the error_log as the access token is not valid,
       // hence cant log to fb endpoint
+      $this->faeLog->write("Invalid access token when querying FB page");
       throw new Exception(
         FacebookCommonUtils::ACCESS_TOKEN_INVALID_EXCEPTION_MESSAGE);
     }
@@ -277,6 +278,13 @@ trait ControllerExtensionFacebookProductTrait {
     $result = $this->facebookgraphapi->getFacebookPageId(
       $page_id,
       $facebook_page_token);
+    if (!isset($result['id'])) {
+      // logs the response if the page id is not returned
+      $this->faeLog->write(
+        "Response from FB page query does not contain id result "
+        . json_encode($result));
+      throw new Exception();
+    }
     return (isset($result['id']));
   }
 }
