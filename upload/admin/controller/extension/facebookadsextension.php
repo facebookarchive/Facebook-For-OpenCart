@@ -214,6 +214,18 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
       $this->isFAESettingAvailableAsString(
         $facebook_setting,
         FacebookCommonUtils::FACEBOOK_MESSENGER));
+    $this->faeLog->write('Messenger plugin, greeting text code customization = ' .
+      $this->isFAESettingAvailableAsString(
+        $facebook_setting,
+        FacebookCommonUtils::FACEBOOK_CUSTOMIZATION_GREETING_TEXT_CODE));
+    $this->faeLog->write('Messenger plugin, locale customization = ' .
+      $this->isFAESettingAvailableAsString(
+        $facebook_setting,
+        FacebookCommonUtils::FACEBOOK_CUSTOMIZATION_LOCALE));
+    $this->faeLog->write('Messenger plugin, theme color code customization = ' .
+      $this->isFAESettingAvailableAsString(
+        $facebook_setting,
+        FacebookCommonUtils::FACEBOOK_CUSTOMIZATION_THEME_COLOR_CODE));
   }
 
   private function isFAESettingAvailableAsString(
@@ -343,6 +355,23 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
     if (isset($this->request->post[FacebookCommonUtils::FACEBOOK_ENABLE_COOKIE_BAR])) {
       $data[FacebookCommonUtils::FACEBOOK_ENABLE_COOKIE_BAR] =
         $this->request->post[FacebookCommonUtils::FACEBOOK_ENABLE_COOKIE_BAR];
+    }
+
+    // handle the customizations from messenger chat plugin
+    if (isset($this->request->post[FacebookCommonUtils::FACEBOOK_CUSTOMIZATION])) {
+      $customization = $this->request->post[FacebookCommonUtils::FACEBOOK_CUSTOMIZATION];
+      if (isset($customization['greetingTextCode'])) {
+        $data[FacebookCommonUtils::FACEBOOK_CUSTOMIZATION_GREETING_TEXT_CODE] =
+          $customization['greetingTextCode'];
+      }
+      if (isset($customization['locale'])) {
+        $data[FacebookCommonUtils::FACEBOOK_CUSTOMIZATION_LOCALE] =
+          $customization['locale'];
+      }
+      if (isset($customization['themeColorCode'])) {
+        $data[FacebookCommonUtils::FACEBOOK_CUSTOMIZATION_THEME_COLOR_CODE] =
+          $customization['themeColorCode'];
+      }
     }
 
     $this->faeLog->write('Updating FAE settings - ' .

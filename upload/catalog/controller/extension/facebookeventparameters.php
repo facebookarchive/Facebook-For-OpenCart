@@ -387,7 +387,8 @@ class ControllerExtensionFacebookEventParameters extends Controller {
         'order'              => $order,
         'start'              => ($page - 1) * $limit,
         'limit'              => $limit)
-      : array();
+      // use a non-existing PK of -1 to indicate invalid category id
+      : array('filter_category_id' => -1);
   }
 
   private function getViewCategoryEventParameters() {
@@ -397,7 +398,8 @@ class ControllerExtensionFacebookEventParameters extends Controller {
       $filter_data['filter_category_id']);
 
     if (!$category_info) {
-      return null;
+      // unable to find the category, just return ViewCategory event
+      return array('event_name' => 'ViewCategory');
     }
 
     $this->load->model('catalog/product');
@@ -476,7 +478,8 @@ class ControllerExtensionFacebookEventParameters extends Controller {
         'order'                  => $order,
         'start'                  => ($page - 1) * $limit,
         'limit'                  => $limit)
-      : array();
+      // use a non-existing PK of -1 to indicate invalid manufacturer id
+      : array('filter_manufacturer_id' => -1);
   }
 
   private function getViewBrandEventParameters() {
@@ -486,7 +489,8 @@ class ControllerExtensionFacebookEventParameters extends Controller {
       $filter_data['filter_manufacturer_id']);
 
     if (!$manufacturer_info) {
-      return null;
+      // unable to find the manufacturer, just return ViewBrand event
+      return array('event_name' => 'ViewBrand');
     }
 
     $this->load->model('catalog/product');

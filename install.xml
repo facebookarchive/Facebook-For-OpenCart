@@ -9,7 +9,7 @@
 <modification>
 	<name>Facebook Ads Extension</name>
 	<code>facebook_ads_extension</code>
-	<version>2.1.4</version>
+	<version>2.1.5</version>
 	<author>Facebook</author>
 	<link></link>
 
@@ -922,7 +922,7 @@
              var js, fjs = d.getElementsByTagName(s)[0];
              if (d.getElementById(id)) {return;}
              js = d.createElement(s); js.id = id;
-             js.src = "https://connect.facebook.net/en_US/sdk/xfbml.customerchat.js";
+             js.src = "https://connect.facebook.net/<?= $facebook_customization_locale_FAE ?>/sdk/xfbml.customerchat.js";
              fjs.parentNode.insertBefore(js, fjs);
            }(document, 'script', 'facebook-jssdk'));
         </script>
@@ -930,6 +930,8 @@
           class="fb-customerchat"
           attribution="fbe_opencart"
           page_id="<?= $facebook_page_id_FAE ?>"
+          <?= $facebook_customization_greeting_text_code_FAE ?>
+          <?= $facebook_customization_theme_color_code_FAE ?>
         />
         <?php } ?>
       ]]></add>
@@ -943,9 +945,35 @@
     <operation>
       <search><![CDATA[public function index()]]></search>
       <add position="after"><![CDATA[
-        $data['facebook_page_id_FAE'] = $this->config->get('facebook_page_id');
-        $data['facebook_jssdk_version_FAE'] = $this->config->get('facebook_jssdk_version');
-        $data['facebook_messenger_enabled_FAE'] = $this->config->get('facebook_messenger_activated');
+        $data['facebook_page_id_FAE'] =
+          $this->config->get(FacebookCommonUtils::FACEBOOK_PAGE_ID);
+        $data['facebook_jssdk_version_FAE'] =
+          $this->config->get(FacebookCommonUtils::FACEBOOK_JSSDK_VER);
+        $data['facebook_messenger_enabled_FAE'] =
+          $this->config->get(FacebookCommonUtils::FACEBOOK_MESSENGER);
+        // default greeting code to empty string if setting is not available
+        $customization_greeting_code = $this->config->get(
+          FacebookCommonUtils::FACEBOOK_CUSTOMIZATION_GREETING_TEXT_CODE);
+        $data['facebook_customization_greeting_text_code_FAE'] =
+          ($customization_greeting_code)
+          ? sprintf('logged_in_greeting="%s" logged_out_greeting="%s"',
+            $customization_greeting_code,
+            $customization_greeting_code)
+          : '';
+        // default locale to en_US if setting is not available
+        $customization_locale = $this->config->get(
+          FacebookCommonUtils::FACEBOOK_CUSTOMIZATION_LOCALE);
+        $data['facebook_customization_locale_FAE'] =
+          ($customization_locale)
+          ? $customization_locale
+          : 'en_US';
+        // default theme color code to empty string if setting is not available
+        $customization_theme_color_code = $this->config->get(
+          FacebookCommonUtils::FACEBOOK_CUSTOMIZATION_THEME_COLOR_CODE);
+        $data['facebook_customization_theme_color_code_FAE'] =
+          ($customization_theme_color_code)
+          ? sprintf('theme_color="%s"', $customization_theme_color_code)
+          : '';
       ]]></add>
     </operation>
   </file>
@@ -972,7 +1000,7 @@
              var js, fjs = d.getElementsByTagName(s)[0];
              if (d.getElementById(id)) {return;}
              js = d.createElement(s); js.id = id;
-             js.src = "https://connect.facebook.net/en_US/sdk/xfbml.customerchat.js";
+             js.src = "https://connect.facebook.net/{{ facebook_customization_locale_FAE }}/sdk/xfbml.customerchat.js";
              fjs.parentNode.insertBefore(js, fjs);
            }(document, 'script', 'facebook-jssdk'));
         </script>
@@ -980,6 +1008,8 @@
           class="fb-customerchat"
           attribution="fbe_opencart"
           page_id="{{ facebook_page_id_FAE }}"
+          {{ facebook_customization_greeting_text_code_FAE }}
+          {{ facebook_customization_theme_color_code_FAE }}
         />
         {% endif %}
       ]]></add>

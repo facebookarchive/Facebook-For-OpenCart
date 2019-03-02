@@ -96,13 +96,19 @@ class FacebookCommonUtils {
   const FACEBOOK_UPLOAD_END_TIME = 'facebook_upload_end_time';
   const FACEBOOK_MESSENGER = 'facebook_messenger_activated';
   const FACEBOOK_JSSDK_VER = 'facebook_jssdk_version';
+  const FACEBOOK_CUSTOMIZATION = 'facebook_customization';
+  const FACEBOOK_CUSTOMIZATION_GREETING_TEXT_CODE =
+    'facebook_customization_greeting_text_code';
+  const FACEBOOK_CUSTOMIZATION_LOCALE = 'facebook_customization_locale';
+  const FACEBOOK_CUSTOMIZATION_THEME_COLOR_CODE =
+    'facebook_customization_theme_color_code';
   const FACEBOOK_LATEST_RELEASE_URL =
     'https://api.github.com/repos/facebookincubator/Facebook-for-OpenCart/releases/latest';
   const FACEBOOK_LAST_UPGRADE_CHECK_TIME = 'facebook_last_upgrade_check_time';
   const FACEBOOK_ENABLE_COOKIE_BAR = 'facebook_enable_cookie_bar';
 
   const FACEBOOK_THRESHOLD_FOR_INITIAL_SYNC_BY_API = 1000;
-  const PRODUCT_COUNT_THRESHOLD = 50000;
+  const PRODUCT_COUNT_THRESHOLD = 5000;
 
   const FACEBOOK_PRODUCT_QUERY_BATCH_COUNT = 100;
 
@@ -119,17 +125,17 @@ class FacebookCommonUtils {
     'You have yet to setup Facebook Ads Extension. Please click on Facebook Ads Extension and Get Started.';
   const INITIAL_PRODUCT_SYNC_EXCEPTION_MESSAGE =
     'There is an error with Facebook Ads Extension setup. Click on Facebook Ads Extension, Manage Settings, go to Advanced options and click on Delete Settings to restart the setup.<br/>Please contact Facebook via our <a href="https://github.com/facebookincubator/Facebook-For-OpenCart/issues" target="_blank">Github</a> if this error keeps showing.';
-  const LARGE_PRODUCT_CATALOG_EXCEPTION_MESSAGE = 'The sync failure of your products to Facebook may be because of the large number of products on your system (We detected %d products).';
+  const LARGE_PRODUCT_CATALOG_EXCEPTION_MESSAGE = 'The sync failure of your products to Facebook may be because of the large number of products on your system (We detected %d products). Please refer to our <a href="https://github.com/facebookincubator/Facebook-For-OpenCart/blob/master/FAQ.md#syncing-of-opencart-products-to-facebook-catalog" target="_blank">FAQ</a> section on "Syncing of OpenCart products to Facebook catalog" for more details.';
   const ACCESS_TOKEN_INVALID_EXCEPTION_MESSAGE =
     'The Facebook access token is invalid. Please click on Facebook Ads Extension, Manage Settings, go to Advanced options and click on Update token.';
   const PRODUCT_SYNC_EXCEPTION_MESSAGE =
     'The product sync on Facebook catalog is still ongoing. Please wait for the sync to complete before making any product changes.';
   const REQUEST_PIXEL_SIGNATURE_ERROR_MESSAGE = 'There is an error requesting a signature key for your pixel, please try again later. Please contact Facebook via our <a href="https://github.com/facebookincubator/Facebook-For-OpenCart/issues" target="_blank">Github</a> if this error keeps showing up.';
-  const PLUGIN_UPGRADE_MESSAGE = 'A newer version of this plugin is available. To download it, go to <a href="https://github.com/facebookincubator/Facebook-For-OpenCart/releases" target="_blank">Github</a> or <a href="https://www.opencart.com/index.php?route=marketplace/extension/info&extension_id=32336" target="_blank">OpenCart marketplace</a>.';
+  const PLUGIN_UPGRADE_MESSAGE = 'A newer version of the Facebook Ads Extension plugin is available. To download it, go to <a href="https://github.com/facebookincubator/Facebook-For-OpenCart/releases" target="_blank">Github</a> or <a href="https://www.opencart.com/index.php?route=marketplace/extension/info&extension_id=32336" target="_blank">OpenCart marketplace</a>.';
 
   private $pluginAgentName = 'exopencart';
 // system auto generated, DO NOT MODIFY
-private $pluginVersion = '2.1.4';
+private $pluginVersion = '2.1.5';
 // system auto generated, DO NOT MODIFY
 
   public function __construct() {

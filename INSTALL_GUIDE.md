@@ -8,7 +8,7 @@ Installation Guide for Facebook Ads Extension
 
 ====
 # Pre-requisites prior to installing the plugin
-  1. The plugin supports these OpenCart versions - 2.0.1.1, 2.0.2.0, 2.0.3.1, 2.1.0.1, 2.1.0.2, 2.2.0.0, 2.3.0.0, 2.3.0.1, 2.3.0.2 and 3.0.2.0.
+  1. The plugin supports these OpenCart versions - 2.0.1.1, 2.0.2.0, 2.0.3.1, 2.1.0.1, 2.1.0.2, 2.2.0.0, 2.3.0.0, 2.3.0.1, 2.3.0.2, 3.0.2.0 and 3.0.3.1.
 
   2. Remove all existing pixel implementations from the website. Duplicate pixel events may be fired if there are existing pixel implementations.
 

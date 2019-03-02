@@ -1,7 +1,14 @@
 Facebook Ads Extension
-Latest version: 2.1.4
+Latest version: 2.1.5
 
 Change log
+2.1.5 - 1 March 2019
+* Support for OpenCart v3.0.3.1
+* Support Messenger customer chat plugin customimsations for the plugin. The customisations include Greeting language, locale and theme color code
+* Fixed a bug on "undefined filter_category_id" when doing a search for product category or manufacturers and the ids are not available
+* Improved the FAQ documentation and UI feedback when there is a failure in syncing large product catalogs
+* Improved on the new plugin upgrade notification message
+
 2.1.4 - 25 February 2019
 * Improved the pixel firing with 3rd party SEO plugins
 * Improved the readme, installation guide and FAQ documentation for OpenCart

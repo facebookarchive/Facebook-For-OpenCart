@@ -217,7 +217,6 @@ trait ControllerExtensionFacebookProductTrait {
   private function getExceptionMessageDueToProductSyncError() {
     $exception_message =
       FacebookCommonUtils::INITIAL_PRODUCT_SYNC_EXCEPTION_MESSAGE;
-    INITIAL_PRODUCT_SYNC_EXCEPTION_MESSAGE;
     // we will show an extra message indicating if the product count is large
     $product_count = $this->model_catalog_product->getTotalProducts(
       array('filter_status' => 1));

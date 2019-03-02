@@ -1,4 +1,4 @@
-Facebook Ads Extension for OpenCart v2.0.1.1 to v3.0.2.0
+Facebook Ads Extension for OpenCart v2.0.1.1 to v3.0.3.1
 ====
 - The latest version of the plugin can be found at [here](https://github.com/facebookincubator/Facebook-For-OpenCart/releases/latest)
 - The latest version of the README can be found at [here](https://github.com/facebookincubator/Facebook-For-OpenCart/blob/master/README.md)
@@ -8,7 +8,7 @@ Facebook Ads Extension for OpenCart v2.0.1.1 to v3.0.2.0
 
 ====
 Source code for Facebook Ads Extension for OpenCart. This is for
-OpenCart v2.0.1.1 to v3.0.2.0.
+OpenCart v2.0.1.1 to v3.0.3.1.
 
 # Features:
 1. Auto-injection of Facebook Pixel events to all store webpages in

@@ -65,7 +65,13 @@
   </div>
   <div class="container-fluid">
     <div class="alert alert-danger" id="divErrorText">
-    </div>  
+    </div>
+    <?php if ($plugin_upgrade_message) { ?>
+      <div class="alert alert-info"><i class="fa fa-exclamation-circle"></i>
+        <?= $plugin_upgrade_message; ?>
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+      </div>
+    <?php } ?>
     <?php if ($download_log_file_error_warning) { ?>
       <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> <?= $download_log_file_error_warning; ?>
         <button type="button" class="close" data-dismiss="alert">&times;</button>
@@ -127,7 +133,6 @@
               <?= $checked_enable_cookie_bar; ?> >
               <?= $enable_cookie_bar_text; ?>
           </h2>
-          <h2><?= $plugin_upgrade_message; ?></h2>
           <div class="download">
             <a class="download" href="<?= $download_log_link; ?>">
               <?= $download_log_file_text; ?>

@@ -62,9 +62,11 @@ Always check that you have installed the latest version of the plugin as we are 
 
 3. I am getting "There is an error with Facebook Ads Extension setup. Click on Facebook Ads Extension, Manage Settings, go to Advanced options and click on Delete Settings to restart the setup." or "MYSQL server has gone away" errors.
   - If you have a large catalog, eg more than 5000 products, there could be memory limitations due to your webserver/database configurations when we are pulling all the available products to generate the initial product catalog feed file. Here are some suggestions for you to solve the problem.
-  - We are only syncing products which are enabled to Facebook catalog. You can set products which are no longer in use to disabled. Screenshot]()
-  - If you are on MYSQL database server, you can look into increasing the wait_timeout and max_allowed_packet variables. Please refer to the MYSQL documentation [here](https://dev.mysql.com/doc/refman/8.0/en/gone-away.html) for more details.
-  - If you are on a shared hosting service, you may need to increase the memory configurations to be able to cater for generating the large catalog.
+    - We are only syncing products which are enabled to Facebook catalog. You can set products which are no longer in use to disabled. [Screenshot](https://drive.google.com/open?id=1cKfe_oIX9Hbvcuqop4-Zxsgeyk3rZa_J)
+    - Check the error logs for your webserver and database to understand if there are any errors logged.
+    - If you are On MYSQL database server and you are getting errors such as "MYSQL server has gone away" and "InnoDB: mmap(134217728 bytes) failed; errno 12", you can look into reducing the innodb_buffer_pool_size variable on your MYSQL server. The reason could be that the MYSQL server is trying to take up more memory than the allowed memory permissible on your server, resulting in MYSQL server crashing. Please refer to the MYSQL documentation [here](https://dev.mysql.com/doc/refman/8.0/en/innodb-parameters.html)
+    - If you are on MYSQL database server, you can look into increasing the wait_timeout and max_allowed_packet variables on your MYSQL server. Please refer to the MYSQL documentation [here](https://dev.mysql.com/doc/refman/8.0/en/gone-away.html) for more details.
+    - If you are on a shared hosting service, you may need to increase the memory configurations to be able to cater for generating the large catalog.
 
 4. How many product catalogs can I use with this setup?
   - You may only use 1 product catalog.

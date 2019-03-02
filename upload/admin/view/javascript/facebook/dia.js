@@ -197,7 +197,8 @@
         {
           'facebook_page_id': message.params.page_id,
           'facebook_messenger_activated': message.params.is_messenger_chat_plugin_enabled,
-          'facebook_jssdk_version': message.params.facebook_jssdk_version
+          'facebook_jssdk_version': message.params.facebook_jssdk_version,
+          'facebook_customization': message.params.customization
         },
         function() {
           // messenager would only have 2 options, only toggling on and off
@@ -388,7 +389,7 @@
         case 'get dia settings':
           window.sendToFacebook('dia settings', window.diaConfig);
           break; 
-       case 'set merchant settings':
+        case 'set merchant settings':
           setMerchantSettings(event.data);
           break;
         case 'set catalog':
