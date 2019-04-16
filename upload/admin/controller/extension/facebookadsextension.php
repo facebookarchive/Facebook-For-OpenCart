@@ -502,10 +502,17 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
       $this->response->addHeader('Content-Type: application/json');
       $this->response->setOutput(json_encode($result));
     } catch (Exception $e) {
+      $error_message = $e->getMessage();
+      // special handling of error and Bad request as invalid access token
+      if (strtolower($e->getMessage()) === 'error'
+        || strtolower($e->getMessage()) === 'bad request') {
+        $error_message =
+          FacebookCommonUtils::ACCESS_TOKEN_INVALID_EXCEPTION_MESSAGE;
+      }
       $this->faeLog->write(
         'Error with getting the initial product sync status '
         . $e->getMessage());
-      header("HTTP/1.1 400 " . $e->getMessage());
+      header("HTTP/1.1 400 " . $error_message);
     }
   }
 

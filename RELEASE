@@ -1,7 +1,11 @@
 Facebook Ads Extension
-Latest version: 2.1.5
+Latest version: 2.1.6
 
 Change log
+2.1.6 - 16 April 2019
+* Fixed a bug where the pixels are not firing for OpenCart versions 2.2.0.0 to 2.3.0.2 and have Journal plugin installed.
+* Fixed a bug where the option to update access token is not shown and the error message shown on the Facebook Ads Extension module is "error" or "Bad Request"
+
 2.1.5 - 1 March 2019
 * Support for OpenCart v3.0.3.1
 * Support Messenger customer chat plugin customimsations for the plugin. The customisations include Greeting language, locale and theme color code
