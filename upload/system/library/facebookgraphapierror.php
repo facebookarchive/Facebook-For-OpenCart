@@ -11,7 +11,7 @@ class FacebookGraphAPIError {
   const INVALID_ID_EXCEPTION_CODE = 100;
   const INVALID_ID_EXCEPTION_SUBCODE = 33;
 
-  const ACCESS_TOKEN_EXCEPTION_MESSAGE = 'FACEBOOK_ACCESS_TOKEN_ERROR';
+  const DEFAULT_ACCESS_TOKEN_EXCEPTION_MESSAGE = 'Error using the access token to make API calls';
 
   public function __construct() {
   }
@@ -32,11 +32,20 @@ class FacebookGraphAPIError {
       : null;
   }
 
+  private function getErrorMessage($result) {
+    return (isset($result['error']['message']))
+      ? $result['error']['message']
+      : null;
+  }
+
   public function checksForAccessTokenErrorAndThrowException(
     $result) {
     if ($this->getErrorCode($result) === self::ACCESS_TOKEN_EXCEPTION_CODE) {
+      $error_message = ($this->getErrorMessage($result))
+        ? $this->getErrorMessage($result)
+        : self::DEFAULT_ACCESS_TOKEN_EXCEPTION_MESSAGE;
       throw new Exception(
-        self::ACCESS_TOKEN_EXCEPTION_MESSAGE,
+        $error_message,
         self::ACCESS_TOKEN_EXCEPTION_CODE);
     }
   }

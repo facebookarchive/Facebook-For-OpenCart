@@ -1,7 +1,10 @@
 Facebook Ads Extension
-Latest version: 2.1.6
+Latest version: 2.1.7
 
 Change log
+2.1.7 - 2 May 2019
+* Improved the error message shown when encountering errors with making API calls by displaying the exact cause on why API calls fail
+
 2.1.6 - 16 April 2019
 * Fixed a bug where the pixels are not firing for OpenCart versions 2.2.0.0 to 2.3.0.2 and have Journal plugin installed.
 * Fixed a bug where the option to update access token is not shown and the error message shown on the Facebook Ads Extension module is "error" or "Bad Request"

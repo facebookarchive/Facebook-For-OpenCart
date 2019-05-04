@@ -190,9 +190,12 @@ trait ControllerExtensionFacebookProductTrait {
     } catch (Exception $e) {
       // not using the error_log as the access token is not valid,
       // hence cant log to fb endpoint
-      $this->faeLog->write("Invalid access token when querying FB page");
-      throw new Exception(
-        FacebookCommonUtils::ACCESS_TOKEN_INVALID_EXCEPTION_MESSAGE);
+      $this->faeLog->write("Error when querying FB page - "
+        . $e->getMessage());
+      $error_message = sprintf(
+        FacebookCommonUtils::ACCESS_TOKEN_INVALID_EXCEPTION_MESSAGE,
+        $e->getMessage());
+      throw new Exception($error_message);
     }
 
     // 4. Verify if feed id is present

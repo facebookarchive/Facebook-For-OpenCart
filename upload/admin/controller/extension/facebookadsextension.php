@@ -506,8 +506,9 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
       // special handling of error and Bad request as invalid access token
       if (strtolower($e->getMessage()) === 'error'
         || strtolower($e->getMessage()) === 'bad request') {
-        $error_message =
-          FacebookCommonUtils::ACCESS_TOKEN_INVALID_EXCEPTION_MESSAGE;
+        $error_message = sprintf(
+          FacebookCommonUtils::ACCESS_TOKEN_INVALID_EXCEPTION_MESSAGE,
+          $e->getMessage());
       }
       $this->faeLog->write(
         'Error with getting the initial product sync status '
