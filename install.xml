@@ -943,7 +943,7 @@
   <!-- The facebook_pixel_event_params_FAE is retrieved from the request->post -->
   <file path="catalog/controller/common/footer.php">
     <operation>
-      <search><![CDATA[public function index()]]></search>
+      <search><![CDATA[public function index(]]></search>
       <add position="after"><![CDATA[
         $data['facebook_page_id_FAE'] =
           $this->config->get(FacebookCommonUtils::FACEBOOK_PAGE_ID);
