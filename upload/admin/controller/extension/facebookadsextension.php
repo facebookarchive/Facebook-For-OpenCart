@@ -503,6 +503,9 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
       $this->response->setOutput(json_encode($result));
     } catch (Exception $e) {
       $error_message = $e->getMessage();
+      $error_code = ($e->getCode() != null)
+        ? $e->getCode()
+        : 400;
       // special handling of error and Bad request as invalid access token
       if (strtolower($e->getMessage()) === 'error'
         || strtolower($e->getMessage()) === 'bad request') {
@@ -513,7 +516,7 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
       $this->faeLog->write(
         'Error with getting the initial product sync status '
         . $e->getMessage());
-      header("HTTP/1.1 400 " . $error_message);
+      header("HTTP/1.1 " . $error_code . " " . $error_message);
     }
   }
 

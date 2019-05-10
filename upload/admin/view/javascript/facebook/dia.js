@@ -319,9 +319,10 @@
         }
       })
       .fail(function(xhr, ajaxOptions, thrownError) {
-        if (xhr.status === 400) {
+        if (xhr.status >= 400 && xhr.status < 500) {
           showErrorText(xhr.statusText);
-          if (xhr.statusText === 'The Facebook access token is invalid. Please click on Facebook Ads Extension, Manage Settings, go to Advanced options and click on Update token.') {
+          if (xhr.status === 452) {
+            // specific to access token update
             window.facebookAdsToolboxConfig.tokenExpired = 'true';
           }
         }

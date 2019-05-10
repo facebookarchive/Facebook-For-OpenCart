@@ -1,7 +1,10 @@
 Facebook Ads Extension
-Latest version: 2.1.7
+Latest version: 2.1.8
 
 Change log
+2.1.8 - 11 May 2019
+* Fix a bug where the feature to refresh access token is not displaying. This is applicable for invalid access tokens that cannot be decrypted
+
 2.1.7 - 2 May 2019
 * Improved the error message shown when encountering errors with making API calls by displaying the exact cause on why API calls fail
 

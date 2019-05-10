@@ -177,11 +177,12 @@ trait ControllerExtensionFacebookProductTrait {
       ? $facebook_setting[FacebookCommonUtils::FACEBOOK_PAGE_ID]
       : null;
     if (!$catalog_id || !$page_id || !$facebook_page_token) {
-      $this->logError(
+      // access token may not be valid so decide not to log to API endpoint
+      // instead we are going to log to local error log and throw exception
+      $this->faeLog->write(
         FacebookCommonUtils::NO_CATALOG_ID_PAGE_ID_ACCESS_TOKEN_ERROR_MESSAGE .
-          $operation,
-        $error_data,
-        FacebookCommonUtils::INITIAL_PRODUCT_SYNC_EXCEPTION_MESSAGE);
+        $operation);
+      throw new Exception(FacebookCommonUtils::INITIAL_PRODUCT_SYNC_EXCEPTION_MESSAGE);
     }
 
     // 3. Verify if the access token is valid
@@ -195,7 +196,9 @@ trait ControllerExtensionFacebookProductTrait {
       $error_message = sprintf(
         FacebookCommonUtils::ACCESS_TOKEN_INVALID_EXCEPTION_MESSAGE,
         $e->getMessage());
-      throw new Exception($error_message);
+      throw new Exception(
+        $error_message,
+        FacebookCommonUtils::ACCESS_TOKEN_INVALID_EXCEPTION_CODE);
     }
 
     // 4. Verify if feed id is present
