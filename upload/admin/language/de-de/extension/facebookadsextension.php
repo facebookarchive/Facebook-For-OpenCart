@@ -9,9 +9,9 @@
  * German translation by https://osworx.net
  */
 
-$_['heading_title']						        = 'Facebook Werbung';
-$_['button_get_started']				      = 'Jetzt beginnen';
-$_['button_manage_settings']		      = 'Einstellungen';
+$_['heading_title']                   = 'Facebook Werbung';
+$_['button_get_started']              = 'Jetzt beginnen';
+$_['button_manage_settings']          = 'Einstellungen';
 $_['sub_heading_title']					      = 'Produkt in Werbung auf facebook umwandeln';
 $_['body_text']				    		        = 'Einfach ein Pixel installieren und einen Produktkatakog auf facebook erstellen. Das Pixel verwenden um gezielt Kunden anzusprechen und den Wert der WErbungen zu messen.<br>Produkte einfach auf einmal bewerben anstatt diverse Werbungen zu erstellen.';
 $_['resync_text']				      		    = 'Produkte mit facebook abgleichen';
