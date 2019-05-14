@@ -81,7 +81,7 @@
         <div id="facebook-header">
           <table><tbody>
             <tr><td><i class="logo"></i></td>
-            <td><span class="title"><?php echo= $heading_title; ?></span></td></tr>
+            <td><span class="title"><?php echo $heading_title; ?></span></td></tr>
           </tbody></table>
         </div>
         <div class="dia-flow-container">
