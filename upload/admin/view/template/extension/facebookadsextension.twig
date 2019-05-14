@@ -53,15 +53,15 @@
   })();
 </script>
 
-{{ header }}{{ column_left }}
+{{ header ~ column_left }}
 <div id="content">
   <div class="page-header">
     <div class="container-fluid">
       <h1>{{ heading_title }}</h1>
       <ul class="breadcrumb">
-{% for breadcrumb in breadcrumbs %}
+      {% for breadcrumb in breadcrumbs %}
         <li><a href="{{ breadcrumb['href'] }}">{{ breadcrumb['text'] }}</a></li>
-{% endfor %}
+      {% endfor %}
       </ul>
     </div>
   </div>
@@ -73,12 +73,12 @@
         {{ plugin_upgrade_message }}
         <button type="button" class="close" data-dismiss="alert">&times;</button>
       </div>
-{% endif %}
+    {% endif %}
     {% if download_log_file_error_warning %}
       <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> {{ download_log_file_error_warning }}
         <button type="button" class="close" data-dismiss="alert">&times;</button>
       </div>
-{% endif %}
+    {% endif %}
     <div class="panel panel-default">
       <div class="panel-body">
         <div id="facebook-header">
