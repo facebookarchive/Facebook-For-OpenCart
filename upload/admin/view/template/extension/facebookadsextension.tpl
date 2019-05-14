@@ -44,7 +44,7 @@
         samples: <?php echo $sample_feed; ?>
       },
       debug_url: debug_url,
-      token_string: '<?php echo= $token_string; ?>',
+      token_string: '<?php echo $token_string; ?>',
     };
 
     window.initial_product_sync = <?php echo $initial_product_sync; ?>;
