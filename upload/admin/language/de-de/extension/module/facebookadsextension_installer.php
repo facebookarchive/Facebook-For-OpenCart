@@ -20,3 +20,5 @@ $_['resync_confirm_text']             = 'Produkte werden automatisch bei Neuerst
 $_['download_log_file_text']          = 'Bericht downladen';
 $_['download_log_file_error_warning'] = 'Achtung: die Berichtsdatei %s ist %s groß!';
 $_['enable_cookie_bar_text']          = 'Zeige Cookiebar im Shop';
+
+$_['help_common']                     = 'Diese Erweiterung kann vom Hauptmenu aufgerufen werden.<br>Oder gleich <a href="%s">hier klicken</a>';
