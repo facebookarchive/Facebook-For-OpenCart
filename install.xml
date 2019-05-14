@@ -9,9 +9,9 @@
 <modification>
 	<name>Facebook Ads Extension</name>
 	<code>facebook_ads_extension</code>
-	<version>2.1.8</version>
+	<version>2.1.9</version>
 	<author>Facebook</author>
-	<link></link>
+	<link>https://github.com/facebookincubator/Facebook-For-OpenCart</link>
 
   <!-- Admin panel settings -->
   <file path="admin/controller/common/column_left.php">
@@ -86,12 +86,12 @@
       <search><![CDATA[<?php if ($error_install) { ?>]]></search>
       <add position="before"><![CDATA[
         <?php if (isset($error_facebook_sync) && !!($error_facebook_sync)) {?>
-        <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> <?= $error_facebook_sync; ?>
+        <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> <?php echo $error_facebook_sync; ?>
           <button type="button" class="close" data-dismiss="alert">&times;</button>
         </div>
         <?php } ?>
         <?php if (isset($plugin_upgrade_message) && !!($plugin_upgrade_message)) {?>
-        <div class="alert alert-info"><i class="fa fa-exclamation-circle"></i> <?= $plugin_upgrade_message; ?>
+        <div class="alert alert-info"><i class="fa fa-exclamation-circle"></i> <?php echo $plugin_upgrade_message; ?>
           <button type="button" class="close" data-dismiss="alert">&times;</button>
         </div>
         <?php } ?>
@@ -125,11 +125,11 @@
     <operation>
       <search><![CDATA[<ul id="menu">]]></search>
       <add position="after"><![CDATA[
-        <li id="facebookadsextension"><a class="parent"><i class="fa fa-facebook-square fa-fw"></i> <span><?= $text_facebook_ads_extension; ?></span></a>
+        <li id="facebookadsextension"><a class="parent"><i class="fa fa-facebook-square fa-fw"></i> <span><?php echo $text_facebook_ads_extension; ?></span></a>
           <ul>
             <li>
-              <a href="<?= $facebookadsextension; ?>">
-                <?= $text_facebook_ads_extension; ?>
+              <a href="<?php echo $facebookadsextension; ?>">
+                <?php echo $text_facebook_ads_extension; ?>
               </a>
             </li>
           </ul>
@@ -358,17 +358,17 @@
       <search><![CDATA[    <?php if ($error_warning) { ?>]]></search>
       <add position="before"><![CDATA[
         <?php if (isset($error_facebook_sync) && !!($error_facebook_sync)) {?>
-        <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> <?= $error_facebook_sync; ?>
+        <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> <?php echo $error_facebook_sync; ?>
           <button type="button" class="close" data-dismiss="alert">&times;</button>
         </div>
         <?php } ?>
         <?php if (isset($error_facebook_delete) && !!($error_facebook_delete)) {?>
-        <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> <?= $error_facebook_delete; ?>
+        <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> <?php echo $error_facebook_delete; ?>
           <button type="button" class="close" data-dismiss="alert">&times;</button>
         </div>
         <?php } ?>
         <?php if (isset($plugin_upgrade_message) && !!($plugin_upgrade_message)) {?>
-        <div class="alert alert-info"><i class="fa fa-exclamation-circle"></i> <?= $plugin_upgrade_message; ?>
+        <div class="alert alert-info"><i class="fa fa-exclamation-circle"></i> <?php echo $plugin_upgrade_message; ?>
           <button type="button" class="close" data-dismiss="alert">&times;</button>
         </div>
         <?php } ?>
@@ -549,7 +549,7 @@
 
         <script type="text/javascript">
           (function() {
-            var enableCookieBar = '<?= $facebook_enable_cookie_bar ?>';
+            var enableCookieBar = '<?php echo $facebook_enable_cookie_bar ?>';
             if (enableCookieBar === 'true') {
               facebook_loadScript("catalog/view/javascript/facebook/cookieconsent.min.js");
 
@@ -615,7 +615,7 @@
             t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
             document,'script','https://connect.facebook.net/en_US/fbevents.js');
 
-            var enableCookieBar = '<?= $facebook_enable_cookie_bar ?>';
+            var enableCookieBar = '<?php echo $facebook_enable_cookie_bar ?>';
             if (enableCookieBar === 'true') {
               fbq.consentCookieName = 'fb_cookieconsent_status';
 
@@ -632,12 +632,12 @@
                 function() {
                   var params = <?= $facebook_pixel_params_FAE ?>;
                   _facebookAdsExtension.facebookPixel.init(
-                    '<?= $facebook_pixel_id_FAE ?>',
-                    <?= $facebook_pixel_pii_FAE ?>,
+                    '<?php echo $facebook_pixel_id_FAE ?>',
+                    <?php echo $facebook_pixel_pii_FAE ?>,
                     params);
                   <?php if ($facebook_pixel_event_params_FAE) { ?>
                     _facebookAdsExtension.facebookPixel.firePixel(
-                      JSON.parse('<?= $facebook_pixel_event_params_FAE ?>'));
+                      JSON.parse('<?php echo $facebook_pixel_event_params_FAE ?>'));
                   <?php } ?>
                 });
             <?php } ?>
@@ -655,7 +655,7 @@
     <operation>
       <search><![CDATA[<?php echo $footer; ?>]]></search>
       <add position="before"><![CDATA[
-        <input type='hidden' id='fbProductID' value='<?= $product_id ?>' />
+        <input type="hidden" id="fbProductID" value="<?php echo $product_id ?>" />
       ]]></add>
     </operation>
   </file>
@@ -841,7 +841,7 @@
     <operation>
       <search><![CDATA[{{ footer }}]]></search>
       <add position="before"><![CDATA[
-        <input type='hidden' id='fbProductID' value='{{ product_id }}' />
+        <input type="hidden" id="fbProductID" value="{{ product_id }}" />
       ]]></add>
     </operation>
   </file>
@@ -914,7 +914,7 @@
               appId            : '',
               autoLogAppEvents : true,
               xfbml            : true,
-              version          : '<?= $facebook_jssdk_version_FAE ?>'
+              version          : '<?php echo $facebook_jssdk_version_FAE ?>'
             });
           };
 
@@ -922,16 +922,16 @@
              var js, fjs = d.getElementsByTagName(s)[0];
              if (d.getElementById(id)) {return;}
              js = d.createElement(s); js.id = id;
-             js.src = "https://connect.facebook.net/<?= $facebook_customization_locale_FAE ?>/sdk/xfbml.customerchat.js";
+             js.src = "https://connect.facebook.net/<?php echo $facebook_customization_locale_FAE ?>/sdk/xfbml.customerchat.js";
              fjs.parentNode.insertBefore(js, fjs);
            }(document, 'script', 'facebook-jssdk'));
         </script>
         <div
           class="fb-customerchat"
           attribution="fbe_opencart"
-          page_id="<?= $facebook_page_id_FAE ?>"
-          <?= $facebook_customization_greeting_text_code_FAE ?>
-          <?= $facebook_customization_theme_color_code_FAE ?>
+          page_id="<?php echo $facebook_page_id_FAE ?>"
+          <?php echo $facebook_customization_greeting_text_code_FAE ?>
+          <?php echo $facebook_customization_theme_color_code_FAE ?>
         />
         <?php } ?>
       ]]></add>
