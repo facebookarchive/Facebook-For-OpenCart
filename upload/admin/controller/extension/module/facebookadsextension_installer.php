@@ -158,6 +158,8 @@ class ControllerExtensionModuleFacebookAdsExtensionInstaller
         $data['token_string'],
         true);
 
+    $data['help_common'] = sprintf( $this->language->get('help_common'), $data['fae_link'] );
+    
     $data['header'] = $this->load->controller('common/header');
     $data['column_left'] = $this->load->controller('common/column_left');
     $data['footer'] = $this->load->controller('common/footer');
