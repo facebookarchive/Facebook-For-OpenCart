@@ -119,6 +119,9 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
     $data['resync_confirm_text'] = $this->language->get('resync_confirm_text');
     $data['download_log_file_text'] =
       $this->language->get('download_log_file_text');
+    
+    $data['help_product_sync'] = $this->language->get('help_product_sync');
+    
     $data['header'] = $this->load->controller('common/header');
     $data['column_left'] = $this->load->controller('common/column_left');
     $data['footer'] = $this->load->controller('common/footer');
