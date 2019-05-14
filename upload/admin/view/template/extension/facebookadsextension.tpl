@@ -112,7 +112,7 @@
               class="product-sync-status-dotted-underline">
             </div>
             <div class="product-sync-status-tooltiptext">
-              The product sync status check will be performed every 30 secs.
+              <?php echo $help_product_sync; ?>
             </div>
           </div>
           <div>
