@@ -20,3 +20,5 @@ $_['download_log_file_text'] = 'Download Log File';
 $_['download_log_file_error_warning'] = 'Warning: ' .
     'Your error log file %s is %s!';
 $_['enable_cookie_bar_text'] = 'Show cookie bar on store website';
+
+$_['help_common']						= 'The Facebook Ads Extension can be accessed from the Main menu of your OpenCart admin panel.<br/>Or you can click <a href="%s">here</a> to access the Facebook Ads Extension.';
