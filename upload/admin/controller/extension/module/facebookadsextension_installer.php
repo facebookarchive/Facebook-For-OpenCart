@@ -153,7 +153,7 @@ class ControllerExtensionModuleFacebookAdsExtensionInstaller
     );
     // this is the actual link for the Facebook Ads Extension
     // that we will be linking from this module
-    $data['fae_link'] = $this->url->link(
+    $fae_link = $this->url->link(
         'extension/facebookadsextension',
         $data['token_string'],
         true);
@@ -161,6 +161,8 @@ class ControllerExtensionModuleFacebookAdsExtensionInstaller
     $data['header'] = $this->load->controller('common/header');
     $data['column_left'] = $this->load->controller('common/column_left');
     $data['footer'] = $this->load->controller('common/footer');
+    $data['fae_entry_point_text'] =
+      sprintf($this->language->get('fae_entry_point_text'), $fae_link);
 
     $this->response->setOutput(
       $this->load->view(

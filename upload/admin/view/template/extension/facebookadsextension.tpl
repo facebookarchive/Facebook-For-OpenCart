@@ -9,56 +9,56 @@
 <script>
   (function () {
     var fb_url = 'www.facebook.com';
-    var debug_url = '<?= $debug_url; ?>';
+    var debug_url = '<?php echo $debug_url; ?>';
     if (debug_url) {
       fb_url = debug_url;
     }
 
     window.facebookAdsToolboxConfig = {
-      hasGzipSupport: '<?= $has_gzip_support; ?>',
+      hasGzipSupport: '<?php echo $has_gzip_support; ?>',
       enabledPlugins: ['MESSENGER_CHAT'],
       popupOrigin: 'https://' + fb_url,
       feedWasDisabled: 'true',
       platform: 'OpenCart',
       pixel: {
-        pixelId: '<?= $facebook_pixel_id; ?>',
+        pixelId: '<?php echo $facebook_pixel_id; ?>',
         advanced_matching_supported: true
       },
-      diaSettingId: '<?= $facebook_dia_setting_id; ?>',
+      diaSettingId: '<?php echo $facebook_dia_setting_id; ?>',
       store: {
         baseUrl: window.location.protocol + '//' + window.location.host,
-        baseCurrency: '<?= $base_currency; ?>',
+        baseCurrency: '<?php echo $base_currency; ?>',
         canSetupShop: true,
-        timezoneId: '<?= $time_zone_id; ?>',
-        storeName: '<?= $store_name; ?>',
-        version: '<?= $opencart_version; ?>',
-        php_version: '<?= $php_version; ?>',
-        plugin_version: '<?= $plugin_version; ?>'
+        timezoneId: '<?php echo $time_zone_id; ?>',
+        storeName: '<?php echo $store_name; ?>',
+        version: '<?php echo $opencart_version; ?>',
+        php_version: '<?php echo $php_version; ?>',
+        plugin_version: '<?php echo $plugin_version; ?>'
       },
       feed: {
-        totalVisibleProducts: <?= $total_visible_products; ?>
+        totalVisibleProducts: <?php echo $total_visible_products; ?>
       },
       feedPrepared: {
         feedUrl: '',
         feedPingUrl: '',
-        samples: <?= $sample_feed; ?>
+        samples: <?php echo $sample_feed; ?>
       },
       debug_url: debug_url,
-      token_string: '<?= $token_string; ?>',
+      token_string: '<?php echo $token_string; ?>',
     };
 
-    window.initial_product_sync = <?= $initial_product_sync; ?>;
+    window.initial_product_sync = <?php echo $initial_product_sync; ?>;
   })();
 </script>
 
-<?= $header; ?><?= $column_left; ?>
+<?php echo $header; ?><?php echo $column_left; ?>
 <div id="content">
   <div class="page-header">
     <div class="container-fluid">
-      <h1><?= $heading_title; ?></h1>
+      <h1><?php echo $heading_title; ?></h1>
       <ul class="breadcrumb">
         <?php foreach ($breadcrumbs as $breadcrumb) { ?>
-        <li><a href="<?= $breadcrumb['href']; ?>"><?= $breadcrumb['text']; ?></a></li>
+        <li><a href="<?php echo $breadcrumb['href']; ?>"><?php echo $breadcrumb['text']; ?></a></li>
         <?php } ?>
       </ul>
     </div>
@@ -68,12 +68,12 @@
     </div>
     <?php if ($plugin_upgrade_message) { ?>
       <div class="alert alert-info"><i class="fa fa-exclamation-circle"></i>
-        <?= $plugin_upgrade_message; ?>
+        <?php echo $plugin_upgrade_message; ?>
         <button type="button" class="close" data-dismiss="alert">&times;</button>
       </div>
     <?php } ?>
     <?php if ($download_log_file_error_warning) { ?>
-      <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> <?= $download_log_file_error_warning; ?>
+      <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> <?php echo $download_log_file_error_warning; ?>
         <button type="button" class="close" data-dismiss="alert">&times;</button>
       </div>
     <?php } ?>
@@ -81,16 +81,16 @@
       <div class="panel-body">
         <div id="facebook-header">
           <table><tbody>
-            <tr><td><i class='logo'></i></td>
-            <td><span class='title'><?= $heading_title; ?></span></td></tr>
+            <tr><td><i class="logo"></i></td>
+            <td><span class="title"><?php echo $heading_title; ?></span></td></tr>
           </tbody></table>
         </div>
         <div class="dia-flow-container">
           <div class="version">
-            Plugin Version: <?= $plugin_version; ?>
+            Plugin Version: <?php echo $plugin_version; ?>
           </div>        
-          <h1><?= $sub_heading_title; ?></h1>
-          <h2><?= $body_text; ?></h2>
+          <h1><?php echo $sub_heading_title; ?></h1>
+          <h2><?php echo $body_text; ?></h2>
           <h2 id="h2DiaSettingId">
           </h2>
           <div>
@@ -113,7 +113,7 @@
               class="product-sync-status-dotted-underline">
             </div>
             <div class="product-sync-status-tooltiptext">
-              The product sync status check will be performed every 30 secs.
+              <?php echo $product_sync_tooltip_text; ?>
             </div>
           </div>
           <div>
@@ -121,21 +121,21 @@
               type="button"
               class="blue"
               onClick="_facebookAdsExtension.dia.resyncAllProducts(
-                '<?= $resync_confirm_text; ?>')"
+                '<?php echo $resync_confirm_text; ?>')"
               id="btnResyncProducts">
-              <?= $resync_text; ?>
+              <?php echo $resync_text; ?>
             </button>
           </div>
           <h2>
             <input
               type="checkbox"
               onchange="_facebookAdsExtension.dia.setEnableCookieBar(this.checked)"
-              <?= $checked_enable_cookie_bar; ?> >
-              <?= $enable_cookie_bar_text; ?>
+              <?php echo $checked_enable_cookie_bar; ?> >
+              <?php echo $enable_cookie_bar_text; ?>
           </h2>
           <div class="download">
-            <a class="download" href="<?= $download_log_link; ?>">
-              <?= $download_log_file_text; ?>
+            <a class="download" href="<?php echo $download_log_link; ?>">
+              <?php echo $download_log_file_text; ?>
             </a>
           </div>
         </div>
@@ -148,4 +148,4 @@
     _facebookAdsExtension.dia.refreshUIForDiaSettings();
   });
 </script>
-<?= $footer; ?>
+<?php echo $footer; ?>

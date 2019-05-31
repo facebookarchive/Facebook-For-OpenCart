@@ -40,7 +40,7 @@ class ModelExtensionFacebookProduct extends Model {
 
   public function getFacebookProductAvailabiltyStatus($product_ids) {
     $sql = "SELECT p.product_id, fbp.facebook_product_id, " .
-      "p.quantity, p.subtract " .
+      "p.quantity, p.subtract, p.stock_status_id " .
       "FROM " . DB_PREFIX . "product p " .
       "LEFT JOIN " .DB_PREFIX . "facebook_product fbp " .
       "ON fbp.product_id = p.product_id " .

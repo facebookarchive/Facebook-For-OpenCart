@@ -1,7 +1,25 @@
 Facebook Ads Extension
-Latest version: 2.1.8
+Latest version: 2.1.9
 
 Change log
+2.1.9 - 30 May 2019
+* Fixed a bug with sales end period to exclude out the sales end date on Facebook, eg if the sales end date is set as on 30 May 2019, the final end date of the sales will be 29 May 2019 23:59
+* Added mapping for predefined OpenCart product status into Facebook catalog availability. Note that Facebook Page Shop only shows "Not available" for out of stock and Checkout to website" for all other status. The logic is as follow:
+  OpenCart Preorder = Facebook Preorder
+  OpenCart 2-3 days = Facebook In stock
+  OpenCart Out of stock = Facebook Out of stock
+  OpenCart In stock, subtract Yes, Zero quantity = Facebook Out of stock
+  OpenCart In stock, subtract Yes, 1 or more quantity = Facebook In stock
+  OpenCart In stock, subtract No (regardless of quantity) = Facebook In stock
+* Converted php short tag <?= back to <?php echo, to better support if webservers do not have the short tag setting enabled - contributed by https://github.com/osworx
+* Improved robust for pixel firing for OpenCart with custom plugins which overwritten the default front.php class
+* Improved the robustness of Messenger chat plugin for v3.x by moving the codes from footer.tpl/twig to header.tpl/twig. This is to address the use case if users made changes to the footer.twig via OpenCart 3.x Theme Editor
+* Improved the robustness of the plugin by changing the ocmod search string from "public function index() {" to "public function index(" - contributed by https://github.com/MikhailShemelin
+* Extracts out 2 error messages from tpl/twig file into language file - contributed by https://github.com/osworx
+* Includes instruction on how to reset access token in the FAQ.md file - https://github.com/facebookincubator/Facebook-For-OpenCart/blob/master/FAQ.md
+* Includes instruction on how to handle "Invalid file type" when trying to install the plugin on OpenCart - https://github.com/facebookincubator/Facebook-For-OpenCart/blob/master/FAQ.md
+* Minor formatting adjustment in the FAQ.md file - https://github.com/facebookincubator/Facebook-For-OpenCart/blob/master/FAQ.md 
+
 2.1.8 - 11 May 2019
 * Fix a bug where the feature to refresh access token is not displaying. This is applicable for invalid access tokens that cannot be decrypted
 

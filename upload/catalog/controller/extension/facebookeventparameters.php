@@ -23,6 +23,17 @@ class ControllerExtensionFacebookEventParameters extends Controller {
       return;
     }
 
+    $fbevents = $this->fbevents;
+    if (isset($fbevents)) {
+      $facebook_pixel_event_params_FAE =
+        $this->fbevents['facebook_pixel_event_params_FAE'];
+      if (isset($facebook_pixel_event_params_FAE)) {
+        // detects that the Facebook event params are already set
+        // we can safely exit as there is no further work needed
+        return;
+      }
+    }
+
     try {
       $data = array();
       $this->fbutils = new FacebookCommonUtils();

@@ -164,11 +164,44 @@ abstract class FacebookProductFormatter {
   }
 
   public function getAvailability($product) {
-    if ($product['subtract']) {
-      return $product['quantity'] ? 'in stock' : 'out of stock';
-    } else {
-      return 'in stock';
+    // OpenCart provides 2 settings - Stock status and subtract stock
+    // we are treating stock status as 1st level decision check and
+    // using the pre-defined stock status. We are not handling
+    // custom additions of new stock status
+    // for "in stock" status, we are further checking based on the
+    // subtract stock setting and available quantity
+    $stock_status = 'in stock';
+    switch ($product['stock_status_id']) {
+      // in stock
+      case 7 :
+        // if subtract stock and qty = 0 we will set as out of stock
+        $stock_status = ($product['subtract'] == 1 && $product['quantity'] == 0)
+          ? 'out of stock'
+          : 'in stock';
+        break;
+
+      // out of stock
+      case 5 :
+        $stock_status = 'out of stock';
+        break;
+
+      // pre-order
+      case 8 :
+        $stock_status = 'preorder';
+        break;
+
+      // 2-3 Days
+      // as Facebook does not support 2-3 Days
+      // we will default to in stock
+      case 6 :
+        break;
+
+      // all other new additions of stock status
+      // we will default to in stock
+      default :
+        break;
     }
+    return $stock_status;
   }
 
   private function getRetailerProductGroupID($product) {
@@ -205,9 +238,15 @@ abstract class FacebookProductFormatter {
           : $product_special['date_start'] . self::MIN_TIME;
 
         // for empty date_end, we will treat it as MAX_DATE
-        $sale_end = ($product_special['date_end'] === self::EMPTY_DATE)
-          ? self::MAX_DATE . self::MAX_TIME
-          : $product_special['date_end'] . self::MAX_TIME;
+        $sale_end = self::MAX_DATE . self::MAX_TIME;
+        if ($product_special['date_end'] !== self::EMPTY_DATE) {
+          // the sale end date for Opencart is exclusive of the date
+          // so we need to go back to the previous date and set the
+          // time to 2359
+          $sale_end_date = new DateTime($product_special['date_end']);
+          $sale_end_date = $sale_end_date->sub(new DateInterval('P1D'));
+          $sale_end = $sale_end_date->format('Y-m-d') . self::MAX_TIME;
+        }
 
         // checks if this sales period is ongoing or will happen in future
         // this means the sale_end is later than current date

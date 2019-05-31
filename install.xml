@@ -9,14 +9,14 @@
 <modification>
 	<name>Facebook Ads Extension</name>
 	<code>facebook_ads_extension</code>
-	<version>2.1.8</version>
+	<version>2.1.9</version>
 	<author>Facebook</author>
-	<link></link>
+	<link>https://github.com/facebookincubator/Facebook-For-OpenCart</link>
 
   <!-- Admin panel settings -->
   <file path="admin/controller/common/column_left.php">
     <operation>
-      <search><![CDATA[public function index() {]]></search>
+      <search><![CDATA[public function index(]]></search>
       <add position="after"><![CDATA[
         $token = (isset($this->session->data['user_token']))
           ? $this->session->data['user_token']
@@ -43,7 +43,7 @@
   <!-- Admin dashboard settings -->
   <file path="admin/controller/common/dashboard.php">
     <operation>
-      <search><![CDATA[public function index() {]]></search>
+      <search><![CDATA[public function index(]]></search>
       <add position="after"><![CDATA[
         $this->load->language('common/dashboard');
         try {
@@ -86,12 +86,12 @@
       <search><![CDATA[<?php if ($error_install) { ?>]]></search>
       <add position="before"><![CDATA[
         <?php if (isset($error_facebook_sync) && !!($error_facebook_sync)) {?>
-        <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> <?= $error_facebook_sync; ?>
+        <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> <?php echo $error_facebook_sync; ?>
           <button type="button" class="close" data-dismiss="alert">&times;</button>
         </div>
         <?php } ?>
         <?php if (isset($plugin_upgrade_message) && !!($plugin_upgrade_message)) {?>
-        <div class="alert alert-info"><i class="fa fa-exclamation-circle"></i> <?= $plugin_upgrade_message; ?>
+        <div class="alert alert-info"><i class="fa fa-exclamation-circle"></i> <?php echo $plugin_upgrade_message; ?>
           <button type="button" class="close" data-dismiss="alert">&times;</button>
         </div>
         <?php } ?>
@@ -109,7 +109,7 @@
   <!-- Seach syntax for opencart v2.2.0.0 and below -->
   <file path="admin/controller/common/menu.php">
     <operation>
-      <search><![CDATA[public function index() {]]></search>
+      <search><![CDATA[public function index(]]></search>
       <add position="after"><![CDATA[
         $token = (isset($this->session->data['user_token']))
           ? $this->session->data['user_token']
@@ -125,11 +125,11 @@
     <operation>
       <search><![CDATA[<ul id="menu">]]></search>
       <add position="after"><![CDATA[
-        <li id="facebookadsextension"><a class="parent"><i class="fa fa-facebook-square fa-fw"></i> <span><?= $text_facebook_ads_extension; ?></span></a>
+        <li id="facebookadsextension"><a class="parent"><i class="fa fa-facebook-square fa-fw"></i> <span><?php echo $text_facebook_ads_extension; ?></span></a>
           <ul>
             <li>
-              <a href="<?= $facebookadsextension; ?>">
-                <?= $text_facebook_ads_extension; ?>
+              <a href="<?php echo $facebookadsextension; ?>">
+                <?php echo $text_facebook_ads_extension; ?>
               </a>
             </li>
           </ul>
@@ -157,7 +157,7 @@
       <!-- when they access the product management module entry screen-->
       <!-- The feedback could be either FAE not setup or  -->
       <!-- a problem with the FAE setup -->
-      <search><![CDATA[public function index() {]]></search>
+      <search><![CDATA[public function index(]]></search>
       <add position="after"><![CDATA[
         $this->load->language('catalog/product');
         try {
@@ -344,7 +344,7 @@
     </operation> -->
 
     <operation>
-      <search><![CDATA[public function index() {]]></search>
+      <search><![CDATA[public function index(]]></search>
       <add position="before"><![CDATA[
         private function validateFacebookAdsExtensionFilePresent() {
           return is_file(DIR_APPLICATION . '/controller/extension/facebookadsextension.php');
@@ -358,17 +358,17 @@
       <search><![CDATA[    <?php if ($error_warning) { ?>]]></search>
       <add position="before"><![CDATA[
         <?php if (isset($error_facebook_sync) && !!($error_facebook_sync)) {?>
-        <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> <?= $error_facebook_sync; ?>
+        <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> <?php echo $error_facebook_sync; ?>
           <button type="button" class="close" data-dismiss="alert">&times;</button>
         </div>
         <?php } ?>
         <?php if (isset($error_facebook_delete) && !!($error_facebook_delete)) {?>
-        <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> <?= $error_facebook_delete; ?>
+        <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> <?php echo $error_facebook_delete; ?>
           <button type="button" class="close" data-dismiss="alert">&times;</button>
         </div>
         <?php } ?>
         <?php if (isset($plugin_upgrade_message) && !!($plugin_upgrade_message)) {?>
-        <div class="alert alert-info"><i class="fa fa-exclamation-circle"></i> <?= $plugin_upgrade_message; ?>
+        <div class="alert alert-info"><i class="fa fa-exclamation-circle"></i> <?php echo $plugin_upgrade_message; ?>
           <button type="button" class="close" data-dismiss="alert">&times;</button>
         </div>
         <?php } ?>
@@ -493,7 +493,7 @@
   <!-- The facebook_pixel_event_params_FAE is retrieved from the request->post -->
   <file path="catalog/controller/common/header.php">
     <operation>
-      <search><![CDATA[public function index()]]></search>
+      <search><![CDATA[public function index(]]></search>
       <add position="after"><![CDATA[
         $data['facebook_pixel_id_FAE'] =
           $this->fbevents['facebook_pixel_id_FAE'];
@@ -511,6 +511,45 @@
         // remove away the facebook_pixel_event_params_FAE in session data
         // to avoid duplicate firing after the 1st fire
         unset($this->session->data['facebook_pixel_event_params_FAE']);
+      ]]></add>
+    </operation>
+  </file>
+
+  <!-- Showing up the customer chat plugin -->
+  <!-- The customer chat plugin options are retrieved from the settings -->
+  <file path="catalog/controller/common/header.php">
+    <operation>
+      <search><![CDATA[public function index(]]></search>
+      <add position="after"><![CDATA[
+        $data['facebook_page_id_FAE'] =
+          $this->config->get(FacebookCommonUtils::FACEBOOK_PAGE_ID);
+        $data['facebook_jssdk_version_FAE'] =
+          $this->config->get(FacebookCommonUtils::FACEBOOK_JSSDK_VER);
+        $data['facebook_messenger_enabled_FAE'] =
+          $this->config->get(FacebookCommonUtils::FACEBOOK_MESSENGER);
+        // default greeting code to empty string if setting is not available
+        $customization_greeting_code = $this->config->get(
+          FacebookCommonUtils::FACEBOOK_CUSTOMIZATION_GREETING_TEXT_CODE);
+        $data['facebook_customization_greeting_text_code_FAE'] =
+          ($customization_greeting_code)
+          ? sprintf('logged_in_greeting="%s" logged_out_greeting="%s"',
+            $customization_greeting_code,
+            $customization_greeting_code)
+          : '';
+        // default locale to en_US if setting is not available
+        $customization_locale = $this->config->get(
+          FacebookCommonUtils::FACEBOOK_CUSTOMIZATION_LOCALE);
+        $data['facebook_customization_locale_FAE'] =
+          ($customization_locale)
+          ? $customization_locale
+          : 'en_US';
+        // default theme color code to empty string if setting is not available
+        $customization_theme_color_code = $this->config->get(
+          FacebookCommonUtils::FACEBOOK_CUSTOMIZATION_THEME_COLOR_CODE);
+        $data['facebook_customization_theme_color_code_FAE'] =
+          ($customization_theme_color_code)
+          ? sprintf('theme_color="%s"', $customization_theme_color_code)
+          : '';
       ]]></add>
     </operation>
   </file>
@@ -549,7 +588,7 @@
 
         <script type="text/javascript">
           (function() {
-            var enableCookieBar = '<?= $facebook_enable_cookie_bar ?>';
+            var enableCookieBar = '<?php echo $facebook_enable_cookie_bar ?>';
             if (enableCookieBar === 'true') {
               facebook_loadScript("catalog/view/javascript/facebook/cookieconsent.min.js");
 
@@ -615,7 +654,7 @@
             t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
             document,'script','https://connect.facebook.net/en_US/fbevents.js');
 
-            var enableCookieBar = '<?= $facebook_enable_cookie_bar ?>';
+            var enableCookieBar = '<?php echo $facebook_enable_cookie_bar ?>';
             if (enableCookieBar === 'true') {
               fbq.consentCookieName = 'fb_cookieconsent_status';
 
@@ -630,19 +669,59 @@
               facebook_loadScript(
                 "catalog/view/javascript/facebook/facebook_pixel.js",
                 function() {
-                  var params = <?= $facebook_pixel_params_FAE ?>;
+                  var params = <?php echo $facebook_pixel_params_FAE ?>;
                   _facebookAdsExtension.facebookPixel.init(
-                    '<?= $facebook_pixel_id_FAE ?>',
-                    <?= $facebook_pixel_pii_FAE ?>,
+                    '<?php echo $facebook_pixel_id_FAE ?>',
+                    <?php echo $facebook_pixel_pii_FAE ?>,
                     params);
                   <?php if ($facebook_pixel_event_params_FAE) { ?>
                     _facebookAdsExtension.facebookPixel.firePixel(
-                      JSON.parse('<?= $facebook_pixel_event_params_FAE ?>'));
+                      JSON.parse('<?php echo $facebook_pixel_event_params_FAE ?>'));
                   <?php } ?>
                 });
             <?php } ?>
           })();
         </script>
+      ]]></add>
+    </operation>
+  </file>
+
+  <!-- Insert Messenger customer chat -->
+  <!-- We need to insert this before a </div> otherwise the chat will not work -->
+  <!-- Selecting the </header> as there could have other divs -->
+  <file path="catalog/view/theme/*/template/common/header.tpl">
+    <operation>
+      <search><![CDATA[</header>]]></search>
+      <add position="before"><![CDATA[
+
+        <?php if ($facebook_messenger_enabled_FAE == 'true') { ?>
+        <!-- Facebook JSSDK -->
+        <script>
+          window.fbAsyncInit = function() {
+            FB.init({
+              appId            : '',
+              autoLogAppEvents : true,
+              xfbml            : true,
+              version          : '<?php echo $facebook_jssdk_version_FAE ?>'
+            });
+          };
+
+          (function(d, s, id){
+             var js, fjs = d.getElementsByTagName(s)[0];
+             if (d.getElementById(id)) {return;}
+             js = d.createElement(s); js.id = id;
+             js.src = "https://connect.facebook.net/<?php echo $facebook_customization_locale_FAE ?>/sdk/xfbml.customerchat.js";
+             fjs.parentNode.insertBefore(js, fjs);
+           }(document, 'script', 'facebook-jssdk'));
+        </script>
+        <div
+          class="fb-customerchat"
+          attribution="fbe_opencart"
+          page_id="<?php echo $facebook_page_id_FAE ?>"
+          <?php echo $facebook_customization_greeting_text_code_FAE ?>
+          <?php echo $facebook_customization_theme_color_code_FAE ?>
+        />
+        <?php } ?>
       ]]></add>
     </operation>
   </file>
@@ -655,7 +734,7 @@
     <operation>
       <search><![CDATA[<?php echo $footer; ?>]]></search>
       <add position="before"><![CDATA[
-        <input type='hidden' id='fbProductID' value='<?= $product_id ?>' />
+        <input type="hidden" id="fbProductID" value="<?php echo $product_id ?>" />
       ]]></add>
     </operation>
   </file>
@@ -664,7 +743,7 @@
   <!-- This will prepare the params for Purchase pixel at Thank you page -->
   <file path="catalog/controller/checkout/success.php">
     <operation>
-      <search><![CDATA[public function index()]]></search>
+      <search><![CDATA[public function index(]]></search>
       <add position="after"><![CDATA[
         $this->load->language('checkout/success');
         try {
@@ -833,6 +912,46 @@
     </operation>
   </file>
 
+  <!-- Insert Messenger customer chat -->
+  <!-- We need to insert this before a </div> otherwise the chat will not work -->
+  <!-- Selecting the </header> as there are divs in a header -->
+  <file path="catalog/view/theme/*/template/common/header.twig">
+    <operation>
+      <search><![CDATA[</header>]]></search>
+      <add position="before"><![CDATA[
+
+        {% if facebook_messenger_enabled_FAE == 'true' %}
+        <!-- Facebook JSSDK -->
+        <script>
+          window.fbAsyncInit = function() {
+            FB.init({
+              appId            : '',
+              autoLogAppEvents : true,
+              xfbml            : true,
+              version          : '{{ facebook_jssdk_version_FAE }}'
+            });
+          };
+
+          (function(d, s, id){
+             var js, fjs = d.getElementsByTagName(s)[0];
+             if (d.getElementById(id)) {return;}
+             js = d.createElement(s); js.id = id;
+             js.src = "https://connect.facebook.net/{{ facebook_customization_locale_FAE }}/sdk/xfbml.customerchat.js";
+             fjs.parentNode.insertBefore(js, fjs);
+           }(document, 'script', 'facebook-jssdk'));
+        </script>
+        <div
+          class="fb-customerchat"
+          attribution="fbe_opencart"
+          page_id="{{ facebook_page_id_FAE }}"
+          {{ facebook_customization_greeting_text_code_FAE }}
+          {{ facebook_customization_theme_color_code_FAE }}
+        />
+        {% endif %}
+      ]]></add>
+    </operation>
+  </file>
+
   <!-- AddToCart at product details page -->
   <!-- Uses jQuery to add new listener to button-cart.click -->
   <!-- The code injection is set to match <?php echo $footer; ?> -->
@@ -841,7 +960,7 @@
     <operation>
       <search><![CDATA[{{ footer }}]]></search>
       <add position="before"><![CDATA[
-        <input type='hidden' id='fbProductID' value='{{ product_id }}' />
+        <input type="hidden" id="fbProductID" value="{{ product_id }}" />
       ]]></add>
     </operation>
   </file>
@@ -900,127 +1019,10 @@
     </operation>
   </file>
 
-  <!-- Insert Messenger customer chat -->
-  <file path="catalog/view/theme/*/template/common/footer.tpl">
-    <operation>
-      <search><![CDATA[</footer>]]></search>
-      <add position="before"><![CDATA[
-
-        <?php if ($facebook_messenger_enabled_FAE == 'true') { ?>
-        <!-- Facebook JSSDK -->
-        <script>
-          window.fbAsyncInit = function() {
-            FB.init({
-              appId            : '',
-              autoLogAppEvents : true,
-              xfbml            : true,
-              version          : '<?= $facebook_jssdk_version_FAE ?>'
-            });
-          };
-
-          (function(d, s, id){
-             var js, fjs = d.getElementsByTagName(s)[0];
-             if (d.getElementById(id)) {return;}
-             js = d.createElement(s); js.id = id;
-             js.src = "https://connect.facebook.net/<?= $facebook_customization_locale_FAE ?>/sdk/xfbml.customerchat.js";
-             fjs.parentNode.insertBefore(js, fjs);
-           }(document, 'script', 'facebook-jssdk'));
-        </script>
-        <div
-          class="fb-customerchat"
-          attribution="fbe_opencart"
-          page_id="<?= $facebook_page_id_FAE ?>"
-          <?= $facebook_customization_greeting_text_code_FAE ?>
-          <?= $facebook_customization_theme_color_code_FAE ?>
-        />
-        <?php } ?>
-      ]]></add>
-    </operation>
-  </file>
-
-
-  <!-- Firing the pixel init and event code -->
-  <!-- The facebook_pixel_event_params_FAE is retrieved from the request->post -->
-  <file path="catalog/controller/common/footer.php">
-    <operation>
-      <search><![CDATA[public function index()]]></search>
-      <add position="after"><![CDATA[
-        $data['facebook_page_id_FAE'] =
-          $this->config->get(FacebookCommonUtils::FACEBOOK_PAGE_ID);
-        $data['facebook_jssdk_version_FAE'] =
-          $this->config->get(FacebookCommonUtils::FACEBOOK_JSSDK_VER);
-        $data['facebook_messenger_enabled_FAE'] =
-          $this->config->get(FacebookCommonUtils::FACEBOOK_MESSENGER);
-        // default greeting code to empty string if setting is not available
-        $customization_greeting_code = $this->config->get(
-          FacebookCommonUtils::FACEBOOK_CUSTOMIZATION_GREETING_TEXT_CODE);
-        $data['facebook_customization_greeting_text_code_FAE'] =
-          ($customization_greeting_code)
-          ? sprintf('logged_in_greeting="%s" logged_out_greeting="%s"',
-            $customization_greeting_code,
-            $customization_greeting_code)
-          : '';
-        // default locale to en_US if setting is not available
-        $customization_locale = $this->config->get(
-          FacebookCommonUtils::FACEBOOK_CUSTOMIZATION_LOCALE);
-        $data['facebook_customization_locale_FAE'] =
-          ($customization_locale)
-          ? $customization_locale
-          : 'en_US';
-        // default theme color code to empty string if setting is not available
-        $customization_theme_color_code = $this->config->get(
-          FacebookCommonUtils::FACEBOOK_CUSTOMIZATION_THEME_COLOR_CODE);
-        $data['facebook_customization_theme_color_code_FAE'] =
-          ($customization_theme_color_code)
-          ? sprintf('theme_color="%s"', $customization_theme_color_code)
-          : '';
-      ]]></add>
-    </operation>
-  </file>
-
-  <!-- Insert Messenger customer chat -->
-  <file path="catalog/view/theme/*/template/common/footer.twig">
-    <operation>
-      <search><![CDATA[</footer>]]></search>
-      <add position="before"><![CDATA[
-
-        {% if facebook_messenger_enabled_FAE == 'true' %}
-        <!-- Facebook JSSDK -->
-        <script>
-          window.fbAsyncInit = function() {
-            FB.init({
-              appId            : '',
-              autoLogAppEvents : true,
-              xfbml            : true,
-              version          : '{{ facebook_jssdk_version_FAE }}'
-            });
-          };
-
-          (function(d, s, id){
-             var js, fjs = d.getElementsByTagName(s)[0];
-             if (d.getElementById(id)) {return;}
-             js = d.createElement(s); js.id = id;
-             js.src = "https://connect.facebook.net/{{ facebook_customization_locale_FAE }}/sdk/xfbml.customerchat.js";
-             fjs.parentNode.insertBefore(js, fjs);
-           }(document, 'script', 'facebook-jssdk'));
-        </script>
-        <div
-          class="fb-customerchat"
-          attribution="fbe_opencart"
-          page_id="{{ facebook_page_id_FAE }}"
-          {{ facebook_customization_greeting_text_code_FAE }}
-          {{ facebook_customization_theme_color_code_FAE }}
-        />
-        {% endif %}
-      ]]></add>
-    </operation>
-  </file>
-
-
   <file path="system/engine/router.php">
     <operation>
       <!-- helper method to run actions required for Facebook plugin -->
-      <search><![CDATA[public function __construct($registry) {]]></search>
+      <search><![CDATA[public function __construct($registry]]></search>
       <add position="before"><![CDATA[
         private function runAction($actionName) {
           // added in defensive checks to ensure the
@@ -1049,12 +1051,34 @@
         $this->runAction('extension/facebookeventparameters');
       ]]></add>
     </operation>
+
+    <operation>
+      <search><![CDATA[public function dispatch(Action $action, Action $error) {]]></search>
+      <add position="after"><![CDATA[
+        // tracking the last pre_action in the list
+        $lastPreAction = end($this->pre_action);
+      ]]></add>
+    </operation>
+
+    <operation>
+      <search><![CDATA[$result = $this->execute($pre_action);]]></search>
+      <add position="after"><![CDATA[
+        // additional attempt to extract the pixel details after
+        // executing the last preaction on the list of pre-actions
+        // we have to wait for all the preactions to be executed as 
+        // only then all the required information will be ready, eg
+        // uri mapping, shopping cart
+        if (isset($lastPreAction) && $pre_action == $lastPreAction) {
+          $this->runAction('extension/facebookeventparameters');
+        }
+      ]]></add>
+    </operation>
   </file>
 
   <file path="system/engine/front.php">
     <operation>
       <!-- helper method to run actions required for Facebook plugin -->
-      <search><![CDATA[public function __construct($registry) {]]></search>
+      <search><![CDATA[public function __construct($registry]]></search>
       <add position="before"><![CDATA[
         private function runAction($actionName) {
           // added in defensive checks to ensure the
@@ -1073,9 +1097,9 @@
     </operation>
   </file>
 
+  <!-- start; this is to cater for OpenCart v2.2.0.0 to v2.3.0.2 -->
   <file path="system/engine/front.php">
     <operation>
-      <!-- this is to cater for OpenCart v2.2.0.0 to v2.3.0.2 -->
       <search><![CDATA[while ($action instanceof Action) {]]></search>
       <add position="before"><![CDATA[
         // redirecting the direct checkout URL to product details page
@@ -1087,9 +1111,21 @@
     </operation>
   </file>
 
+  <!-- additional attempt to extract the pixel details after executing the last preaction on the list of pre-actions -->
   <file path="system/engine/front.php">
     <operation>
-      <!-- this is to cater for OpenCart v2.0.3.1 to v2.1.0.2  -->
+      <search><![CDATA[public function dispatch(Action $action, Action $error) {]]></search>
+      <add position="after"><![CDATA[
+        // tracking the last pre_action in the list
+        $lastPreAction = end($this->pre_action);
+      ]]></add>
+    </operation>
+  </file>
+  <!-- end; this is to cater for OpenCart v2.2.0.0 to v2.3.0.2 -->
+
+  <!-- start; this is to cater for OpenCart v2.0.3.1 to v2.1.0.2  -->
+  <file path="system/engine/front.php">
+    <operation>
       <search><![CDATA[while ($action) {]]></search>
       <add position="before"><![CDATA[
         // redirecting the direct checkout URL to product details page
@@ -1100,6 +1136,36 @@
       ]]></add>
     </operation>
   </file>
+
+  <!-- additional attempt to extract the pixel details after executing the last preaction on the list of pre-actions -->
+  <file path="system/engine/front.php">
+    <operation>
+      <search><![CDATA[public function dispatch($action, $error) {]]></search>
+      <add position="after"><![CDATA[
+        // tracking the last pre_action in the list
+        $lastPreAction = end($this->pre_action);
+      ]]></add>
+    </operation>
+  </file>
+  <!-- end; this is to cater for OpenCart v2.0.3.1 to v2.1.0.2  -->
+
+  <!-- start; common for all OpenCart v2.x  -->
+  <file path="system/engine/front.php">
+    <operation>
+      <search><![CDATA[$result = $this->execute($pre_action);]]></search>
+      <add position="after"><![CDATA[
+        // additional attempt to extract the pixel details after
+        // executing the last preaction on the list of pre-actions
+        // we have to wait for all the preactions to be executed as 
+        // only then all the required information will be ready, eg
+        // uri mapping, shopping cart
+        if (isset($lastPreAction) && $pre_action == $lastPreAction) {
+          $this->runAction('extension/facebookeventparameters');
+        }
+      ]]></add>
+    </operation>
+  </file>
+  <!-- end; common for all OpenCart v2.x  -->
 
   <file path="catalog/language/*/checkout/success.php">
     <operation>
