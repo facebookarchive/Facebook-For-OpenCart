@@ -94,14 +94,26 @@ class ControllerExtensionFacebookProductFeed extends Controller {
 
       $this->faeLog->write('Sync all products using feed, feed file generated');
 
-      $feed_id = $this->createFeed(
-        $facebook_catalog_id,
-        $facebook_page_token);
+      $feed_id = $this->getFacebookFeedId();
+      // for new setup, the feed_id will be empty
+      // for a resync of catalog, the feed_id will be available
       if (!$feed_id) {
-        $this->logError(
-          self::FEED_NOT_CREATED_ERROR_MESSAGE . $operation,
-          $error_data,
-          FacebookCommonUtils::INITIAL_PRODUCT_SYNC_EXCEPTION_MESSAGE);
+        // new setup
+        $feed_id = $this->createFeed(
+          $facebook_catalog_id,
+          $facebook_page_token);
+        if (!$feed_id) {
+          $this->logError(
+            self::FEED_NOT_CREATED_ERROR_MESSAGE . $operation,
+            $error_data,
+            FacebookCommonUtils::INITIAL_PRODUCT_SYNC_EXCEPTION_MESSAGE);
+        }
+      } else {
+        // resync of catalog
+        // we will remove away the upload_id and facebook_upload_end_time
+        // as a new set of upload_id and end time will be created
+        $this->deleteFacebookSetting(FacebookCommonUtils::FACEBOOK_UPLOAD_ID);
+        $this->deleteFacebookSetting(FacebookCommonUtils::FACEBOOK_UPLOAD_END_TIME);
       }
 
       // performs a last check if the feed file is successfully generated

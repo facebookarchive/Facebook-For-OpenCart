@@ -1,7 +1,19 @@
-Facebook Ads Extension
-Latest version: 2.1.9
+Facebook Business Extension
+Latest version: 2.1.10
 
 Change log
+2.1.10 - 3 June 2019
+* Renamed Facebook Ads Extension to Facebook Business Extension
+* Updated the logic for stock status to follow that of OpenCart on product details page - https://github.com/opencart/opencart/blob/master/upload/catalog/controller/product/product.php#L247-L253
+  1. OpenCart quantity of (1 or more) = Facebook in stock
+  2. OpenCart quantity of (0 or less), in stock = Facebook in stock
+  3. OpenCart quantity of (0 or less), out of stock = Facebook out of stock
+  4. OpenCart quantity of (0 or less), pre order = Facebook pre order
+  5. OpenCart quantity of (0 or less), 2-3 days = Facebook in stock
+* Improved the pixel firing for Opencart v3.x with Journal theme
+* Improved the function Resync products to use feed approach instead of API. This helps to reduce the webserver load, especially if there are many products.
+* Added mechanism to add version number to Javascript files as suffix. This will bust the client browser cache, reduce the need to Clear browser cache and force reload and avoid bugs on client browser side because they are using older version of the Javascript files.
+
 2.1.9 - 30 May 2019
 * Fixed a bug with sales end period to exclude out the sales end date on Facebook, eg if the sales end date is set as on 30 May 2019, the final end date of the sales will be 29 May 2019 23:59
 * Added mapping for predefined OpenCart product status into Facebook catalog availability. Note that Facebook Page Shop only shows "Not available" for out of stock and Checkout to website" for all other status. The logic is as follow:

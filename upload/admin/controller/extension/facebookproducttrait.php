@@ -85,6 +85,10 @@ trait ControllerExtensionFacebookProductTrait {
     return $this->getFacebookSetting(FacebookCommonUtils::FACEBOOK_PAGE_TOKEN);
   }
 
+  private function getFacebookFeedId() {
+    return $this->getFacebookSetting(FacebookCommonUtils::FACEBOOK_FEED_ID);
+  }
+
   private function getFacebookExternalMerchantSettings() {
     return $this->getFacebookSetting(
       FacebookCommonUtils::FACEBOOK_DIA_SETTING_ID);

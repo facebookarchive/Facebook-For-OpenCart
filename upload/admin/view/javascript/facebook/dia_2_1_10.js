@@ -220,12 +220,13 @@
 
     var syncAllProducts = function(onSuccess) {
       $.get(
-        'index.php?route=extension/facebookadsextension/syncallproducts&' +
+        'index.php?route=extension/facebookadsextension/syncallproductsusingfeed&' +
           window.facebookAdsToolboxConfig.token_string
       )
       .done(function(json) {
         if (json.total_to_be_sync === json.successfully_sync) {
           onSuccess();
+          refreshUIForDiaSettings();
         } else {
           window.sendToFacebook('fail catalog', json);
         }

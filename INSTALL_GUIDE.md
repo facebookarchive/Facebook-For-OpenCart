@@ -1,4 +1,4 @@
-Installation Guide for Facebook Ads Extension
+Installation Guide for Facebook Business Extension
 ====
 - The latest version of the plugin can be found at [here](https://github.com/facebookincubator/Facebook-For-OpenCart/releases/latest)
 - The latest version of the README can be found at [here](https://github.com/facebookincubator/Facebook-For-OpenCart/blob/master/README.md)
@@ -37,7 +37,7 @@ Installation Guide for Facebook Ads Extension
 
       - Ensure that the plugin file ends with .ocmod.zip extension. [Screenshot](https://drive.google.com/open?id=19hCCtDKLY12uiKu4WOJ_KGv_5_PNlS7m)
 
-  7. Ensure that the OpenCart database user has the permission rights to CREATE_TABLE, ALTER_TABLE, SELECT, UPDATE and DELETE. Our plugin requires these permissions to create a new database table to link the association of the OpenCart products with Facebook products and store the settings of the Facebook Ads Extension.
+  7. Ensure that the OpenCart database user has the permission rights to CREATE_TABLE, ALTER_TABLE, SELECT, UPDATE and DELETE. Our plugin requires these permissions to create a new database table to link the association of the OpenCart products with Facebook products and store the settings of the Facebook Business Extension.
 
   8. Our plugin is designed based on the default OpenCart folder structure as admin, catalog and system. If your folder structure is not the same, you will need to modify the plugin yourself to make it compatible with your folder structure. The changes will include:
       - changing the folder names of the plugin.
@@ -59,34 +59,34 @@ Installation Guide for Facebook Ads Extension
   2. For OpenCart 3.x, you need to perform an additional installation step. [Video guide](https://drive.google.com/open?id=1-ljN_pNcyZBbN2LoXtxwaJEy0dfnxAum)
       - Go to the admin panel of OpenCart and click on Menu -> Extensions -> Extensions. [Screenshot](https://drive.google.com/open?id=1ftZTL2M8S11g4XKqUIESalLraltFHlC-)
       - Click on the Extension type dropdown list and select Modules. [Screenshot](https://drive.google.com/open?id=1xQ-1yp22x6khgfduPw8CrtVpIHtPrS4T)
-      - Scroll down the list to locate Facebook Ads Extension and click on Install button. [Screenshot](https://drive.google.com/open?id=1sfryAfbG9rUyF0skyZ4BI7nLma8uM1KI)
+      - Scroll down the list to locate Facebook Business Extension and click on Install button. [Screenshot](https://drive.google.com/open?id=1sfryAfbG9rUyF0skyZ4BI7nLma8uM1KI)
 
 # Setup for Facebook pixel, catalog and page shop
-  1. Access the Facebook Ads Extension to install pixel, catalog and page shop. [Video guide](https://drive.google.com/open?id=1JPXQ0mS1pGk2Bat9RV02vYNdbRfCLP9r)
-      - Go to the admin panel of OpenCart and click on Menu -> Facebook Ads Extension -> Facebook Ads Extension. [Screenshot](https://drive.google.com/open?id=1xC5hQLqn-6AR7mxPME3y-safDTY-LFya)
+  1. Access the Facebook Business Extension to install pixel, catalog and page shop. [Video guide](https://drive.google.com/open?id=1JPXQ0mS1pGk2Bat9RV02vYNdbRfCLP9r)
+      - Go to the admin panel of OpenCart and click on Menu -> Facebook Business Extension -> Facebook Business Extension. [Screenshot](https://drive.google.com/open?id=1xC5hQLqn-6AR7mxPME3y-safDTY-LFya)
       - Click on the Get Started button. [Screenshot](https://drive.google.com/open?id=1NOmU1ujQS98PCrSe_lN9g4MTa-ig7CZy)
       - Read the welcome text and click on Next button. [Screenshot](https://drive.google.com/open?id=1k7eEaao8zznOHGtvc4yUs0-8w4YymzPf)
       - Select an existing Facebook Page or create a new Facebook Page and click on Next button. [Screenshot](https://drive.google.com/open?id=1hc66N_wa1GgqEP4yUgHuFxbeDXpqVl_b)
       - Select the Facebook pixel you wish to use for your OpenCart store website. Toggle Advanced matching if you wish to active Facebook Advanced matching and click on Next button. [Screenshot](https://drive.google.com/open?id=1nood2Oq1YSWdHsFXBQtF6PBTmOoy5tDr)
       - Toggle Page shop if you wish to enable the catalog on your Facebook Page. Click on Finish to complete the setup. [Screenshot](https://drive.google.com/open?id=1LqmQYAjuvgdsz6YTeRsIXTayIWYu_kQu)
       - Click on Continue button and Close button to close the popup screen. [Screenshot](https://drive.google.com/open?id=1yDn2AstNadjfCAGtcVY13mi1S0fTjwNt)
-      - Observe that the Facebook Ads Extension setup is completed successfully. [Screenshot](https://drive.google.com/open?id=1QYqAsRRym3uxxZWfT-ZsQXCmAAqXShvu)
+      - Observe that the Facebook Business Extension setup is completed successfully. [Screenshot](https://drive.google.com/open?id=1QYqAsRRym3uxxZWfT-ZsQXCmAAqXShvu)
 
-  2. Setup the permission rights for Facebook Ads Extension if you encounter "Permission Denied". [Screenshot.](https://drive.google.com/open?id=1wgBr11M5ikAVNXtxYw0bkYMsksTGW2ri) [Video guide](https://drive.google.com/open?id=1JUwZPlUNIhFO7I8U0slbJSQNjyu4al_J)
-      - Ensure you are on the latest version of the Facebook Ads Extension plugin. [Latest version](https://github.com/facebookincubator/Facebook-For-OpenCart/releases/latest)
+  2. Setup the permission rights for Facebook Business Extension if you encounter "Permission Denied". [Screenshot.](https://drive.google.com/open?id=1wgBr11M5ikAVNXtxYw0bkYMsksTGW2ri) [Video guide](https://drive.google.com/open?id=1JUwZPlUNIhFO7I8U0slbJSQNjyu4al_J)
+      - Ensure you are on the latest version of the Facebook Business Extension plugin. [Latest version](https://github.com/facebookincubator/Facebook-For-OpenCart/releases/latest)
       - If you are on OpenCart v3.x, ensure that you have performed the additional installation step. [Video guide](https://drive.google.com/open?id=1-ljN_pNcyZBbN2LoXtxwaJEy0dfnxAum)
-      - The Facebook Ads Extension plugin will automatically enable the permission access for the default Administrator group. For other user groups, you will need to provide the permission access manually.
+      - The Facebook Business Extension plugin will automatically enable the permission access for the default Administrator group. For other user groups, you will need to provide the permission access manually.
       - Follow the below steps to provide the permission access:
         - Go to the admin panel and click on Menu -> Settings -> Users -> User Groups. Locate your user group and click on the Edit button. [Screenshot](https://drive.google.com/open?id=1qNQQN4bFAk41CgW73rz6Dg5W_HIpnjMo)
         - Locate the Access and Modify permissions, extension/facebookadsextension. Ensure the permissions are selected and click on Save button. [Screenshot](https://drive.google.com/open?id=1GdwPxVE2xBz-R__1EVtsYeJylhhHMr-t)
-        - Access the Facebook Ads Extension to verify that you are able to view the plugin.
+        - Access the Facebook Business Extension to verify that you are able to view the plugin.
 
 # Delete the existing settings for Facebook for OpenCart
   1. [Video guide](https://drive.google.com/open?id=1PenBy_xizQGszdiS5BrmVFPypn5HKnkL)
   
-  2. You must have already completed the setup for pixel, catalog for Facebook Ads Extension.
+  2. You must have already completed the setup for pixel, catalog for Facebook Business Extension.
   
-  3. Go to the admin panel of OpenCart and click on Menu -> Facebook Ads Extension -> Facebook Ads Extension. Click on the Manage Settings button. [Screenshot](https://drive.google.com/open?id=1nUNSsphp7ID8Ma4_5ESWI8DR_eQ4-IfI)
+  3. Go to the admin panel of OpenCart and click on Menu -> Facebook Business Extension -> Facebook Business Extension. Click on the Manage Settings button. [Screenshot](https://drive.google.com/open?id=1nUNSsphp7ID8Ma4_5ESWI8DR_eQ4-IfI)
   
   4. In the popup window, click on the Advanced options and click on the Delete Settings button. [Screenshot](https://drive.google.com/open?id=1MteMvqhAlnt44uowXeTlDBPM0bHT1dmB)
   
@@ -99,7 +99,7 @@ Installation Guide for Facebook Ads Extension
   
   3. Go to the admin panel of OpenCart and click on Menu -> Extensions -> Modifications. [Screenshot](https://drive.google.com/open?id=1H5ppQPXnx2UYo6v82d5comDJKPu064X2)
   
-  4. Locate and select the Facebook Ads Extension plugin. Click on the Delete button on the top right of the screen. [Screenshot](https://drive.google.com/open?id=1cWMe0ChoDbTFm9on-9g89r7G_vZPylJP)
+  4. Locate and select the Facebook Business Extension plugin. Click on the Delete button on the top right of the screen. [Screenshot](https://drive.google.com/open?id=1cWMe0ChoDbTFm9on-9g89r7G_vZPylJP)
   
   5. Click on Ok button to delete the plugin. [Screenshot](https://drive.google.com/open?id=1swxbD99bfJxXGHfYPNYyZ3oaa6P7_rkY)
   
@@ -108,7 +108,7 @@ Installation Guide for Facebook Ads Extension
 # Upgrade the plugin to a later version
   1. [Video guide](https://drive.google.com/open?id=12dX2wYTcE3Y7Wf-ZBD_6X4EAZU2L-8vp)
 
-  2. You must have already installed the Facebook Ads Extension plugin on your OpenCart server.
+  2. You must have already installed the Facebook Business Extension plugin on your OpenCart server.
   
   3. Delete the existing Facebook for OpenCart plugin. [Video guide](https://drive.google.com/open?id=1aPxqEcH1J3tT3bG0vMIC5DLnkDN7fo_d)
 
@@ -116,20 +116,20 @@ Installation Guide for Facebook Ads Extension
 
 # Cookie bar on the webstore
   1. Disable the cookie bar.
-      - Ensure you are on the versions 2.0.3 and above of the Facebook Ads Extension plugin. [Latest version](https://github.com/facebookincubator/Facebook-For-OpenCart/releases/latest)
-      - Go to the admin panel and click on Menu -> Facebook Ads Extension -> Facebook Ads Extension. Click on Manage Settings button. [Screenshot](https://drive.google.com/open?id=1nUNSsphp7ID8Ma4_5ESWI8DR_eQ4-IfI)
+      - Ensure you are on the versions 2.0.3 and above of the Facebook Business Extension plugin. [Latest version](https://github.com/facebookincubator/Facebook-For-OpenCart/releases/latest)
+      - Go to the admin panel and click on Menu -> Facebook Business Extension -> Facebook Business Extension. Click on Manage Settings button. [Screenshot](https://drive.google.com/open?id=1nUNSsphp7ID8Ma4_5ESWI8DR_eQ4-IfI)
       - Uncheck the Show cookie bar on store website option. [Screenshot](https://drive.google.com/open?id=1cdzTmI9pIqKx2olKku0-bjH1XMPEKcbn)
 
   2. Enable the cookie bar.
-      - Ensure you are on the versions 2.0.3 and above of the Facebook Ads Extension plugin. [Latest version](https://github.com/facebookincubator/Facebook-For-OpenCart/releases/latest)
-      - Go to the admin panel and click on Menu -> Facebook Ads Extension -> Facebook Ads Extension. Click on Manage Settings button. [Screenshot](https://drive.google.com/open?id=1nUNSsphp7ID8Ma4_5ESWI8DR_eQ4-IfI)
+      - Ensure you are on the versions 2.0.3 and above of the Facebook Business Extension plugin. [Latest version](https://github.com/facebookincubator/Facebook-For-OpenCart/releases/latest)
+      - Go to the admin panel and click on Menu -> Facebook Business Extension -> Facebook Business Extension. Click on Manage Settings button. [Screenshot](https://drive.google.com/open?id=1nUNSsphp7ID8Ma4_5ESWI8DR_eQ4-IfI)
       - Check the Show cookie bar on store website option. [Screenshot](https://drive.google.com/open?id=1CSeaZ0BPsue6eNKsLHXjahodXWgNh5ss)
 
 # Setup for Facebook Messenger chat
   1. Enable the Facebook Messenger chat plugin. [Video guide](https://drive.google.com/open?id=1XubpAUFYw6m7lB9A8RqrdOPq3IjEQvIq)
-      - Ensure you are on versions 2.1.0 and above of the Facebook Ads Extension plugin. [Latest version](https://github.com/facebookincubator/Facebook-For-OpenCart/releases/latest)
-      - You must have already completed the setup for pixel, catalog for Facebook Ads Extension. [Video guide](https://drive.google.com/open?id=1JPXQ0mS1pGk2Bat9RV02vYNdbRfCLP9r)
-      - Go to the admin panel and click on Menu -> Facebook Ads Extension -> Facebook Ads Extension. Click on Manage Settings button. [Screenshot](https://drive.google.com/open?id=1nUNSsphp7ID8Ma4_5ESWI8DR_eQ4-IfI)
+      - Ensure you are on versions 2.1.0 and above of the Facebook Business Extension plugin. [Latest version](https://github.com/facebookincubator/Facebook-For-OpenCart/releases/latest)
+      - You must have already completed the setup for pixel, catalog for Facebook Business Extension. [Video guide](https://drive.google.com/open?id=1JPXQ0mS1pGk2Bat9RV02vYNdbRfCLP9r)
+      - Go to the admin panel and click on Menu -> Facebook Business Extension -> Facebook Business Extension. Click on Manage Settings button. [Screenshot](https://drive.google.com/open?id=1nUNSsphp7ID8Ma4_5ESWI8DR_eQ4-IfI)
       - In the popup window, locate the Messenger Chat plugin and click on View button. [Screenshot](https://drive.google.com/open?id=1Bs1bYqZFGWr2Da56vbAgcNQBsL1yd0qo)
       - Click on Add plugin button. [Screenshot](https://drive.google.com/open?id=1FOH4JgAtYUeK1vnkrhYC7TDdRwRmfTcJ)
       - Setup your language settings and click on Next button. [Screenshot](https://drive.google.com/open?id=1qtYfnjoIeLfcuQ2rxYR0hwEfbxCnXZaT)
@@ -138,12 +138,12 @@ Installation Guide for Facebook Ads Extension
 
   2. Edit the Facebook Messenger chat plugin settings.
       - Ensure you have enabled the Facebook Messenger chat plugin.
-      - Go to the admin panel and click on Menu -> Facebook Ads Extension -> Facebook Ads Extension. Click on Manage Settings button. [Screenshot](https://drive.google.com/open?id=1nUNSsphp7ID8Ma4_5ESWI8DR_eQ4-IfI)
+      - Go to the admin panel and click on Menu -> Facebook Business Extension -> Facebook Business Extension. Click on Manage Settings button. [Screenshot](https://drive.google.com/open?id=1nUNSsphp7ID8Ma4_5ESWI8DR_eQ4-IfI)
       - In the popup window, locate the Messenger Chat plugin and click on View button. [Screenshot](https://drive.google.com/open?id=1Bs1bYqZFGWr2Da56vbAgcNQBsL1yd0qo)
       - CLick on Edit button. Complete your changes and click on Finish button. [Screenshot](https://drive.google.com/open?id=1GZE4EGTrUVdFLwC7FCt98S_Bzynas21a)
 
   3. Disable the Facebook Messenger chat plugin settings.
       - Ensure you have enabled the Facebook Messenger chat plugin.
-      - Go to the admin panel and click on Menu -> Facebook Ads Extension -> Facebook Ads Extension. Click on Manage Settings button. [Screenshot](https://drive.google.com/open?id=1nUNSsphp7ID8Ma4_5ESWI8DR_eQ4-IfI)
+      - Go to the admin panel and click on Menu -> Facebook Business Extension -> Facebook Business Extension. Click on Manage Settings button. [Screenshot](https://drive.google.com/open?id=1nUNSsphp7ID8Ma4_5ESWI8DR_eQ4-IfI)
       - In the popup window, locate the Messenger Chat plugin and click on View button. [Screenshot](https://drive.google.com/open?id=1Bs1bYqZFGWr2Da56vbAgcNQBsL1yd0qo)
       - CLick on Disable button. Complete your changes and click on Finish button. [Screenshot](https://drive.google.com/open?id=1J_kOcyIWBZeO3YJZMJFMQlWui5eSn3Kq)

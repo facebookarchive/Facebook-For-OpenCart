@@ -4,7 +4,9 @@
 <!-- This source code is licensed under the license found in the -->
 <!-- LICENSE file in the root directory of this source tree. -->
 
-<script src="view/javascript/facebook/dia.js" type="text/javascript"></script>
+<!-- system auto generated dia.js, DO NOT MODIFY -->
+<script src='view/javascript/facebook/dia_2_1_10.js' type='text/javascript'></script>
+<!-- system auto generated dia.js, DO NOT MODIFY -->
 <link href="view/stylesheet/facebook/dia.css" type="text/css" rel="stylesheet" />
 <script>
   (function () {

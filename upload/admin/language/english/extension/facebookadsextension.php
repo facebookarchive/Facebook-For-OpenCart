@@ -5,7 +5,7 @@
 // This source code is licensed under the license found in the
 // LICENSE file in the root directory of this source tree.
 
-$_['heading_title']                     = 'Facebook Ads Extension';
+$_['heading_title']                     = 'Facebook Business Extension';
 $_['button_get_started']                = 'Get Started';
 $_['button_manage_settings']            = 'Manage Settings';
 $_['sub_heading_title']                 = 'Turn your products into ads on Facebook';
@@ -21,5 +21,5 @@ $_['download_log_file_error_warning']   = 'Warning: ' .
                                           'Your error log file %s is %s!';
 $_['enable_cookie_bar_text']            = 'Show cookie bar on store website';
 $_['product_sync_tooltip_text']         = 'The product sync status check will be performed every 30 secs.';
-$_['fae_entry_point_text']              = 'The Facebook Ads Extension can be accessed from the Main menu of your OpenCart admin panel.' .
-                                          '<br/>Or you can click <a href="%s">here</a> to access the Facebook Ads Extension.';
+$_['fae_entry_point_text']              = 'The Facebook Business Extension can be accessed from the Main menu of your OpenCart admin panel.' .
+                                          '<br/>Or you can click <a href="%s">here</a> to access the Facebook Business Extension.';

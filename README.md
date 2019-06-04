@@ -1,4 +1,4 @@
-Facebook Ads Extension for OpenCart v2.0.1.1 to v3.0.3.1
+Facebook Business Extension for OpenCart v2.0.1.1 to v3.0.3.1
 ====
 - The latest version of the plugin can be found at [here](https://github.com/facebookincubator/Facebook-For-OpenCart/releases/latest)
 - The latest version of the README can be found at [here](https://github.com/facebookincubator/Facebook-For-OpenCart/blob/master/README.md)
@@ -7,7 +7,7 @@ Facebook Ads Extension for OpenCart v2.0.1.1 to v3.0.3.1
 - For other questions or bug reporting, please create a ticket at our [github](https://github.com/facebookincubator/Facebook-For-OpenCart/issues)
 
 ====
-Source code for Facebook Ads Extension for OpenCart. This is for
+Source code for Facebook Business Extension for OpenCart. This is for
 OpenCart v2.0.1.1 to v3.0.3.1.
 
 # Features:
@@ -30,14 +30,14 @@ OpenCart v2.0.1.1 to v3.0.3.1.
 
 4. Enabling Messenger chat plugin on your store webpage.
 
-# Building Facebook Ads Extension for OpenCart from the source codes
+# Building Facebook Business Extension for OpenCart from the source codes
 Zip up contents of the folder and rename it to facebook_ads_extension.ocmod.zip. Do NOT include a sub-folder in the root of the zip file as it will result in unsuccessful installation of the plugin.
 
-# Installing Facebook Ads Extension on a running OpenCart website
+# Installing Facebook Business Extension on a running OpenCart website
 Refer to the installation guide [here](https://github.com/facebookincubator/Facebook-For-OpenCart/blob/master/INSTALL_GUIDE.md)
 
 # Frequently asked questions
 Refer to the FAQ guide [here](https://github.com/facebookincubator/Facebook-For-OpenCart/blob/master/FAQ.md)
 
 # License
-Facebook Ads Extension for OpenCart is Platform-licensed, as found in the LICENSE file.
+Facebook Business Extension for OpenCart is Platform-licensed, as found in the LICENSE file.

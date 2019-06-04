@@ -164,42 +164,43 @@ abstract class FacebookProductFormatter {
   }
 
   public function getAvailability($product) {
-    // OpenCart provides 2 settings - Stock status and subtract stock
-    // we are treating stock status as 1st level decision check and
-    // using the pre-defined stock status. We are not handling
-    // custom additions of new stock status
-    // for "in stock" status, we are further checking based on the
-    // subtract stock setting and available quantity
+    // we are re-writing the stock availability status
+    // to follow that of OpenCart logic
+    // https://github.com/opencart/opencart/blob/master/upload/catalog/controller/product/product.php#L247-L253
+    // the logic uses stock status if quantity <= 0
+    // otherwise to default to in stock
+    // subtract stock will NOT be used here
     $stock_status = 'in stock';
-    switch ($product['stock_status_id']) {
-      // in stock
-      case 7 :
-        // if subtract stock and qty = 0 we will set as out of stock
-        $stock_status = ($product['subtract'] == 1 && $product['quantity'] == 0)
-          ? 'out of stock'
-          : 'in stock';
-        break;
 
-      // out of stock
-      case 5 :
-        $stock_status = 'out of stock';
-        break;
+    // using stock status only if quantity <= 0
+    if ($product['quantity'] <= 0) {
+      switch ($product['stock_status_id']) {
+        // in stock
+        // we will default to in stock        
+        case 7 :
+          break;
 
-      // pre-order
-      case 8 :
-        $stock_status = 'preorder';
-        break;
+        // out of stock
+        case 5 :
+          $stock_status = 'out of stock';
+          break;
 
-      // 2-3 Days
-      // as Facebook does not support 2-3 Days
-      // we will default to in stock
-      case 6 :
-        break;
+        // pre-order
+        case 8 :
+          $stock_status = 'preorder';
+          break;
 
-      // all other new additions of stock status
-      // we will default to in stock
-      default :
-        break;
+        // 2-3 Days
+        // as Facebook does not support 2-3 Days
+        // we will default to in stock
+        case 6 :
+          break;
+
+        // all other new additions of stock status
+        // we will default to in stock
+        default :
+          break;
+      }      
     }
     return $stock_status;
   }
