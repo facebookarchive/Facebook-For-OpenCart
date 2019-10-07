@@ -5,7 +5,7 @@
 <!-- LICENSE file in the root directory of this source tree. -->
 
 <!-- system auto generated dia.js, DO NOT MODIFY -->
-<script src='view/javascript/facebook/dia_2_1_10.js' type='text/javascript'></script>
+<script src='view/javascript/facebook/dia_2_1_11.js' type='text/javascript'></script>
 <!-- system auto generated dia.js, DO NOT MODIFY -->
 <link href="view/stylesheet/facebook/dia.css" type="text/css" rel="stylesheet" />
 <script>
@@ -79,6 +79,11 @@
         <button type="button" class="close" data-dismiss="alert">&times;</button>
       </div>
     <?php } ?>
+    <?php if ($plugin_code_injection_error_messages) { ?>
+      <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> <?php echo $plugin_code_injection_error_messages; ?>
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+      </div>
+    <?php } ?>
     <div class="panel panel-default">
       <div class="panel-body">
         <div id="facebook-header">
@@ -128,13 +133,7 @@
               <?php echo $resync_text; ?>
             </button>
           </div>
-          <h2>
-            <input
-              type="checkbox"
-              onchange="_facebookAdsExtension.dia.setEnableCookieBar(this.checked)"
-              <?php echo $checked_enable_cookie_bar; ?> >
-              <?php echo $enable_cookie_bar_text; ?>
-          </h2>
+
           <div class="download">
             <a class="download" href="<?php echo $download_log_link; ?>">
               <?php echo $download_log_file_text; ?>
@@ -142,11 +141,64 @@
           </div>
         </div>
       </div>
+
+      <div class="panel-body" id="divSettings">
+        <div class="container-fluid">
+          <div class="pull-right">
+            <button title="Save" class="btn btn-primary" id="buttonSave"><i class="fa fa-save"></i></button>
+          </div>
+        </div>
+        <div class="container-fluid">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 class="panel-title"><i class="fa fa-list"></i> <?php echo $sub_heading_settings; ?></h3>
+            </div>
+            <div class="panel-body">
+              <form class="form-horizontal">
+                <div class="form-group">
+                  <label class="col-sm-2 control-label"><?php echo $enable_cookie_bar_text; ?></label>
+                  <div class="checkbox">
+                    <input
+                      type="checkbox"
+                      id="checkboxEnableCookieBar"
+                      class="form-control"
+                      <?php echo $checked_enable_cookie_bar; ?> >
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="col-sm-2 control-label"><?php echo $enable_special_price_text; ?></label>
+                  <div class="checkbox">
+                    <input
+                      type="checkbox"
+                      id="checkboxEnableSpecialPrice"
+                      class="form-control"
+                      <?php echo $checked_enable_special_price; ?> >
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 </div>
 <script type="text/javascript">
   $(function () {
+    $("#buttonSave").on('click', function() {
+      settingsKeyValueData = {
+        '<?php echo $enable_cookie_bar_key; ?>': $("#checkboxEnableCookieBar").prop('checked'),
+        '<?php echo $enable_special_price_key; ?>': $("#checkboxEnableSpecialPrice").prop('checked')
+      };
+      _facebookAdsExtension.dia.updateSettings(
+        settingsKeyValueData,
+        function() {
+          alert("<?php echo $alert_settings_saved; ?>");
+        }
+      );
+    });
+
     _facebookAdsExtension.dia.refreshUIForDiaSettings();
   });
 </script>

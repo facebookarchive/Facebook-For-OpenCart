@@ -12,6 +12,7 @@ class FacebookProductFormatterParams {
   private $hasCents; // 1 = currency supports cents, 0 = otherwise
   private $modelCatalogProduct; // model object to retrieve product discounts
   private $storeName; // name of the store, used if brand or category is empty
+  private $enableSpecialPrice; // decide if we should use the special price as discount
 
   public function __construct(
     $params) {
@@ -33,6 +34,9 @@ class FacebookProductFormatterParams {
     if (isset($params['tax'])) {
       $this->tax = $params['tax'];
     }
+    if (isset($params['enableSpecialPrice'])) {
+      $this->enableSpecialPrice = $params['enableSpecialPrice'];
+    }
   }
 
   public function getConfigTax() {
@@ -40,7 +44,7 @@ class FacebookProductFormatterParams {
   }
 
   public function getCurrencyCode() {
-    return $this->currencyCode;
+    return strtoupper($this->currencyCode);
   }
 
   public function hasCents() {
@@ -57,6 +61,10 @@ class FacebookProductFormatterParams {
 
   public function getTax() {
     return $this->tax;
+  }
+
+  public function hasEnabledSpecialPrice() {
+    return $this->enableSpecialPrice;
   }
 }
 
@@ -231,7 +239,7 @@ abstract class FacebookProductFormatter {
     $product_discount_data['sale_price_end_date'] =
       self::MIN_DATE . self::MAX_TIME;
     $product_discount_data['sale_price'] = $this->getPrice($product);
-    if ($product_specials) {
+    if ($this->params->hasEnabledSpecialPrice() && $product_specials) {
       foreach ($product_specials as $product_special) {
         // for empty date_start, we will treat it as MIN_DATE
         $sale_start = ($product_special['date_start'] === self::EMPTY_DATE)
@@ -265,6 +273,7 @@ abstract class FacebookProductFormatter {
         }
       }
     }
+
     return $product_discount_data;
   }
 

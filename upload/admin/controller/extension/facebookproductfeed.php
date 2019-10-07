@@ -174,13 +174,15 @@ class ControllerExtensionFacebookProductFeed extends Controller {
   }
 
   private function updateFacebookFeedId($feed_id) {
-    $this->loadFacebookModel('extension/facebooksetting');
+    $this->model_extension_facebooksetting =
+      $this->facebookcommonutils->loadFacebookSettingsModel($this->registry);
     $this->model_extension_facebooksetting->updateSettings(
       array(FacebookCommonUtils::FACEBOOK_FEED_ID => $feed_id));
   }
 
   private function updateFacebookUploadId($upload_id) {
-    $this->loadFacebookModel('extension/facebooksetting');
+    $this->model_extension_facebooksetting =
+      $this->facebookcommonutils->loadFacebookSettingsModel($this->registry);
     $this->model_extension_facebooksetting->updateSettings(
       array(FacebookCommonUtils::FACEBOOK_UPLOAD_ID => $upload_id));
   }
@@ -318,6 +320,12 @@ class ControllerExtensionFacebookProductFeed extends Controller {
       $this->faeLog->write(json_encode($result));
       return null;
     }
+    if (!$this->facebookcommonutils->isValidSetting(
+      FacebookCommonUtils::FACEBOOK_FEED_ID,
+      $result['id'])) {
+      $this->faeLog->write('Facebook feed id is invalid - ' . $result['id']);
+      return null;
+    }
     $feed_id = $result['id'];
     $this->updateFacebookFeedId($feed_id);
     return $feed_id;
@@ -333,6 +341,12 @@ class ControllerExtensionFacebookProductFeed extends Controller {
       $facebook_page_token);
     if (!isset($result['id']) || !$result['id']) {
       $this->faeLog->write(json_encode($result));
+      return null;
+    }
+    if (!$this->facebookcommonutils->isValidSetting(
+      FacebookCommonUtils::FACEBOOK_UPLOAD_ID,
+      $result['id'])) {
+      $this->faeLog->write('Facebook upload id is invalid - ' . $result['id']);
       return null;
     }
     $upload_id = $result['id'];
@@ -355,7 +369,8 @@ class ControllerExtensionFacebookProductFeed extends Controller {
     $facebook_page_token = $this->getFacebookPageAccessToken();
     // Verify if the upload end time is tracked in the settings
     // if upload end time is present, will assume everything is ok
-    $this->loadFacebookModel('extension/facebooksetting');
+    $this->model_extension_facebooksetting =
+      $this->facebookcommonutils->loadFacebookSettingsModel($this->registry);
     $facebook_setting =
       $this->model_extension_facebooksetting->getSettings();
     if (isset(
@@ -379,7 +394,8 @@ class ControllerExtensionFacebookProductFeed extends Controller {
   }
 
   private function updateFacebookUploadEndTime($end_time) {
-    $this->loadFacebookModel('extension/facebooksetting');
+    $this->model_extension_facebooksetting =
+      $this->facebookcommonutils->loadFacebookSettingsModel($this->registry);
     $this->model_extension_facebooksetting->updateSettings(
       array(FacebookCommonUtils::FACEBOOK_UPLOAD_END_TIME => $end_time));
   }

@@ -9,7 +9,7 @@
 <modification>
 	<name>Facebook Business Extension</name>
 	<code>facebook_business_extension</code>
-	<version>2.1.10</version>
+	<version>2.1.11</version>
 	<author>Facebook</author>
 	<link>https://github.com/facebookincubator/Facebook-For-OpenCart</link>
 
@@ -511,6 +511,17 @@
         // remove away the facebook_pixel_event_params_FAE in session data
         // to avoid duplicate firing after the 1st fire
         unset($this->session->data['facebook_pixel_event_params_FAE']);
+
+        // pull in the cookie bar settings from the language bar
+        $this->load->language('common/header');
+        $data['cookie_bar_header_value'] =
+          json_encode($this->language->get('cookie_bar_header_value'));
+        $data['cookie_bar_description_value'] =
+          json_encode($this->language->get('cookie_bar_description_value'));
+        $data['cookie_bar_opt_in_value'] =
+          json_encode($this->language->get('cookie_bar_opt_in_value'));
+        $data['cookie_bar_opt_out_value'] =
+          json_encode($this->language->get('cookie_bar_opt_out_value'));
       ]]></add>
     </operation>
   </file>
@@ -562,6 +573,14 @@
     <operation>
       <search><![CDATA[</head>]]></search>
       <add position="before"><![CDATA[
+        <-- DO NOT MODIFY, use for indicating pixel code added -->
+
+        <script type="text/javascript">
+          // we are using this flag to determine if the pixel
+          // is successfully added to the header
+          window.isFacebookPixelInHeaderAdded = 1;
+        </script>
+
         <script type="text/javascript">
           function facebook_loadScript(url, callback) {
             var script = document.createElement("script");
@@ -624,10 +643,10 @@
                   type: 'opt-out',
                   showLink: false,
                   content: {
-                    dismiss: 'Agree',
-                    deny: 'Opt Out',
-                    header: 'Our Site Uses Cookies',
-                    message: 'By clicking Agree, you agree to our <a class="cc-link" href="https://www.facebook.com/legal/terms/update" target="_blank">terms of service</a>, <a class="cc-link" href="https://www.facebook.com/policies/" target="_blank">privacy policy</a> and <a class="cc-link" href="https://www.facebook.com/policies/cookies/" target="_blank">cookies policy</a>.'
+                    allow: <?php echo $cookie_bar_opt_in_value ?>,
+                    deny: <?php echo $cookie_bar_opt_out_value ?>,
+                    header: <?php echo $cookie_bar_header_value ?>,
+                    message: <?php echo $cookie_bar_description_value ?>
                   },
                   layout: 'basic-header',
                   location: true,
@@ -667,7 +686,7 @@
 
             <?php if ($facebook_pixel_id_FAE) { ?>
 // system auto generated facebook_pixel.js, DO NOT MODIFY
-pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_1_10.js';
+pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_1_11.js';
 // system auto generated facebook_pixel.js, DO NOT MODIFY
               facebook_loadScript(
                 pixel_script_filename,
@@ -696,6 +715,13 @@ pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_1_10.
     <operation>
       <search><![CDATA[</header>]]></search>
       <add position="before"><![CDATA[
+        <-- DO NOT MODIFY, use for indicating messenger chat code added -->
+
+        <script type="text/javascript">
+          // we are using this flag to determine if the customer chat
+          // is successfully added to the header
+          window.isFacebookCustomerChatInHeaderAdded = 1;
+        </script>
 
         <?php if ($facebook_messenger_enabled_FAE == 'true') { ?>
         <!-- Facebook JSSDK -->
@@ -718,6 +744,7 @@ pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_1_10.
            }(document, 'script', 'facebook-jssdk'));
         </script>
         <div
+          id="fb-customerchat-header"
           class="fb-customerchat"
           attribution="fbe_opencart"
           page_id="<?php echo $facebook_page_id_FAE ?>"
@@ -791,6 +818,14 @@ pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_1_10.
     <operation>
       <search><![CDATA[</head>]]></search>
       <add position="before"><![CDATA[
+        <-- DO NOT MODIFY, use for indicating pixel code added -->
+
+        <script type="text/javascript">
+          // we are using this flag to determine if the pixel
+          // is successfully added to the header
+          window.isFacebookPixelInHeaderAdded = 1;
+        </script>
+
         <script type="text/javascript">
           function facebook_loadScript(url, callback) {
             var script = document.createElement("script");
@@ -853,10 +888,10 @@ pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_1_10.
                   type: 'opt-out',
                   showLink: false,
                   content: {
-                    dismiss: 'Agree',
-                    deny: 'Opt Out',
-                    header: 'Our Site Uses Cookies',
-                    message: 'By clicking Agree, you agree to our <a class="cc-link" href="https://www.facebook.com/legal/terms/update" target="_blank">terms of service</a>, <a class="cc-link" href="https://www.facebook.com/policies/" target="_blank">privacy policy</a> and <a class="cc-link" href="https://www.facebook.com/policies/cookies/" target="_blank">cookies policy</a>.'
+                    allow: {{ cookie_bar_opt_in_value }},
+                    deny: {{ cookie_bar_opt_out_value }},
+                    header: {{ cookie_bar_header_value }},
+                    message: {{ cookie_bar_description_value }}
                   },
                   layout: 'basic-header',
                   location: true,
@@ -896,7 +931,7 @@ pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_1_10.
 
             {% if facebook_pixel_id_FAE %}
 // system auto generated facebook_pixel.js, DO NOT MODIFY
-pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_1_10.js';
+pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_1_11.js';
 // system auto generated facebook_pixel.js, DO NOT MODIFY
               facebook_loadScript(
                 pixel_script_filename,
@@ -925,6 +960,13 @@ pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_1_10.
     <operation>
       <search><![CDATA[</header>]]></search>
       <add position="before"><![CDATA[
+        <-- DO NOT MODIFY, use for indicating messenger chat code added -->
+
+        <script type="text/javascript">
+          // we are using this flag to determine if the customer chat
+          // is successfully added to the header
+          window.isFacebookCustomerChatInHeaderAdded = 1;
+        </script>
 
         {% if facebook_messenger_enabled_FAE == 'true' %}
         <!-- Facebook JSSDK -->
@@ -947,6 +989,7 @@ pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_1_10.
            }(document, 'script', 'facebook-jssdk'));
         </script>
         <div
+          id="fb-customerchat-header"
           class="fb-customerchat"
           attribution="fbe_opencart"
           page_id="{{ facebook_page_id_FAE }}"
@@ -1214,6 +1257,499 @@ pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_1_10.
       <add position="after"><![CDATA[
         $_['text_warning_facebook_fae_install_problem'] = 'Warning: There is a problem with your Facebook Business Extension installation. Please go to Facebook Business Extension to view more details.';
         $_['text_warning_facebook_missing_facebookadsextension'] = 'Warning: There is a problem with your Facebook Business Extension installation. We are unable to locate the admin/controller/extension/facebookadsextension.php file on your webserver. Please ensure that you have given read+write+execute permission to the admin/controller folder and reinstall the plugin again.';
+      ]]></add>
+    </operation>
+  </file>
+
+  <file path="catalog/language/*/common/header.php">
+    <operation>
+      <search><![CDATA[<?php]]></search>
+      <add position="after"><![CDATA[
+        $_['cookie_bar_description_value']       = 'By clicking Agree, you agree to our <a class="cc-link" href="https://www.facebook.com/legal/terms/update" target="_blank">terms of service</a>, <a class="cc-link" href="https://www.facebook.com/policies/" target="_blank">privacy policy</a> and <a class="cc-link" href="https://www.facebook.com/policies/cookies/" target="_blank">cookies policy</a>.';
+        $_['cookie_bar_opt_in_value']            = 'Agree';
+        $_['cookie_bar_opt_out_value']           = 'Opt Out';
+        $_['cookie_bar_header_value']            = 'Our Site Uses Cookies';
+      ]]></add>
+    </operation>
+  </file>
+
+  <!-- Firing the pixel init and event code -->
+  <!-- The facebook_pixel_event_params_FAE is retrieved from the request->post -->
+  <file path="catalog/controller/common/footer.php">
+    <operation>
+      <search><![CDATA[public function index(]]></search>
+      <add position="after"><![CDATA[
+        $data['facebook_pixel_id_FAE'] =
+          $this->fbevents['facebook_pixel_id_FAE'];
+        $data['facebook_pixel_pii_FAE'] =
+          $this->fbevents['facebook_pixel_pii_FAE'];
+        $data['facebook_pixel_params_FAE'] =
+          $this->fbevents['facebook_pixel_params_FAE'];
+        $data['facebook_pixel_params_FAE'] =
+          $this->fbevents['facebook_pixel_params_FAE'];
+        $data['facebook_pixel_event_params_FAE'] =
+          $this->fbevents['facebook_pixel_event_params_FAE'];
+        $data['facebook_enable_cookie_bar'] =
+          $this->fbevents['facebook_enable_cookie_bar'];
+
+        // remove away the facebook_pixel_event_params_FAE in session data
+        // to avoid duplicate firing after the 1st fire
+        unset($this->session->data['facebook_pixel_event_params_FAE']);
+
+        // pull in the cookie bar settings from the language bar
+        $this->load->language('common/header');
+        $data['cookie_bar_header_value'] =
+          json_encode($this->language->get('cookie_bar_header_value'));
+        $data['cookie_bar_description_value'] =
+          json_encode($this->language->get('cookie_bar_description_value'));
+        $data['cookie_bar_opt_in_value'] =
+          json_encode($this->language->get('cookie_bar_opt_in_value'));
+        $data['cookie_bar_opt_out_value'] =
+          json_encode($this->language->get('cookie_bar_opt_out_value'));
+      ]]></add>
+    </operation>
+  </file>
+
+  <!-- Showing up the customer chat plugin -->
+  <!-- The customer chat plugin options are retrieved from the settings -->
+  <file path="catalog/controller/common/footer.php">
+    <operation>
+      <search><![CDATA[public function index(]]></search>
+      <add position="after"><![CDATA[
+        $data['facebook_page_id_FAE'] =
+          $this->config->get(FacebookCommonUtils::FACEBOOK_PAGE_ID);
+        $data['facebook_jssdk_version_FAE'] =
+          $this->config->get(FacebookCommonUtils::FACEBOOK_JSSDK_VER);
+        $data['facebook_messenger_enabled_FAE'] =
+          $this->config->get(FacebookCommonUtils::FACEBOOK_MESSENGER);
+        // default greeting code to empty string if setting is not available
+        $customization_greeting_code = $this->config->get(
+          FacebookCommonUtils::FACEBOOK_CUSTOMIZATION_GREETING_TEXT_CODE);
+        $data['facebook_customization_greeting_text_code_FAE'] =
+          ($customization_greeting_code)
+          ? sprintf('logged_in_greeting="%s" logged_out_greeting="%s"',
+            $customization_greeting_code,
+            $customization_greeting_code)
+          : '';
+        // default locale to en_US if setting is not available
+        $customization_locale = $this->config->get(
+          FacebookCommonUtils::FACEBOOK_CUSTOMIZATION_LOCALE);
+        $data['facebook_customization_locale_FAE'] =
+          ($customization_locale)
+          ? $customization_locale
+          : 'en_US';
+        // default theme color code to empty string if setting is not available
+        $customization_theme_color_code = $this->config->get(
+          FacebookCommonUtils::FACEBOOK_CUSTOMIZATION_THEME_COLOR_CODE);
+        $data['facebook_customization_theme_color_code_FAE'] =
+          ($customization_theme_color_code)
+          ? sprintf('theme_color="%s"', $customization_theme_color_code)
+          : '';
+      ]]></add>
+    </operation>
+  </file>
+
+  <!-- Attempt to insert the pixel and messenger chat codes in footer -->
+  <!-- if the codes are not inserted in the header -->
+  <file path="catalog/view/theme/*/template/common/footer.tpl">
+    <operation>
+      <search><![CDATA[</footer>]]></search>
+      <add position="before"><![CDATA[
+        <-- DO NOT MODIFY, use for indicating pixel code added -->
+
+        <script type="text/javascript">
+          // checks if the facebook code in header is successfully added
+          // and if not, will try to add in the pixel code to the footer
+          if (typeof window.isFacebookPixelInHeaderAdded === 'undefined') {
+            function facebook_loadScript(url, callback) {
+              var script = document.createElement("script");
+              script.type = "text/javascript";
+              if(script.readyState) {  // only required for IE <9
+                script.onreadystatechange = function() {
+                  if (script.readyState === "loaded" || script.readyState === "complete") {
+                    script.onreadystatechange = null;
+                    if (callback) {
+                      callback();
+                    }
+                  }
+                };
+              } else {  //Others
+                if (callback) {
+                  script.onload = callback;
+                }
+              }
+
+              script.src = url;
+              document.getElementsByTagName("head")[0].appendChild(script);
+            }
+          }
+        </script>
+
+        <script type="text/javascript">
+          // checks if the facebook code in header is successfully added
+          // and if not, will try to add in the pixel code to the footer
+          if (typeof window.isFacebookPixelInHeaderAdded === 'undefined') {
+            (function() {
+              var enableCookieBar = '<?php echo $facebook_enable_cookie_bar ?>';
+              if (enableCookieBar === 'true') {
+                facebook_loadScript("catalog/view/javascript/facebook/cookieconsent.min.js");
+
+                // loading the css file
+                var css = document.createElement("link");
+                css.setAttribute("rel", "stylesheet");
+                css.setAttribute("type", "text/css");
+                css.setAttribute(
+                  "href",
+                  "catalog/view/theme/css/facebook/cookieconsent.min.css");
+                document.getElementsByTagName("head")[0].appendChild(css);
+
+                window.addEventListener("load", function(){
+                  function setConsent() {
+                    fbq(
+                      'consent',
+                      this.hasConsented() ? 'grant' : 'revoke'
+                    );
+                  }
+                  window.cookieconsent.initialise({
+                    palette: {
+                      popup: {
+                        background: '#237afc'
+                      },
+                      button: {
+                        background: '#fff',
+                        text: '#237afc'
+                      }
+                    },
+                    cookie: {
+                      name: fbq.consentCookieName
+                    },
+                    type: 'opt-out',
+                    showLink: false,
+                    content: {
+                      allow: <?php echo $cookie_bar_opt_in_value ?>,
+                      deny: <?php echo $cookie_bar_opt_out_value ?>,
+                      header: <?php echo $cookie_bar_header_value ?>,
+                      message: <?php echo $cookie_bar_description_value ?>
+                    },
+                    layout: 'basic-header',
+                    location: true,
+                    revokable: true,
+                    onInitialise: setConsent,
+                    onStatusChange: setConsent,
+                    onRevokeChoice: setConsent
+                  }, function (popup) {
+                    // If this isn't open, we know that we can use cookies.
+                    if (!popup.getStatus() && !popup.options.enabled) {
+                      popup.setStatus(cookieconsent.status.dismiss);
+                    }
+                  });
+                });
+              }
+            })();
+          }
+        </script>
+
+        <script type="text/javascript">
+          // checks if the facebook code in header is successfully added
+          // and if not, will try to add in the pixel code to the footer
+          if (typeof window.isFacebookPixelInHeaderAdded === 'undefined') {
+            (function() {
+              !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+              n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+              n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+              t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+              document,'script','https://connect.facebook.net/en_US/fbevents.js');
+
+              var enableCookieBar = '<?php echo $facebook_enable_cookie_bar ?>';
+              if (enableCookieBar === 'true') {
+                fbq.consentCookieName = 'fb_cookieconsent_status';
+
+                (function() {
+                  function getCookie(t){var i=("; "+document.cookie).split("; "+t+"=");if(2==i.length)return i.pop().split(";").shift()}
+                  var consentValue = getCookie(fbq.consentCookieName);
+                  fbq('consent', consentValue === 'dismiss' ? 'grant' : 'revoke');
+                })();
+              }
+
+              <?php if ($facebook_pixel_id_FAE) { ?>
+// system auto generated facebook_pixel.js, DO NOT MODIFY
+pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_1_11.js';
+// system auto generated facebook_pixel.js, DO NOT MODIFY
+                facebook_loadScript(
+                  pixel_script_filename,
+                  function() {
+                    var params = <?php echo $facebook_pixel_params_FAE ?>;
+                    _facebookAdsExtension.facebookPixel.init(
+                      '<?php echo $facebook_pixel_id_FAE ?>',
+                      <?php echo $facebook_pixel_pii_FAE ?>,
+                      params);
+                    <?php if ($facebook_pixel_event_params_FAE) { ?>
+                      _facebookAdsExtension.facebookPixel.firePixel(
+                        JSON.parse('<?php echo $facebook_pixel_event_params_FAE ?>'));
+                    <?php } ?>
+                  });
+              <?php } ?>
+            })();
+          }
+          window.isFacebookPixelInHeaderAdded = 1;
+        </script>
+
+        <-- DO NOT MODIFY, use for indicating messenger chat code added -->
+
+        <?php if ($facebook_messenger_enabled_FAE == 'true') { ?>
+        <!-- Facebook JSSDK -->
+        <script>
+          // checks if the customer chat in header is successfully added
+          // and if not, will try to add in the messenger chat code to the footer
+          if (typeof window.isFacebookCustomerChatInHeaderAdded === 'undefined') {
+            window.fbAsyncInit = function() {
+              FB.init({
+                appId            : '',
+                autoLogAppEvents : true,
+                xfbml            : true,
+                version          : '<?php echo $facebook_jssdk_version_FAE ?>'
+              });
+            };
+
+            (function(d, s, id){
+               var js, fjs = d.getElementsByTagName(s)[0];
+               if (d.getElementById(id)) {return;}
+               js = d.createElement(s); js.id = id;
+               js.src = "https://connect.facebook.net/<?php echo $facebook_customization_locale_FAE ?>/sdk/xfbml.customerchat.js";
+               fjs.parentNode.insertBefore(js, fjs);
+             }(document, 'script', 'facebook-jssdk'));
+          }
+          window.isFacebookCustomerChatInHeaderAdded = 1;
+        </script>
+        <div
+          id="fb-customerchat-footer"
+          class="fb-customerchat"
+          attribution="fbe_opencart"
+          page_id="<?php echo $facebook_page_id_FAE ?>"
+          <?php echo $facebook_customization_greeting_text_code_FAE ?>
+          <?php echo $facebook_customization_theme_color_code_FAE ?>
+        />
+        <?php } ?>
+      ]]></add>
+    </operation>
+  </file>
+
+  <file path="catalog/view/theme/*/template/common/footer.tpl">
+    <operation>
+      <search><![CDATA[</footer>]]></search>
+      <add position="after"><![CDATA[
+        <?php if ($facebook_messenger_enabled_FAE == 'true') { ?>
+        <script>
+          // checks if the customer chat in header is successfully added
+          // and if so, will need to remove away the customer chat from the footer
+          if (window.isFacebookCustomerChatInHeaderAdded === 1) {
+            $('div#fb-customerchat-footer').remove();
+          }
+        </script>
+        <?php } ?>
+      ]]></add>
+    </operation>
+  </file>
+
+  <!-- Attempt to insert the pixel and messenger chat codes in footer -->
+  <!-- if the codes are not inserted in the header -->
+  <file path="catalog/view/theme/*/template/common/footer.twig">
+    <operation>
+      <search><![CDATA[</footer>]]></search>
+      <add position="before"><![CDATA[
+        <-- DO NOT MODIFY, use for indicating pixel code added -->
+
+        <script type="text/javascript">
+          // checks if the facebook code in header is successfully added
+          // and if not, will try to add in the pixel code to the footer
+          if (typeof window.isFacebookPixelInHeaderAdded === 'undefined') {
+            window.isFacebookCustomerChatInHeaderAdded = 1;
+            function facebook_loadScript(url, callback) {
+              var script = document.createElement("script");
+              script.type = "text/javascript";
+              if(script.readyState) {  // only required for IE <9
+                script.onreadystatechange = function() {
+                  if (script.readyState === "loaded" || script.readyState === "complete") {
+                    script.onreadystatechange = null;
+                    if (callback) {
+                      callback();
+                    }
+                  }
+                };
+              } else {  //Others
+                if (callback) {
+                  script.onload = callback;
+                }
+              }
+
+              script.src = url;
+              document.getElementsByTagName("head")[0].appendChild(script);
+            }
+          }
+        </script>
+
+        <script type="text/javascript">
+          // checks if the facebook code in header is successfully added
+          // and if not, will try to add in the pixel code to the footer
+          if (typeof window.isFacebookPixelInHeaderAdded === 'undefined') {
+            (function() {
+              var enableCookieBar = '{{ facebook_enable_cookie_bar }}';
+              if (enableCookieBar === 'true') {
+                facebook_loadScript("catalog/view/javascript/facebook/cookieconsent.min.js");
+
+                // loading the css file
+                var css = document.createElement("link");
+                css.setAttribute("rel", "stylesheet");
+                css.setAttribute("type", "text/css");
+                css.setAttribute(
+                  "href",
+                  "catalog/view/theme/css/facebook/cookieconsent.min.css");
+                document.getElementsByTagName("head")[0].appendChild(css);
+
+                window.addEventListener("load", function(){
+                  function setConsent() {
+                    fbq(
+                      'consent',
+                      this.hasConsented() ? 'grant' : 'revoke'
+                    );
+                  }
+                  window.cookieconsent.initialise({
+                    palette: {
+                      popup: {
+                        background: '#237afc'
+                      },
+                      button: {
+                        background: '#fff',
+                        text: '#237afc'
+                      }
+                    },
+                    cookie: {
+                      name: fbq.consentCookieName
+                    },
+                    type: 'opt-out',
+                    showLink: false,
+                    content: {
+                      allow: {{ cookie_bar_opt_in_value }},
+                      deny: {{ cookie_bar_opt_out_value }},
+                      header: {{ cookie_bar_header_value }},
+                      message: {{ cookie_bar_description_value }}
+                    },
+                    layout: 'basic-header',
+                    location: true,
+                    revokable: true,
+                    onInitialise: setConsent,
+                    onStatusChange: setConsent,
+                    onRevokeChoice: setConsent
+                  }, function (popup) {
+                    // If this isn't open, we know that we can use cookies.
+                    if (!popup.getStatus() && !popup.options.enabled) {
+                      popup.setStatus(cookieconsent.status.dismiss);
+                    }
+                  });
+                });
+              }
+            })();
+          }
+        </script>
+
+        <script type="text/javascript">
+          // checks if the facebook code in header is successfully added
+          // and if not, will try to add in the pixel code to the footer
+          if (typeof window.isFacebookPixelInHeaderAdded === 'undefined') {
+            (function() {
+              !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+              n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+              n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+              t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+              document,'script','https://connect.facebook.net/en_US/fbevents.js');
+
+              var enableCookieBar = '{{ facebook_enable_cookie_bar }}';
+              if (enableCookieBar === 'true') {
+                fbq.consentCookieName = 'fb_cookieconsent_status';
+
+                (function() {
+                  function getCookie(t){var i=("; "+document.cookie).split("; "+t+"=");if(2==i.length)return i.pop().split(";").shift()}
+                  var consentValue = getCookie(fbq.consentCookieName);
+                  fbq('consent', consentValue === 'dismiss' ? 'grant' : 'revoke');
+                })();
+              }
+
+              {% if facebook_pixel_id_FAE %}
+// system auto generated facebook_pixel.js, DO NOT MODIFY
+pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_1_11.js';
+// system auto generated facebook_pixel.js, DO NOT MODIFY
+                facebook_loadScript(
+                  pixel_script_filename,
+                  function() {
+                    var params = {{ facebook_pixel_params_FAE }};
+                    _facebookAdsExtension.facebookPixel.init(
+                      '{{ facebook_pixel_id_FAE }}',
+                      {{ facebook_pixel_pii_FAE }},
+                      params);
+                    {% if facebook_pixel_event_params_FAE %}
+                      _facebookAdsExtension.facebookPixel.firePixel(
+                        JSON.parse('{{facebook_pixel_event_params_FAE }}'));
+                    {% endif %}
+                  });
+              {% endif %}
+            })();
+          }
+          window.isFacebookPixelInHeaderAdded = 1;
+        </script>
+
+        <-- DO NOT MODIFY, use for indicating messenger chat code added -->
+
+        {% if facebook_messenger_enabled_FAE == 'true' %}
+        <!-- Facebook JSSDK -->
+        <script>
+          // checks if the customer chat in header is successfully added
+          // and if not, will try to add in the messenger chat code to the footer
+          if (typeof window.isFacebookCustomerChatInHeaderAdded === 'undefined') {
+            window.fbAsyncInit = function() {
+              FB.init({
+                appId            : '',
+                autoLogAppEvents : true,
+                xfbml            : true,
+                version          : '{{ facebook_jssdk_version_FAE }}'
+              });
+            };
+
+            (function(d, s, id){
+               var js, fjs = d.getElementsByTagName(s)[0];
+               if (d.getElementById(id)) {return;}
+               js = d.createElement(s); js.id = id;
+               js.src = "https://connect.facebook.net/{{ facebook_customization_locale_FAE }}/sdk/xfbml.customerchat.js";
+               fjs.parentNode.insertBefore(js, fjs);
+             }(document, 'script', 'facebook-jssdk'));
+          }
+          window.isFacebookCustomerChatInHeaderAdded = 1;
+        </script>
+        <div
+          id="fb-customerchat-footer"
+          class="fb-customerchat"
+          attribution="fbe_opencart"
+          page_id="{{ facebook_page_id_FAE }}"
+          {{ facebook_customization_greeting_text_code_FAE }}
+          {{ facebook_customization_theme_color_code_FAE }}
+        />
+        {% endif %}
+      ]]></add>
+    </operation>
+  </file>
+
+  <file path="catalog/view/theme/*/template/common/footer.twig">
+    <operation>
+      <search><![CDATA[</footer>]]></search>
+      <add position="after"><![CDATA[
+        {% if facebook_messenger_enabled_FAE == 'true' %}
+        <script>
+          // checks if the customer chat in header is successfully added
+          // and if so, will need to remove away the customer chat from the footer
+          if (window.isFacebookCustomerChatInHeaderAdded === 1) {
+            $('div#fb-customerchat-footer').remove();
+          }
+        </script>
+        {% endif %}
       ]]></add>
     </operation>
   </file>

@@ -20,6 +20,9 @@ $_['download_log_file_text']            = 'Download Log File';
 $_['download_log_file_error_warning']   = 'Warning: ' .
                                           'Your error log file %s is %s!';
 $_['enable_cookie_bar_text']            = 'Show cookie bar on store website';
+$_['enable_special_price_text']         = 'Sync product special price as discount to Facebook catalog (requires resync of products)';
 $_['product_sync_tooltip_text']         = 'The product sync status check will be performed every 30 secs.';
 $_['fae_entry_point_text']              = 'The Facebook Business Extension can be accessed from the Main menu of your OpenCart admin panel.' .
                                           '<br/>Or you can click <a href="%s">here</a> to access the Facebook Business Extension.';
+$_['sub_heading_settings']              = 'Settings';
+$_['alert_settings_saved']              = 'Settings saved';

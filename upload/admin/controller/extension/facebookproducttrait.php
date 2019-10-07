@@ -12,8 +12,9 @@ trait ControllerExtensionFacebookProductTrait {
     $this->faeLog = new Log(FacebookCommonUtils::FAE_LOG_FILENAME);
     $this->load->model('catalog/product');
     $this->load->model('localisation/currency');
-    $this->loadFacebookModel('extension/facebookproduct');
     $this->facebookcommonutils = new FacebookCommonUtils();
+    $this->model_extension_facebookproduct =
+      $this->facebookcommonutils->loadFacebookProductModel($this->registry);
     $this->facebookgraphapierror = new FacebookGraphAPIError();
     $this->facebookgraphapi = new FacebookGraphAPI();
     $this->facebookproductapiformatter = new FacebookProductAPIFormatter();
@@ -29,10 +30,15 @@ trait ControllerExtensionFacebookProductTrait {
         $default_currency_code,
         $default_currency);
     $store_name = $this->config->get('config_name');
+    $enable_special_price =
+      ($this->config->get('facebook_enable_special_price') === 'true')
+      ? true
+      : false;
 
     $params = new FacebookProductFormatterParams(array(
       'configTax' => $config_tax,
       'currencyCode' => $default_currency_code,
+      'enableSpecialPrice' => $enable_special_price,
       'hasCents' => $has_cents,
       'modelCatalogProduct' => $this->model_catalog_product,
       'storeName' => $store_name,
@@ -41,40 +47,6 @@ trait ControllerExtensionFacebookProductTrait {
     $this->facebookproductapiformatter->setup($params);
     $this->facebookproductfeedformatter->setup($params);
     $this->facebooksampleproductfeedformatter->setup($params);
-  }
-
-  private function loadFacebookModel($model_name) {
-    // attempting to load the model if it is on the same folder path
-    $full_model_filename =
-      getcwd() . "/model/" . $model_name . ".php";
-    $is_facebook_model_loaded = false;
-    if (is_file($full_model_filename)) {
-      try {
-        $this->load->model($model_name);
-        $is_facebook_model_loaded = true;
-      } catch (Exception $e) {
-        $is_facebook_model_loaded = false;
-      }
-    }
-
-    // unable to load the model
-    // this will happen for common models which are placed in
-    // the admin folder and shared/re-used in catalog folder (store front)
-    // in this case we will explicitly load the full name of the model
-    if (!$is_facebook_model_loaded) {
-      require_once
-        DIR_APPLICATION . "../admin/model/" . $model_name . ".php";
-      switch ($model_name) {
-        case "extension/facebooksetting":
-          $this->model_extension_facebooksetting =
-            new ModelExtensionFacebookSetting($this->registry);
-          break;
-        case "extension/facebookproduct":
-          $this->model_extension_facebookproduct =
-            new ModelExtensionFacebookProduct($this->registry);
-          break;
-      }
-    }
   }
 
   private function getFacebookCatalogId() {
@@ -99,7 +71,8 @@ trait ControllerExtensionFacebookProductTrait {
   }
 
   private function getFacebookSetting($setting_key) {
-    $this->loadFacebookModel('extension/facebooksetting');
+    $this->model_extension_facebooksetting =
+      $this->facebookcommonutils->loadFacebookSettingsModel($this->registry);
     $facebook_setting = $this->model_extension_facebooksetting->
       getSettings();
     return (isset($facebook_setting[$setting_key]))
@@ -108,7 +81,8 @@ trait ControllerExtensionFacebookProductTrait {
   }
 
   private function deleteFacebookSetting($setting_key) {
-    $this->loadFacebookModel('extension/facebooksetting');
+    $this->model_extension_facebooksetting =
+      $this->facebookcommonutils->loadFacebookSettingsModel($this->registry);
     $facebook_setting =
       $this->model_extension_facebooksetting->
         deleteSetting($setting_key);
@@ -154,7 +128,8 @@ trait ControllerExtensionFacebookProductTrait {
     $operation,
     $error_data = array('operation' => 'Access product module')) {
     // we are not using the getXXX methods to avoid repeated retrieval from DB
-    $this->loadFacebookModel('extension/facebooksetting');
+    $this->model_extension_facebooksetting =
+      $this->facebookcommonutils->loadFacebookSettingsModel($this->registry);
     $facebook_setting = $this->model_extension_facebooksetting->
       getSettings();
 

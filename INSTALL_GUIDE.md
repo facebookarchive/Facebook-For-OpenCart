@@ -117,13 +117,25 @@ Installation Guide for Facebook Business Extension
 # Cookie bar on the webstore
   1. Disable the cookie bar.
       - Ensure you are on the versions 2.0.3 and above of the Facebook Business Extension plugin. [Latest version](https://github.com/facebookincubator/Facebook-For-OpenCart/releases/latest)
-      - Go to the admin panel and click on Menu -> Facebook Business Extension -> Facebook Business Extension. Click on Manage Settings button. [Screenshot](https://drive.google.com/open?id=1nUNSsphp7ID8Ma4_5ESWI8DR_eQ4-IfI)
-      - Uncheck the Show cookie bar on store website option. [Screenshot](https://drive.google.com/open?id=1cdzTmI9pIqKx2olKku0-bjH1XMPEKcbn)
+      - Go to the admin panel of OpenCart and click on Menu -> Facebook Business Extension -> Facebook Business Extension. [Screenshot](https://drive.google.com/open?id=1xC5hQLqn-6AR7mxPME3y-safDTY-LFya)
+      - Uncheck the Show cookie bar on store website option and click on Save button. [Screenshot](https://drive.google.com/open?id=1cdzTmI9pIqKx2olKku0-bjH1XMPEKcbn)
 
   2. Enable the cookie bar.
       - Ensure you are on the versions 2.0.3 and above of the Facebook Business Extension plugin. [Latest version](https://github.com/facebookincubator/Facebook-For-OpenCart/releases/latest)
       - Go to the admin panel and click on Menu -> Facebook Business Extension -> Facebook Business Extension. Click on Manage Settings button. [Screenshot](https://drive.google.com/open?id=1nUNSsphp7ID8Ma4_5ESWI8DR_eQ4-IfI)
-      - Check the Show cookie bar on store website option. [Screenshot](https://drive.google.com/open?id=1CSeaZ0BPsue6eNKsLHXjahodXWgNh5ss)
+      - Check the Show cookie bar on store website option and click on Save button. [Screenshot](https://drive.google.com/open?id=1CSeaZ0BPsue6eNKsLHXjahodXWgNh5ss)
+
+# Product special price to be used as discount in Facebook catalog
+  1. Disable the special price to be used as discount.
+      - Ensure you are on the versions 2.1.11 and above of the Facebook Business Extension plugin. [Latest version](https://github.com/facebookincubator/Facebook-For-OpenCart/releases/latest)
+      - Go to the admin panel of OpenCart and click on Menu -> Facebook Business Extension -> Facebook Business Extension. [Screenshot](https://drive.google.com/open?id=1xC5hQLqn-6AR7mxPME3y-safDTY-LFya)
+      - Uncheck the Sync product special price as discount option and click on Save button. [Screenshot](https://drive.google.com/open?id=1cdzTmI9pIqKx2olKku0-bjH1XMPEKcbn)
+      - Click on Resync Products to Facebook button to resync the product details to Facebook.
+
+  2. Enable the special price to be used as discount.
+      - Ensure you are on the versions 2.1.11 and above of the Facebook Business Extension plugin. [Latest version](https://github.com/facebookincubator/Facebook-For-OpenCart/releases/latest)
+      - Go to the admin panel and click on Menu -> Facebook Business Extension -> Facebook Business Extension. Click on Manage Settings button. [Screenshot](https://drive.google.com/open?id=1nUNSsphp7ID8Ma4_5ESWI8DR_eQ4-IfI)
+      - Check the Sync product special price as discount option and click on Save button. [Screenshot](https://drive.google.com/open?id=1CSeaZ0BPsue6eNKsLHXjahodXWgNh5ss)
 
 # Setup for Facebook Messenger chat
   1. Enable the Facebook Messenger chat plugin. [Video guide](https://drive.google.com/open?id=1XubpAUFYw6m7lB9A8RqrdOPq3IjEQvIq)

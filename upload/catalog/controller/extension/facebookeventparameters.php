@@ -77,11 +77,13 @@ class ControllerExtensionFacebookEventParameters extends Controller {
       DIR_APPLICATION . '/../system/library/facebookproductformatter.php',
       DIR_APPLICATION . '/../system/library/facebooksampleproductfeedformatter.php',
       DIR_APPLICATION . '/../system/library/facebooktax.php',
+      DIR_APPLICATION . '/../system/library/model/extension/facebookproduct.php',
+      DIR_APPLICATION . '/../system/library/model/extension/facebooksetting.php',
       DIR_APPLICATION . '/../catalog/controller/extension/facebookeventparameters.php',
       DIR_APPLICATION . '/../catalog/controller/extension/facebookpageshopcheckoutredirect.php',
       DIR_APPLICATION . '/../catalog/controller/extension/facebookproduct.php',
       DIR_APPLICATION . '/../catalog/view/javascript/facebook/cookieconsent.min.js',
-      DIR_APPLICATION . '/../catalog/view/javascript/facebook/facebook_pixel_2_1_10.js',
+      DIR_APPLICATION . '/../catalog/view/javascript/facebook/facebook_pixel_2_1_11.js',
       DIR_APPLICATION . '/../catalog/view/theme/css/facebook/cookieconsent.min.css',
 // system auto generated, DO NOT MODIFY
       '');

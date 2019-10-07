@@ -76,7 +76,9 @@
         dataType: 'json',
         success: function(json) {
           if (json.success === 'true') {
-            onSuccess();
+            if (typeof onSuccess === "function") {
+              onSuccess();
+            }
           } else {
             showError('Error updating DIA settings');
           }
@@ -120,7 +122,9 @@
           window.facebookAdsToolboxConfig.token_string
       )
       .done(function(json) {
-        onSuccess();
+        if (typeof onSuccess === "function") {
+          onSuccess();
+        }
       })
       .fail(function(xhr, ajaxOptions, thrownError) {
         showError(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
@@ -208,16 +212,6 @@
       );
     };
 
-    var setEnableCookieBar = function(enable_cookie_bar) {
-      updateSettings(
-        {
-          'facebook_enable_cookie_bar': enable_cookie_bar
-        },
-        function() {
-        }
-      );
-    };
-
     var syncAllProducts = function(onSuccess) {
       $.get(
         'index.php?route=extension/facebookadsextension/syncallproductsusingfeed&' +
@@ -225,7 +219,9 @@
       )
       .done(function(json) {
         if (json.total_to_be_sync === json.successfully_sync) {
-          onSuccess();
+          if (typeof onSuccess === "function") {
+            onSuccess();
+          }
           refreshUIForDiaSettings();
         } else {
           window.sendToFacebook('fail catalog', json);
@@ -250,7 +246,9 @@
       .done(function(json) {
         if (json.success === 'true') {
           window.initial_product_sync = true;
-          onSuccess();
+          if (typeof onSuccess === "function") {
+            onSuccess();
+          }
         } else {
           window.sendToFacebook('fail ack custom_feed_sync', json);
         }
@@ -337,6 +335,7 @@
       $("#btnLaunchDiaWizard").hide();
       $("#divProductSyncStatus").hide();
       $("#divProductSyncErrorText").hide();
+      $("#divSettings").hide();
       $.get(
         'index.php?route=extension/facebookadsextension/iswritableproductfeedfolderavailable&' +
           window.facebookAdsToolboxConfig.token_string
@@ -359,6 +358,7 @@
       $("#btnLaunchDiaWizard").html('Manage Settings');
       $("#divProductSyncStatus").show();
       $("#divErrorText").hide();
+      $("#divSettings").show();
     };
 
     var showCheckingUploadStatus = function() {
@@ -444,7 +444,7 @@
       addEventListenerForDIA: addEventListenerForDIA,
       resyncAllProducts: resyncAllProducts,
       refreshUIForDiaSettings: refreshUIForDiaSettings,
-      setEnableCookieBar: setEnableCookieBar
+      updateSettings: updateSettings
     };
   }());
 }(window._facebookAdsExtension = window._facebookAdsExtension || {}, window, document));

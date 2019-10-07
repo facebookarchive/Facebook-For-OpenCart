@@ -39,7 +39,7 @@ class ModelExtensionFacebookSetting extends Model {
     $query = $this->db->query("SELECT * FROM " .
       DB_PREFIX .
       "setting WHERE `code` = 'facebook' " .
-      "AND `key` = '" . $setting_key . "'");
+      "AND `key` = '" . $this->db->escape($setting_key) . "'");
     return (isset($query->row['value']))
       ? $query->row['value']
       : '';
@@ -55,6 +55,6 @@ class ModelExtensionFacebookSetting extends Model {
     $this->db->query("DELETE FROM `" .
       DB_PREFIX .
       "setting` WHERE `code` = 'facebook' " .
-      "AND `key` = '" . $setting_key . "'");
+      "AND `key` = '" . $this->db->escape($setting_key) . "'");
   }
 }

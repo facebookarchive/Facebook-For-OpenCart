@@ -48,6 +48,7 @@ Always check that you have installed the latest version of the plugin as we are 
     - Check that you have refreshed the plugin modifications. Click on Refresh button to refresh the existing plugins on your OpenCart server. [Screenshot](https://drive.google.com/open?id=1Mfr49CzavKogSrOvZurJIvadfCwtR_6p)
     - If you are using OpenCart 3.x, check that you have disabled the theme cache. [Screenshot](https://drive.google.com/open?id=1bY-bworYxX36b88HDvFW0_32C3Wtq_Tm)
     - Please check if you are using the version 2.1.4 and above for the Facebook for OpenCart plugin.
+    - If you are on OpenCart v3.x, please check that you have not made any changes to the common/header.twig template file using the Theme Editor. It is a known issue that the Theme Editor is not compatible with ocmod plugins, and the Facebook for OpenCart plugin is using ocmod. [Screenshot](https://drive.google.com/open?id=1c5lnHR0fw9laZXOs9UEyhpMpsDaij_mU)
 
 2. I am getting "There is an error with Facebook Business Extension setup. Click on Facebook Business Extension, Manage Settings, go to Advanced options and click on Delete Settings to restart the setup." error after completing the setup. [Screenshot](https://drive.google.com/open?id=1PadMA4cE1M-l_PgmyYo3_qg2JGU8E0Iy)
     - If you have a large catalog, eg more than 5000 products, there could be memory limitations due to your webserver/database configurations. Please refer to the next section "Syncing of OpenCart products to Facebook catalog" for more details.
@@ -78,6 +79,13 @@ Always check that you have installed the latest version of the plugin as we are 
 
 4. How many product catalogs can I use with this setup?
     - You may only use 1 product catalog.
+
+5. Why is Facebook catalog/Page shop not showing up my product images?
+    - Ensure the file permission of the images on your website have read access. See this post for more details - https://github.com/facebookincubator/Facebook-For-OpenCart/issues/87
+    - Check on the DNS and SSL certification for your web hosting company if it is set to Flexible and to change this to Full (Strict). Check this post for more details - https://github.com/facebookincubator/Facebook-For-OpenCart/issues/244
+
+6. Why is the Checkout link from Page Shop not working?
+    - Check if the issue is due to server handling the URL rewrite due to special characters in the URL. See this post for more details - https://github.com/facebookincubator/Facebook-For-OpenCart/issues/113
 
 # Product configurations and settings
 1. Facebook product catalog showing "This url is classified as malicious" warning message.

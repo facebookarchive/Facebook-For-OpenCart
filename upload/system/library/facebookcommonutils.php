@@ -106,6 +106,9 @@ class FacebookCommonUtils {
     'https://api.github.com/repos/facebookincubator/Facebook-for-OpenCart/releases/latest';
   const FACEBOOK_LAST_UPGRADE_CHECK_TIME = 'facebook_last_upgrade_check_time';
   const FACEBOOK_ENABLE_COOKIE_BAR = 'facebook_enable_cookie_bar';
+  const FACEBOOK_PIXEL_CODE_INDICATOR = '<-- DO NOT MODIFY, use for indicating pixel code added -->';
+  const FACEBOOK_MESSENGER_CHAT_CODE_INDICATOR = '<-- DO NOT MODIFY, use for indicating messenger chat code added -->';
+  const FACEBOOK_ENABLE_SPECIAL_PRICE = 'facebook_enable_special_price';
 
   const FACEBOOK_THRESHOLD_FOR_INITIAL_SYNC_BY_API = 1000;
   const PRODUCT_COUNT_THRESHOLD = 5000;
@@ -132,12 +135,16 @@ class FacebookCommonUtils {
     'The product sync on Facebook catalog is still ongoing. Please wait for the sync to complete before making any product changes.';
   const REQUEST_PIXEL_SIGNATURE_ERROR_MESSAGE = 'There is an error requesting a signature key for your pixel, please try again later. Please contact Facebook via our <a href="https://github.com/facebookincubator/Facebook-For-OpenCart/issues" target="_blank">Github</a> if this error keeps showing up.';
   const PLUGIN_UPGRADE_MESSAGE = 'A newer version of the Facebook Business Extension plugin is available. To download it, go to <a href="https://github.com/facebookincubator/Facebook-For-OpenCart/releases" target="_blank">Github</a> or <a href="https://www.opencart.com/index.php?route=marketplace/extension/info&extension_id=32336" target="_blank">OpenCart marketplace</a>.';
+  const MISSING_WEB_STORE_CODE_ERROR_MESSAGE = 'We have detected the %s is not correctly setup in your web store site. You can try these below steps to fix the problem.<br/>' .
+    '1. Ensure that you have Refresh the modifications, <a href="https://drive.google.com/open?id=1qy-ipwK1HCk8oSnUmGuy6MCJxQdUyGfw" target="_blank">View steps</a><br/>' .
+    '2. For OpenCart 3.x, ensure that you have disabled the theme and SASS cache, <a href="https://drive.google.com/open?id=1bY-bworYxX36b88HDvFW0_32C3Wtq_Tm" target="_blank">View steps</a><br/>' .
+    '3. For OpenCart 3.x, ensure that you do not have modifications to the header design, <a href="https://drive.google.com/open?id=1066BSKAqjKegzw-5oKuvtZuzu_PzkRZT" target="_blank">View steps</a><br/>';
 
   const ACCESS_TOKEN_INVALID_EXCEPTION_CODE = 452;
 
   private $pluginAgentName = 'exopencart';
 // system auto generated, DO NOT MODIFY
-private $pluginVersion = '2.1.10';
+private $pluginVersion = '2.1.11';
 // system auto generated, DO NOT MODIFY
 
   public function __construct() {
@@ -381,5 +388,58 @@ private $pluginVersion = '2.1.10';
       $this->faeLog = new Log(self::FAE_LOG_FILENAME);
       $this->faeLog->write($e->getMessage());
     }
+  }
+
+  private function loadFacebookModel($model_name, $registry) {
+    $model = null;
+    // the facebook models have been moved to system/library/model/extension
+    require_once
+      DIR_APPLICATION . "../system/library/model/" . $model_name . ".php";
+    switch ($model_name) {
+      case "extension/facebooksetting":
+        $model =
+          new ModelExtensionFacebookSetting($registry);
+        break;
+      case "extension/facebookproduct":
+        $model =
+          new ModelExtensionFacebookProduct($registry);
+        break;
+    }
+    return $model;
+  }
+
+  public function loadFacebookSettingsModel($registry) {
+    return $this->loadFacebookModel("extension/facebooksetting", $registry);
+  }
+
+  public function loadFacebookProductModel($registry) {
+    return $this->loadFacebookModel("extension/facebookproduct", $registry);
+  }
+
+  public function isTrueFalseString($value) {
+    return ($value === 'true' || $value === 'false');
+  }
+
+  public function isValidSetting($setting, $value) {
+    $is_valid = true;
+    switch ($setting) {
+      case FacebookCommonUtils::FACEBOOK_DIA_SETTING_ID:
+      case FacebookCommonUtils::FACEBOOK_PIXEL_ID:
+      case FacebookCommonUtils::FACEBOOK_CATALOG_ID:
+      case FacebookCommonUtils::FACEBOOK_PAGE_ID:
+      case FacebookCommonUtils::FACEBOOK_FEED_ID:
+      case FacebookCommonUtils::FACEBOOK_UPLOAD_ID:
+        $is_valid = ctype_digit($value);
+        break;
+
+      case FacebookCommonUtils::FACEBOOK_PIXEL_USE_PII:
+      case FacebookCommonUtils::FACEBOOK_ENABLE_COOKIE_BAR:
+      case FacebookCommonUtils::FACEBOOK_ENABLE_SPECIAL_PRICE:
+      case FacebookCommonUtils::FACEBOOK_MESSENGER:
+        $is_valid = $this->isTrueFalseString($value);
+        break;
+    }
+
+    return $is_valid;
   }
 }

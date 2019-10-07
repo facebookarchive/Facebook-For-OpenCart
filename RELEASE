@@ -1,7 +1,16 @@
 Facebook Business Extension
-Latest version: 2.1.10
+Latest version: 2.1.11
 
 Change log
+2.1.11 - 1 Oct 2019
+* Improved the catalog sync and pixel currency by ensuring that the currency code is changed to uppercase
+* Added a check during the plugin installation to ensure that the extensions folder is empty before attempting to remove away the directory. Applicable only for OpenCart 2.0.3.1 and earlier
+* Provided a new setting for enabling/disabling OpenCart special prices to be sync to Facebook product catalog
+* Improved on the settings module for the plugin by providing a Save button
+* Improved on the pixel and customer chat modules on web store by attempting to inject to both header and footer. The footer code will only be loaded if the code fails to load on header
+* Added in a diagnostics check for the web store to verify if the pixel and customer chat modules are loaded successfully, and if not, provided suggestions on how to resolve them
+* Verified that the plugin supports OpenCart 3.0.3.2
+
 2.1.10 - 3 June 2019
 * Renamed Facebook Ads Extension to Facebook Business Extension
 * Updated the logic for stock status to follow that of OpenCart on product details page - https://github.com/opencart/opencart/blob/master/upload/catalog/controller/product/product.php#L247-L253

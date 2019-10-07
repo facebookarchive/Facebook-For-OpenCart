@@ -12,6 +12,7 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
     parent::__construct($registry);
     if (class_exists('FacebookCommonUtils')) {
       $this->faeLog = new Log(FacebookCommonUtils::FAE_LOG_FILENAME);
+      $this->facebookcommonutils = new FacebookCommonUtils();
     } else {
       error_log("class FacebookCommonUtils does not exist");
     }
@@ -36,7 +37,6 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
       return;
     }
 
-    $this->facebookcommonutils = new FacebookCommonUtils();
     $this->facebookgraphapi = new FacebookGraphAPI();
 
     $this->load->language('extension/facebookadsextension');
@@ -50,7 +50,8 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
       }
     }
 
-    $this->load->model('extension/facebooksetting');
+    $this->model_extension_facebooksetting =
+      $this->facebookcommonutils->loadFacebookSettingsModel($this->registry);
     $facebook_setting = $this->model_extension_facebooksetting
       ->getSettings();
 
@@ -91,7 +92,8 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
       isset($facebook_setting[FacebookCommonUtils::FACEBOOK_PIXEL_ID])
         ? $facebook_setting[FacebookCommonUtils::FACEBOOK_PIXEL_ID]
         : '';
-    $data['base_currency'] = addslashes($this->config->get('config_currency'));
+    $data['base_currency'] =
+      strtoupper(addslashes($this->config->get('config_currency')));
     $data['store_name'] = addslashes($this->config->get('config_name'));
     $data['opencart_version'] = VERSION;
     $data['plugin_version'] = $this->facebookcommonutils->getPluginVersion();
@@ -121,6 +123,10 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
       $this->language->get('download_log_file_text');
     $data['product_sync_tooltip_text'] =
       $this->language->get('product_sync_tooltip_text');
+    $data['sub_heading_settings'] =
+      $this->language->get('sub_heading_settings');
+    $data['alert_settings_saved'] =
+      $this->language->get('alert_settings_saved');
 
     $data['header'] = $this->load->controller('common/header');
     $data['column_left'] = $this->load->controller('common/column_left');
@@ -156,6 +162,28 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
       : '';
     $data['enable_cookie_bar_text'] =
       $this->language->get('enable_cookie_bar_text');
+    $data['enable_cookie_bar_key'] =
+      FacebookCommonUtils::FACEBOOK_ENABLE_COOKIE_BAR;
+
+    // performs a diagnostics check on the pixel and customer chat for the store front
+    // and gets any error messages from the check
+    $data['plugin_code_injection_error_messages'] =
+      $this->validatePluginCodeInjection();
+
+    // default the special price to be enabled if the setting is not available
+    $data['enable_special_price'] =
+      isset($facebook_setting[FacebookCommonUtils::FACEBOOK_ENABLE_SPECIAL_PRICE])
+      ? $facebook_setting[FacebookCommonUtils::FACEBOOK_ENABLE_SPECIAL_PRICE]
+      : 'true';
+    // this will control if the enable special price checkbox is checked
+    $data['checked_enable_special_price'] =
+      (strcmp($data['enable_special_price'], 'true') === 0)
+      ? 'checked'
+      : '';
+    $data['enable_special_price_text'] =
+      $this->language->get('enable_special_price_text');
+    $data['enable_special_price_key'] =
+      FacebookCommonUtils::FACEBOOK_ENABLE_SPECIAL_PRICE;
 
     $this->response->setOutput(
       $this->load->view(
@@ -163,8 +191,36 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
         $data));
   }
 
+  private function validatePluginCodeInjection() {
+    // validate that the plugin injected the codes successfully
+    $error_messages = array();
+    error_log($this->validateWebStoreCodeInjection());
+    array_push($error_messages, $this->validateWebStoreCodeInjection());
+    return implode(',', $error_messages);
+  }
+
+  private function validateWebStoreCodeInjection() {
+    $error_sections = array();
+
+    // read the html page of the web store
+    $curl = curl_init(HTTPS_CATALOG);
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+    $result = curl_exec($curl);
+    curl_close($curl);
+
+    if (strpos($result, FacebookCommonUtils::FACEBOOK_PIXEL_CODE_INDICATOR) == 0) {
+      array_push($error_sections, 'Facebook pixel');
+    }
+    if (strpos($result, FacebookCommonUtils::FACEBOOK_MESSENGER_CHAT_CODE_INDICATOR) == 0) {
+      array_push($error_sections, 'Messenger customer chat');
+    }
+
+    return (sizeof($error_sections))
+      ? sprintf(FacebookCommonUtils::MISSING_WEB_STORE_CODE_ERROR_MESSAGE, implode('/', $error_sections))
+      : '';
+  }
+
   private function logVersionsTologFile() {
-    $this->facebookcommonutils = new FacebookCommonUtils();
     $this->faeLog->write('Facebook Ads Extension version = ' .
       $this->facebookcommonutils->getPluginVersion());
     $this->faeLog->write('OpenCart version = ' . VERSION);
@@ -172,7 +228,8 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
   }
 
   private function logFAESettingsAvailability() {
-    $this->load->model('extension/facebooksetting');
+    $this->model_extension_facebooksetting =
+      $this->facebookcommonutils->loadFacebookSettingsModel($this->registry);
     $facebook_setting = $this->model_extension_facebooksetting
       ->getSettings();
     $this->faeLog->write(
@@ -314,28 +371,43 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
     $data = array();
 
     if (isset(
-      $this->request->post[FacebookCommonUtils::FACEBOOK_DIA_SETTING_ID])) {
+      $this->request->post[FacebookCommonUtils::FACEBOOK_DIA_SETTING_ID])
+      && $this->facebookcommonutils->isValidSetting(
+        FacebookCommonUtils::FACEBOOK_DIA_SETTING_ID,
+        $this->request->post[FacebookCommonUtils::FACEBOOK_DIA_SETTING_ID])) {
       $data[FacebookCommonUtils::FACEBOOK_DIA_SETTING_ID] =
         $this->request->post[FacebookCommonUtils::FACEBOOK_DIA_SETTING_ID];
     }
 
-    if (isset($this->request->post[FacebookCommonUtils::FACEBOOK_PIXEL_ID])) {
+    if (isset($this->request->post[FacebookCommonUtils::FACEBOOK_PIXEL_ID])
+      && $this->facebookcommonutils->isValidSetting(
+        FacebookCommonUtils::FACEBOOK_PIXEL_ID,
+        $this->request->post[FacebookCommonUtils::FACEBOOK_PIXEL_ID])) {
       $data[FacebookCommonUtils::FACEBOOK_PIXEL_ID] =
         $this->request->post[FacebookCommonUtils::FACEBOOK_PIXEL_ID];
     }
 
     if (isset(
-      $this->request->post[FacebookCommonUtils::FACEBOOK_PIXEL_USE_PII])) {
+      $this->request->post[FacebookCommonUtils::FACEBOOK_PIXEL_USE_PII])
+      && $this->facebookcommonutils->isValidSetting(
+        FacebookCommonUtils::FACEBOOK_PIXEL_USE_PII,
+        $this->request->post[FacebookCommonUtils::FACEBOOK_PIXEL_USE_PII])) {
       $data[FacebookCommonUtils::FACEBOOK_PIXEL_USE_PII] =
         $this->request->post[FacebookCommonUtils::FACEBOOK_PIXEL_USE_PII];
     }
 
-    if (isset($this->request->post[FacebookCommonUtils::FACEBOOK_CATALOG_ID])) {
+    if (isset($this->request->post[FacebookCommonUtils::FACEBOOK_CATALOG_ID])
+      && $this->facebookcommonutils->isValidSetting(
+        FacebookCommonUtils::FACEBOOK_CATALOG_ID,
+        $this->request->post[FacebookCommonUtils::FACEBOOK_CATALOG_ID])) {
       $data[FacebookCommonUtils::FACEBOOK_CATALOG_ID] =
         $this->request->post[FacebookCommonUtils::FACEBOOK_CATALOG_ID];
     }
 
-    if (isset($this->request->post[FacebookCommonUtils::FACEBOOK_PAGE_ID])) {
+    if (isset($this->request->post[FacebookCommonUtils::FACEBOOK_PAGE_ID])
+      && $this->facebookcommonutils->isValidSetting(
+        FacebookCommonUtils::FACEBOOK_PAGE_ID,
+        $this->request->post[FacebookCommonUtils::FACEBOOK_PAGE_ID])) {
       $data[FacebookCommonUtils::FACEBOOK_PAGE_ID] =
         $this->request->post[FacebookCommonUtils::FACEBOOK_PAGE_ID];
     }
@@ -345,7 +417,10 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
         $this->request->post[FacebookCommonUtils::FACEBOOK_PAGE_TOKEN];
     }
 
-    if (isset($this->request->post[FacebookCommonUtils::FACEBOOK_MESSENGER])) {
+    if (isset($this->request->post[FacebookCommonUtils::FACEBOOK_MESSENGER])
+      && $this->facebookcommonutils->isValidSetting(
+        FacebookCommonUtils::FACEBOOK_MESSENGER,
+        $this->request->post[FacebookCommonUtils::FACEBOOK_MESSENGER])) {
       $data[FacebookCommonUtils::FACEBOOK_MESSENGER] =
         $this->request->post[FacebookCommonUtils::FACEBOOK_MESSENGER];
     }
@@ -355,7 +430,10 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
         $this->request->post[FacebookCommonUtils::FACEBOOK_JSSDK_VER];
     }
 
-    if (isset($this->request->post[FacebookCommonUtils::FACEBOOK_ENABLE_COOKIE_BAR])) {
+    if (isset($this->request->post[FacebookCommonUtils::FACEBOOK_ENABLE_COOKIE_BAR])
+      && $this->facebookcommonutils->isValidSetting(
+        FacebookCommonUtils::FACEBOOK_ENABLE_COOKIE_BAR,
+        $this->request->post[FacebookCommonUtils::FACEBOOK_ENABLE_COOKIE_BAR])) {
       $data[FacebookCommonUtils::FACEBOOK_ENABLE_COOKIE_BAR] =
         $this->request->post[FacebookCommonUtils::FACEBOOK_ENABLE_COOKIE_BAR];
     }
@@ -377,9 +455,18 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
       }
     }
 
+    if (isset($this->request->post[FacebookCommonUtils::FACEBOOK_ENABLE_SPECIAL_PRICE])
+      && $this->facebookcommonutils->isValidSetting(
+        FacebookCommonUtils::FACEBOOK_ENABLE_SPECIAL_PRICE,
+        $this->request->post[FacebookCommonUtils::FACEBOOK_ENABLE_SPECIAL_PRICE])) {
+      $data[FacebookCommonUtils::FACEBOOK_ENABLE_SPECIAL_PRICE] =
+        $this->request->post[FacebookCommonUtils::FACEBOOK_ENABLE_SPECIAL_PRICE];
+    }
+
     $this->faeLog->write('Updating FAE settings - ' .
       implode(',', array_keys($data)));
-    $this->load->model('extension/facebooksetting');
+    $this->model_extension_facebooksetting =
+      $this->facebookcommonutils->loadFacebookSettingsModel($this->registry);
     $this->model_extension_facebooksetting->updateSettings($data);
 
     $json = array('success' => 'true');
@@ -405,7 +492,8 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
 
   public function deleteSettings() {
     $this->faeLog->write('Deleting FAE settings');
-    $this->load->model('extension/facebooksetting');
+    $this->model_extension_facebooksetting =
+      $this->facebookcommonutils->loadFacebookSettingsModel($this->registry);
     $this->model_extension_facebooksetting->deleteSettings();
 
     $json = array('success' => 'true');
@@ -487,7 +575,8 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
 
   private function updateSettingsToIndicateInitialSyncByAPI() {
     $this->faeLog->write('Updating FAE settings - ');
-    $this->load->model('extension/facebooksetting');
+    $this->model_extension_facebooksetting =
+      $this->facebookcommonutils->loadFacebookSettingsModel($this->registry);
     $data = array();
     $data[FacebookCommonUtils::FACEBOOK_FEED_ID] =
       'USING_API_FOR_INITIAL_SYNC';
@@ -548,13 +637,11 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
       DIR_APPLICATION . '/../admin/language/en-gb/extension/module/facebookadsextension_installer.php',
       DIR_APPLICATION . '/../admin/language/english/extension/facebookadsextension.php',
       DIR_APPLICATION . '/../admin/language/english/extension/module/facebookadsextension_installer.php',
-      DIR_APPLICATION . '/../admin/model/extension/facebookproduct.php',
-      DIR_APPLICATION . '/../admin/model/extension/facebooksetting.php',
       DIR_APPLICATION . '/../admin/view/image/facebook/background.png',
       DIR_APPLICATION . '/../admin/view/image/facebook/buttonbg.png',
       DIR_APPLICATION . '/../admin/view/image/facebook/fbicons.png',
       DIR_APPLICATION . '/../admin/view/image/facebook/loadingicon.gif',
-      DIR_APPLICATION . '/../admin/view/javascript/facebook/dia_2_1_10.js',
+      DIR_APPLICATION . '/../admin/view/javascript/facebook/dia_2_1_11.js',
       DIR_APPLICATION . '/../admin/view/stylesheet/facebook/dia.css',
       DIR_APPLICATION . '/../admin/view/stylesheet/facebook/feed.css',
       DIR_APPLICATION . '/../admin/view/stylesheet/facebook/pixel.css',
@@ -570,11 +657,13 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
       DIR_APPLICATION . '/../system/library/facebookproductformatter.php',
       DIR_APPLICATION . '/../system/library/facebooksampleproductfeedformatter.php',
       DIR_APPLICATION . '/../system/library/facebooktax.php',
+      DIR_APPLICATION . '/../system/library/model/extension/facebookproduct.php',
+      DIR_APPLICATION . '/../system/library/model/extension/facebooksetting.php',
       DIR_APPLICATION . '/../catalog/controller/extension/facebookeventparameters.php',
       DIR_APPLICATION . '/../catalog/controller/extension/facebookpageshopcheckoutredirect.php',
       DIR_APPLICATION . '/../catalog/controller/extension/facebookproduct.php',
       DIR_APPLICATION . '/../catalog/view/javascript/facebook/cookieconsent.min.js',
-      DIR_APPLICATION . '/../catalog/view/javascript/facebook/facebook_pixel_2_1_10.js',
+      DIR_APPLICATION . '/../catalog/view/javascript/facebook/facebook_pixel_2_1_11.js',
       DIR_APPLICATION . '/../catalog/view/theme/css/facebook/cookieconsent.min.css',
 // system auto generated, DO NOT MODIFY
       null
@@ -780,7 +869,8 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
 
   private function getLastUpgradeCheckTime() {
     // gets the last upgrade check time from database settings
-    $this->load->model('extension/facebooksetting');
+    $this->model_extension_facebooksetting =
+      $this->facebookcommonutils->loadFacebookSettingsModel($this->registry);
     $last_upgrade_check_time = $this->model_extension_facebooksetting
       ->getSetting(FacebookCommonUtils::FACEBOOK_LAST_UPGRADE_CHECK_TIME);
     if (!$last_upgrade_check_time) {
@@ -812,8 +902,8 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
   }
 
   private function updateLastUpgradeCheckTimeToCurrentDate() {
-    $data =
-    $this->load->model('extension/facebooksetting');
+    $this->model_extension_facebooksetting =
+      $this->facebookcommonutils->loadFacebookSettingsModel($this->registry);
     $data = array(
       FacebookCommonUtils::FACEBOOK_LAST_UPGRADE_CHECK_TIME
         => date("Y-m-d"));
