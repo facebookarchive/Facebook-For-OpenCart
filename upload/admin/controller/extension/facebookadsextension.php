@@ -641,7 +641,7 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
       DIR_APPLICATION . '/../admin/view/image/facebook/buttonbg.png',
       DIR_APPLICATION . '/../admin/view/image/facebook/fbicons.png',
       DIR_APPLICATION . '/../admin/view/image/facebook/loadingicon.gif',
-      DIR_APPLICATION . '/../admin/view/javascript/facebook/dia_2_1_11.js',
+      DIR_APPLICATION . '/../admin/view/javascript/facebook/dia_2_1_12.js',
       DIR_APPLICATION . '/../admin/view/stylesheet/facebook/dia.css',
       DIR_APPLICATION . '/../admin/view/stylesheet/facebook/feed.css',
       DIR_APPLICATION . '/../admin/view/stylesheet/facebook/pixel.css',
@@ -663,7 +663,7 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
       DIR_APPLICATION . '/../catalog/controller/extension/facebookpageshopcheckoutredirect.php',
       DIR_APPLICATION . '/../catalog/controller/extension/facebookproduct.php',
       DIR_APPLICATION . '/../catalog/view/javascript/facebook/cookieconsent.min.js',
-      DIR_APPLICATION . '/../catalog/view/javascript/facebook/facebook_pixel_2_1_11.js',
+      DIR_APPLICATION . '/../catalog/view/javascript/facebook/facebook_pixel_2_1_12.js',
       DIR_APPLICATION . '/../catalog/view/theme/css/facebook/cookieconsent.min.css',
 // system auto generated, DO NOT MODIFY
       null

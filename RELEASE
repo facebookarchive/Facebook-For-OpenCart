@@ -1,7 +1,10 @@
 Facebook Business Extension
-Latest version: 2.1.11
+Latest version: 2.1.12
 
 Change log
+2.1.12 - 8 Oct 2019
+* Fixed a bug where the comments are wrongly shown on the web store
+
 2.1.11 - 1 Oct 2019
 * Improved the catalog sync and pixel currency by ensuring that the currency code is changed to uppercase
 * Added a check during the plugin installation to ensure that the extensions folder is empty before attempting to remove away the directory. Applicable only for OpenCart 2.0.3.1 and earlier

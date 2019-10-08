@@ -9,7 +9,7 @@
 <modification>
 	<name>Facebook Business Extension</name>
 	<code>facebook_business_extension</code>
-	<version>2.1.11</version>
+	<version>2.1.12</version>
 	<author>Facebook</author>
 	<link>https://github.com/facebookincubator/Facebook-For-OpenCart</link>
 
@@ -573,7 +573,7 @@
     <operation>
       <search><![CDATA[</head>]]></search>
       <add position="before"><![CDATA[
-        <-- DO NOT MODIFY, use for indicating pixel code added -->
+        <!-- DO NOT MODIFY, use for indicating pixel code added -->
 
         <script type="text/javascript">
           // we are using this flag to determine if the pixel
@@ -686,7 +686,7 @@
 
             <?php if ($facebook_pixel_id_FAE) { ?>
 // system auto generated facebook_pixel.js, DO NOT MODIFY
-pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_1_11.js';
+pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_1_12.js';
 // system auto generated facebook_pixel.js, DO NOT MODIFY
               facebook_loadScript(
                 pixel_script_filename,
@@ -715,7 +715,7 @@ pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_1_11.
     <operation>
       <search><![CDATA[</header>]]></search>
       <add position="before"><![CDATA[
-        <-- DO NOT MODIFY, use for indicating messenger chat code added -->
+        <!-- DO NOT MODIFY, use for indicating messenger chat code added -->
 
         <script type="text/javascript">
           // we are using this flag to determine if the customer chat
@@ -818,7 +818,7 @@ pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_1_11.
     <operation>
       <search><![CDATA[</head>]]></search>
       <add position="before"><![CDATA[
-        <-- DO NOT MODIFY, use for indicating pixel code added -->
+        <!-- DO NOT MODIFY, use for indicating pixel code added -->
 
         <script type="text/javascript">
           // we are using this flag to determine if the pixel
@@ -931,7 +931,7 @@ pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_1_11.
 
             {% if facebook_pixel_id_FAE %}
 // system auto generated facebook_pixel.js, DO NOT MODIFY
-pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_1_11.js';
+pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_1_12.js';
 // system auto generated facebook_pixel.js, DO NOT MODIFY
               facebook_loadScript(
                 pixel_script_filename,
@@ -960,7 +960,7 @@ pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_1_11.
     <operation>
       <search><![CDATA[</header>]]></search>
       <add position="before"><![CDATA[
-        <-- DO NOT MODIFY, use for indicating messenger chat code added -->
+        <!-- DO NOT MODIFY, use for indicating messenger chat code added -->
 
         <script type="text/javascript">
           // we are using this flag to determine if the customer chat
@@ -1355,7 +1355,7 @@ pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_1_11.
     <operation>
       <search><![CDATA[</footer>]]></search>
       <add position="before"><![CDATA[
-        <-- DO NOT MODIFY, use for indicating pixel code added -->
+        <!-- DO NOT MODIFY, use for indicating pixel code added -->
 
         <script type="text/javascript">
           // checks if the facebook code in header is successfully added
@@ -1473,7 +1473,7 @@ pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_1_11.
 
               <?php if ($facebook_pixel_id_FAE) { ?>
 // system auto generated facebook_pixel.js, DO NOT MODIFY
-pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_1_11.js';
+pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_1_12.js';
 // system auto generated facebook_pixel.js, DO NOT MODIFY
                 facebook_loadScript(
                   pixel_script_filename,
@@ -1494,7 +1494,7 @@ pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_1_11.
           window.isFacebookPixelInHeaderAdded = 1;
         </script>
 
-        <-- DO NOT MODIFY, use for indicating messenger chat code added -->
+        <!-- DO NOT MODIFY, use for indicating messenger chat code added -->
 
         <?php if ($facebook_messenger_enabled_FAE == 'true') { ?>
         <!-- Facebook JSSDK -->
@@ -1557,7 +1557,7 @@ pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_1_11.
     <operation>
       <search><![CDATA[</footer>]]></search>
       <add position="before"><![CDATA[
-        <-- DO NOT MODIFY, use for indicating pixel code added -->
+        <!-- DO NOT MODIFY, use for indicating pixel code added -->
 
         <script type="text/javascript">
           // checks if the facebook code in header is successfully added
@@ -1676,7 +1676,7 @@ pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_1_11.
 
               {% if facebook_pixel_id_FAE %}
 // system auto generated facebook_pixel.js, DO NOT MODIFY
-pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_1_11.js';
+pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_1_12.js';
 // system auto generated facebook_pixel.js, DO NOT MODIFY
                 facebook_loadScript(
                   pixel_script_filename,
@@ -1697,7 +1697,7 @@ pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_1_11.
           window.isFacebookPixelInHeaderAdded = 1;
         </script>
 
-        <-- DO NOT MODIFY, use for indicating messenger chat code added -->
+        <!-- DO NOT MODIFY, use for indicating messenger chat code added -->
 
         {% if facebook_messenger_enabled_FAE == 'true' %}
         <!-- Facebook JSSDK -->

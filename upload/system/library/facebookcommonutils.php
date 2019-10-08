@@ -106,8 +106,8 @@ class FacebookCommonUtils {
     'https://api.github.com/repos/facebookincubator/Facebook-for-OpenCart/releases/latest';
   const FACEBOOK_LAST_UPGRADE_CHECK_TIME = 'facebook_last_upgrade_check_time';
   const FACEBOOK_ENABLE_COOKIE_BAR = 'facebook_enable_cookie_bar';
-  const FACEBOOK_PIXEL_CODE_INDICATOR = '<-- DO NOT MODIFY, use for indicating pixel code added -->';
-  const FACEBOOK_MESSENGER_CHAT_CODE_INDICATOR = '<-- DO NOT MODIFY, use for indicating messenger chat code added -->';
+  const FACEBOOK_PIXEL_CODE_INDICATOR = '<!-- DO NOT MODIFY, use for indicating pixel code added -->';
+  const FACEBOOK_MESSENGER_CHAT_CODE_INDICATOR = '<!-- DO NOT MODIFY, use for indicating messenger chat code added -->';
   const FACEBOOK_ENABLE_SPECIAL_PRICE = 'facebook_enable_special_price';
 
   const FACEBOOK_THRESHOLD_FOR_INITIAL_SYNC_BY_API = 1000;
@@ -144,7 +144,7 @@ class FacebookCommonUtils {
 
   private $pluginAgentName = 'exopencart';
 // system auto generated, DO NOT MODIFY
-private $pluginVersion = '2.1.11';
+private $pluginVersion = '2.1.12';
 // system auto generated, DO NOT MODIFY
 
   public function __construct() {
