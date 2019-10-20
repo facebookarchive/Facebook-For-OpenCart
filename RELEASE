@@ -1,7 +1,14 @@
 Facebook Business Extension
-Latest version: 2.1.12
+Latest version: 2.1.13
 
 Change log
+2.1.13 - 18 Oct 2019
+* Fixed a bug where the Messenger chat is not shown correctly on the footer, if it is enabled
+* Fixed a compatibility issue for PHP 5.3 to PHP 5.5
+* Improved the diagnostics check for pixel and Messenger chat code injection to be based on javascript variable instead of HTML comment, as HTML comments may be stripped away by optimisers/minifers
+* Improved the diagnostics check for Messenger chat code injection, only if the Messenger chat code injection is enabled
+* Improved the product sync by ignoring the disabled products on the SQL level
+
 2.1.12 - 8 Oct 2019
 * Fixed a bug where the comments are wrongly shown on the web store
 

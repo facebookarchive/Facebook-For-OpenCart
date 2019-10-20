@@ -216,7 +216,8 @@ class ControllerExtensionFacebookProductFeed extends Controller {
         $filter_data = array(
           'start' => $batch_number *
             FacebookCommonUtils::FACEBOOK_PRODUCT_QUERY_BATCH_COUNT,
-          'limit' => FacebookCommonUtils::FACEBOOK_PRODUCT_QUERY_BATCH_COUNT
+          'limit' => FacebookCommonUtils::FACEBOOK_PRODUCT_QUERY_BATCH_COUNT,
+          'filter_status' => 1
         );
         $products =
           $this->model_extension_facebookproduct->getProducts($filter_data);
@@ -266,14 +267,11 @@ class ControllerExtensionFacebookProductFeed extends Controller {
       array_walk(
         $products,
         function($product) use($feed_file) {
-          // only sends in the products which are enabled, status = 1
-          if ($product['status']) {
-            $product_data = $this->facebookproductfeedformatter->getProductData(
-              $product);
-            $product_data_as_feed_row =
-              $this->convertProductDataAsFeedRow($product_data);
-            fwrite($feed_file, $product_data_as_feed_row);
-          }
+          $product_data = $this->facebookproductfeedformatter->getProductData(
+            $product);
+          $product_data_as_feed_row =
+            $this->convertProductDataAsFeedRow($product_data);
+          fwrite($feed_file, $product_data_as_feed_row);
         });
       return true;
     } catch (Exception $e) {

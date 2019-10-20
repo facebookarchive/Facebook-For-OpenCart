@@ -106,8 +106,8 @@ class FacebookCommonUtils {
     'https://api.github.com/repos/facebookincubator/Facebook-for-OpenCart/releases/latest';
   const FACEBOOK_LAST_UPGRADE_CHECK_TIME = 'facebook_last_upgrade_check_time';
   const FACEBOOK_ENABLE_COOKIE_BAR = 'facebook_enable_cookie_bar';
-  const FACEBOOK_PIXEL_CODE_INDICATOR = '<!-- DO NOT MODIFY, use for indicating pixel code added -->';
-  const FACEBOOK_MESSENGER_CHAT_CODE_INDICATOR = '<!-- DO NOT MODIFY, use for indicating messenger chat code added -->';
+  const FACEBOOK_PIXEL_CODE_INDICATOR = 'window.isFacebookPixelAdded = 1;';
+  const FACEBOOK_MESSENGER_CHAT_CODE_INDICATOR = 'window.isFacebookCustomerChatAdded = 1;';
   const FACEBOOK_ENABLE_SPECIAL_PRICE = 'facebook_enable_special_price';
 
   const FACEBOOK_THRESHOLD_FOR_INITIAL_SYNC_BY_API = 1000;
@@ -135,16 +135,13 @@ class FacebookCommonUtils {
     'The product sync on Facebook catalog is still ongoing. Please wait for the sync to complete before making any product changes.';
   const REQUEST_PIXEL_SIGNATURE_ERROR_MESSAGE = 'There is an error requesting a signature key for your pixel, please try again later. Please contact Facebook via our <a href="https://github.com/facebookincubator/Facebook-For-OpenCart/issues" target="_blank">Github</a> if this error keeps showing up.';
   const PLUGIN_UPGRADE_MESSAGE = 'A newer version of the Facebook Business Extension plugin is available. To download it, go to <a href="https://github.com/facebookincubator/Facebook-For-OpenCart/releases" target="_blank">Github</a> or <a href="https://www.opencart.com/index.php?route=marketplace/extension/info&extension_id=32336" target="_blank">OpenCart marketplace</a>.';
-  const MISSING_WEB_STORE_CODE_ERROR_MESSAGE = 'We have detected the %s is not correctly setup in your web store site. You can try these below steps to fix the problem.<br/>' .
-    '1. Ensure that you have Refresh the modifications, <a href="https://drive.google.com/open?id=1qy-ipwK1HCk8oSnUmGuy6MCJxQdUyGfw" target="_blank">View steps</a><br/>' .
-    '2. For OpenCart 3.x, ensure that you have disabled the theme and SASS cache, <a href="https://drive.google.com/open?id=1bY-bworYxX36b88HDvFW0_32C3Wtq_Tm" target="_blank">View steps</a><br/>' .
-    '3. For OpenCart 3.x, ensure that you do not have modifications to the header design, <a href="https://drive.google.com/open?id=1066BSKAqjKegzw-5oKuvtZuzu_PzkRZT" target="_blank">View steps</a><br/>';
+  const MISSING_WEB_STORE_CODE_ERROR_MESSAGE = 'We have detected the %s is not correctly setup in your web store site. You can try these below steps to fix the problem.<br/>1. Ensure that you have Refresh the modifications, <a href="https://drive.google.com/open?id=1qy-ipwK1HCk8oSnUmGuy6MCJxQdUyGfw" target="_blank">View steps</a><br/>2. For OpenCart 3.x, ensure that you have disabled the theme and SASS cache, <a href="https://drive.google.com/open?id=1bY-bworYxX36b88HDvFW0_32C3Wtq_Tm" target="_blank">View steps</a><br/>3. For OpenCart 3.x, ensure that you do not have modifications to the header design, <a href="https://drive.google.com/open?id=1066BSKAqjKegzw-5oKuvtZuzu_PzkRZT" target="_blank">View steps</a><br/>';
 
   const ACCESS_TOKEN_INVALID_EXCEPTION_CODE = 452;
 
   private $pluginAgentName = 'exopencart';
 // system auto generated, DO NOT MODIFY
-private $pluginVersion = '2.1.12';
+private $pluginVersion = '2.1.13';
 // system auto generated, DO NOT MODIFY
 
   public function __construct() {

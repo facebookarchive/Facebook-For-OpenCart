@@ -9,7 +9,7 @@
 <modification>
 	<name>Facebook Business Extension</name>
 	<code>facebook_business_extension</code>
-	<version>2.1.12</version>
+	<version>2.1.13</version>
 	<author>Facebook</author>
 	<link>https://github.com/facebookincubator/Facebook-For-OpenCart</link>
 
@@ -573,12 +573,11 @@
     <operation>
       <search><![CDATA[</head>]]></search>
       <add position="before"><![CDATA[
-        <!-- DO NOT MODIFY, use for indicating pixel code added -->
-
         <script type="text/javascript">
           // we are using this flag to determine if the pixel
           // is successfully added to the header
           window.isFacebookPixelInHeaderAdded = 1;
+          window.isFacebookPixelAdded = 1;
         </script>
 
         <script type="text/javascript">
@@ -686,7 +685,7 @@
 
             <?php if ($facebook_pixel_id_FAE) { ?>
 // system auto generated facebook_pixel.js, DO NOT MODIFY
-pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_1_12.js';
+pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_1_13.js';
 // system auto generated facebook_pixel.js, DO NOT MODIFY
               facebook_loadScript(
                 pixel_script_filename,
@@ -715,12 +714,11 @@ pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_1_12.
     <operation>
       <search><![CDATA[</header>]]></search>
       <add position="before"><![CDATA[
-        <!-- DO NOT MODIFY, use for indicating messenger chat code added -->
-
         <script type="text/javascript">
           // we are using this flag to determine if the customer chat
           // is successfully added to the header
           window.isFacebookCustomerChatInHeaderAdded = 1;
+          window.isFacebookCustomerChatAdded = 1;
         </script>
 
         <?php if ($facebook_messenger_enabled_FAE == 'true') { ?>
@@ -818,12 +816,11 @@ pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_1_12.
     <operation>
       <search><![CDATA[</head>]]></search>
       <add position="before"><![CDATA[
-        <!-- DO NOT MODIFY, use for indicating pixel code added -->
-
         <script type="text/javascript">
           // we are using this flag to determine if the pixel
           // is successfully added to the header
           window.isFacebookPixelInHeaderAdded = 1;
+          window.isFacebookPixelAdded = 1;
         </script>
 
         <script type="text/javascript">
@@ -931,7 +928,7 @@ pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_1_12.
 
             {% if facebook_pixel_id_FAE %}
 // system auto generated facebook_pixel.js, DO NOT MODIFY
-pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_1_12.js';
+pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_1_13.js';
 // system auto generated facebook_pixel.js, DO NOT MODIFY
               facebook_loadScript(
                 pixel_script_filename,
@@ -960,12 +957,11 @@ pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_1_12.
     <operation>
       <search><![CDATA[</header>]]></search>
       <add position="before"><![CDATA[
-        <!-- DO NOT MODIFY, use for indicating messenger chat code added -->
-
         <script type="text/javascript">
           // we are using this flag to determine if the customer chat
           // is successfully added to the header
           window.isFacebookCustomerChatInHeaderAdded = 1;
+          window.isFacebookCustomerChatAdded = 1;
         </script>
 
         {% if facebook_messenger_enabled_FAE == 'true' %}
@@ -1355,8 +1351,6 @@ pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_1_12.
     <operation>
       <search><![CDATA[</footer>]]></search>
       <add position="before"><![CDATA[
-        <!-- DO NOT MODIFY, use for indicating pixel code added -->
-
         <script type="text/javascript">
           // checks if the facebook code in header is successfully added
           // and if not, will try to add in the pixel code to the footer
@@ -1473,7 +1467,7 @@ pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_1_12.
 
               <?php if ($facebook_pixel_id_FAE) { ?>
 // system auto generated facebook_pixel.js, DO NOT MODIFY
-pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_1_12.js';
+pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_1_13.js';
 // system auto generated facebook_pixel.js, DO NOT MODIFY
                 facebook_loadScript(
                   pixel_script_filename,
@@ -1491,10 +1485,8 @@ pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_1_12.
               <?php } ?>
             })();
           }
-          window.isFacebookPixelInHeaderAdded = 1;
+          window.isFacebookPixelAdded = 1;
         </script>
-
-        <!-- DO NOT MODIFY, use for indicating messenger chat code added -->
 
         <?php if ($facebook_messenger_enabled_FAE == 'true') { ?>
         <!-- Facebook JSSDK -->
@@ -1519,7 +1511,7 @@ pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_1_12.
                fjs.parentNode.insertBefore(js, fjs);
              }(document, 'script', 'facebook-jssdk'));
           }
-          window.isFacebookCustomerChatInHeaderAdded = 1;
+          window.isFacebookCustomerChatAdded = 1;
         </script>
         <div
           id="fb-customerchat-footer"
@@ -1557,13 +1549,10 @@ pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_1_12.
     <operation>
       <search><![CDATA[</footer>]]></search>
       <add position="before"><![CDATA[
-        <!-- DO NOT MODIFY, use for indicating pixel code added -->
-
         <script type="text/javascript">
           // checks if the facebook code in header is successfully added
           // and if not, will try to add in the pixel code to the footer
           if (typeof window.isFacebookPixelInHeaderAdded === 'undefined') {
-            window.isFacebookCustomerChatInHeaderAdded = 1;
             function facebook_loadScript(url, callback) {
               var script = document.createElement("script");
               script.type = "text/javascript";
@@ -1676,7 +1665,7 @@ pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_1_12.
 
               {% if facebook_pixel_id_FAE %}
 // system auto generated facebook_pixel.js, DO NOT MODIFY
-pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_1_12.js';
+pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_1_13.js';
 // system auto generated facebook_pixel.js, DO NOT MODIFY
                 facebook_loadScript(
                   pixel_script_filename,
@@ -1694,10 +1683,8 @@ pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_1_12.
               {% endif %}
             })();
           }
-          window.isFacebookPixelInHeaderAdded = 1;
+          window.isFacebookPixelAdded = 1;
         </script>
-
-        <!-- DO NOT MODIFY, use for indicating messenger chat code added -->
 
         {% if facebook_messenger_enabled_FAE == 'true' %}
         <!-- Facebook JSSDK -->
@@ -1722,7 +1709,7 @@ pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_1_12.
                fjs.parentNode.insertBefore(js, fjs);
              }(document, 'script', 'facebook-jssdk'));
           }
-          window.isFacebookCustomerChatInHeaderAdded = 1;
+          window.isFacebookCustomerChatAdded = 1;
         </script>
         <div
           id="fb-customerchat-footer"

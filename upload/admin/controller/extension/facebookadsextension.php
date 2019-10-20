@@ -194,7 +194,6 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
   private function validatePluginCodeInjection() {
     // validate that the plugin injected the codes successfully
     $error_messages = array();
-    error_log($this->validateWebStoreCodeInjection());
     array_push($error_messages, $this->validateWebStoreCodeInjection());
     return implode(',', $error_messages);
   }
@@ -208,15 +207,19 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
     $result = curl_exec($curl);
     curl_close($curl);
 
+    // always do the check for pixel
     if (strpos($result, FacebookCommonUtils::FACEBOOK_PIXEL_CODE_INDICATOR) == 0) {
       array_push($error_sections, 'Facebook pixel');
     }
-    if (strpos($result, FacebookCommonUtils::FACEBOOK_MESSENGER_CHAT_CODE_INDICATOR) == 0) {
+
+    // only do the check for messenger chat if it is enabled
+    if (strpos($result, FacebookCommonUtils::FACEBOOK_MESSENGER_CHAT_CODE_INDICATOR) == 0
+      && $this->config->get(FacebookCommonUtils::FACEBOOK_MESSENGER) === 'true') {
       array_push($error_sections, 'Messenger customer chat');
     }
 
     return (sizeof($error_sections))
-      ? sprintf(FacebookCommonUtils::MISSING_WEB_STORE_CODE_ERROR_MESSAGE, implode('/', $error_sections))
+      ? sprintf(FacebookCommonUtils::MISSING_WEB_STORE_CODE_ERROR_MESSAGE, implode(', ', $error_sections))
       : '';
   }
 
@@ -641,7 +644,7 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
       DIR_APPLICATION . '/../admin/view/image/facebook/buttonbg.png',
       DIR_APPLICATION . '/../admin/view/image/facebook/fbicons.png',
       DIR_APPLICATION . '/../admin/view/image/facebook/loadingicon.gif',
-      DIR_APPLICATION . '/../admin/view/javascript/facebook/dia_2_1_12.js',
+      DIR_APPLICATION . '/../admin/view/javascript/facebook/dia_2_1_13.js',
       DIR_APPLICATION . '/../admin/view/stylesheet/facebook/dia.css',
       DIR_APPLICATION . '/../admin/view/stylesheet/facebook/feed.css',
       DIR_APPLICATION . '/../admin/view/stylesheet/facebook/pixel.css',
@@ -663,7 +666,7 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
       DIR_APPLICATION . '/../catalog/controller/extension/facebookpageshopcheckoutredirect.php',
       DIR_APPLICATION . '/../catalog/controller/extension/facebookproduct.php',
       DIR_APPLICATION . '/../catalog/view/javascript/facebook/cookieconsent.min.js',
-      DIR_APPLICATION . '/../catalog/view/javascript/facebook/facebook_pixel_2_1_12.js',
+      DIR_APPLICATION . '/../catalog/view/javascript/facebook/facebook_pixel_2_1_13.js',
       DIR_APPLICATION . '/../catalog/view/theme/css/facebook/cookieconsent.min.css',
 // system auto generated, DO NOT MODIFY
       null
