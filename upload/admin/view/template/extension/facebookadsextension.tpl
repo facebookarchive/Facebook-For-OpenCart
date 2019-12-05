@@ -5,7 +5,7 @@
 <!-- LICENSE file in the root directory of this source tree. -->
 
 <!-- system auto generated dia.js, DO NOT MODIFY -->
-<script src='view/javascript/facebook/dia_2_1_13.js' type='text/javascript'></script>
+<script src='view/javascript/facebook/dia_2_2_0.js' type='text/javascript'></script>
 <!-- system auto generated dia.js, DO NOT MODIFY -->
 <link href="view/stylesheet/facebook/dia.css" type="text/css" rel="stylesheet" />
 <script>
@@ -20,7 +20,6 @@
       hasGzipSupport: '<?php echo $has_gzip_support; ?>',
       enabledPlugins: ['MESSENGER_CHAT'],
       popupOrigin: 'https://' + fb_url,
-      feedWasDisabled: 'true',
       platform: 'OpenCart',
       pixel: {
         pixelId: '<?php echo $facebook_pixel_id; ?>',
@@ -38,18 +37,19 @@
         plugin_version: '<?php echo $plugin_version; ?>'
       },
       feed: {
+        enabled: true,
+        format: 'csv',
         totalVisibleProducts: <?php echo $total_visible_products; ?>
       },
       feedPrepared: {
-        feedUrl: '',
-        feedPingUrl: '',
+        feedUrl: '<?php echo $feed_url; ?>',
+        feedPingUrl: '<?php echo $feed_ping_url; ?>',
+        feedMigrated: <?php echo $feed_migrated ? 'true' : 'false'; ?>,
         samples: <?php echo $sample_feed; ?>
       },
       debug_url: debug_url,
       token_string: '<?php echo $token_string; ?>',
     };
-
-    window.initial_product_sync = <?php echo $initial_product_sync; ?>;
   })();
 </script>
 
@@ -84,6 +84,16 @@
         <button type="button" class="close" data-dismiss="alert">&times;</button>
       </div>
     <?php } ?>
+    <?php if ($plugin_feed_not_migrated_message) { ?>
+      <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> <?php echo $plugin_feed_not_migrated_message; ?>
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+      </div>
+    <?php } ?>
+    <?php if ($plugin_feed_migrated_and_website_in_maintenance_message) { ?>
+      <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> <?php echo $plugin_feed_migrated_and_website_in_maintenance_message; ?>
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+      </div>
+    <?php } ?>
     <div class="panel panel-default">
       <div class="panel-body">
         <div id="facebook-header">
@@ -108,32 +118,6 @@
               id="btnLaunchDiaWizard">
             </button>
           </div>
-          <div id="divProductSyncStatus" class="product-sync-status">
-            <div class="product-sync-status">
-              <img
-                src="view/image/facebook/loadingicon.gif"
-                width="20"
-                height="20"/>
-            </div>
-            <div
-              id="divProductSyncStatusText"
-              class="product-sync-status-dotted-underline">
-            </div>
-            <div class="product-sync-status-tooltiptext">
-              <?php echo $product_sync_tooltip_text; ?>
-            </div>
-          </div>
-          <div>
-            <button
-              type="button"
-              class="blue"
-              onClick="_facebookAdsExtension.dia.resyncAllProducts(
-                '<?php echo $resync_confirm_text; ?>')"
-              id="btnResyncProducts">
-              <?php echo $resync_text; ?>
-            </button>
-          </div>
-
           <div class="download">
             <a class="download" href="<?php echo $download_log_link; ?>">
               <?php echo $download_log_file_text; ?>

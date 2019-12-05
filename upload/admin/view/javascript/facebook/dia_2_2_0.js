@@ -104,30 +104,37 @@
       updateSettings(
         {'facebook_catalog_id': message.params.catalog_id},
         function() {
-          // clearing of the existing table oc_facebook_product
-          // this table stores the assoc between OpenCart and FB product
-          // this function will only be called on the initial setup to ensure
-          // that this assoc table is freshly initialized
-          clearAllFacebookProducts(function () {
-            window.sendToFacebook('ack set catalog', message.params);
-            window.facebookAdsToolboxConfig.catalogId = message.params.catalog_id;
-          });
+          window.sendToFacebook('ack set catalog', message.params);
+          window.facebookAdsToolboxConfig.catalogId = message.params.catalog_id;
         }
       );
     };
 
-    var clearAllFacebookProducts = function(onSuccess) {
-      $.get(
-        'index.php?route=extension/facebookadsextension/clearallfacebookproducts&' +
-          window.facebookAdsToolboxConfig.token_string
-      )
-      .done(function(json) {
-        if (typeof onSuccess === "function") {
-          onSuccess();
+    var setFeedMigrated = function(message) {
+      if (!message.params.hasOwnProperty('feed_migrated')) {
+        console.error('Facebook Extension Error: feed migrated not received', message.params);
+        showError('Facebook Extension Error: feed migrated not received');
+        window.sendToFacebook('fail set feed migrated', message.params);
+        return;
+      }     
+
+      updateSettings(
+        {'facebook_feed_migrated': message.params.feed_migrated},
+        function() {
+          window.sendToFacebook('ack set feed migrated', message.params);
+          window.facebookAdsToolboxConfig.feedPrepared.feedMigrated = message.params.feed_migrated;
         }
+      );
+    }
+
+    var genFeed = function(message) {
+      $.get(window.facebookAdsToolboxConfig.feedPrepared.feedUrl + 'Now')
+      .done(function(json) {
+        window.sendToFacebook('ack feed', message.params);
       })
-      .fail(function(xhr, ajaxOptions, thrownError) {
-        showError(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+      .fail(function(xhr, ajaxOptions, thronwError){
+        window.sendToFacebook('fail feed', message.params);
+        showError(thronwError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
       });
     };
 
@@ -162,36 +169,7 @@
         function() {
           window.sendToFacebook('ack set merchant settings', message.params);
           window.facebookAdsToolboxConfig.diaSettingId = message.params.setting_id;
-        }
-      );
-    };
-
-    var setPage = function(message) {
-      if (!message.params.page_id || !message.params.page_token) {
-        console.error('Facebook Extension Error: page id or page token not received', message.params);
-        window.sendToFacebook('fail page access token', message.params);
-        return;
-      }  
-      
-      updateSettings(
-        {
-          'facebook_page_id': message.params.page_id,
-          'facebook_page_token': message.params.page_token
-        },
-        function() {
-          // set page is now used in 2 scenarios
-          // 1. when it is a fresh FAE flow
-          // 2. or when the access token is updated
-          // we only want to run the product sync when it is a fresh FAE flow
-          if (!window.initial_product_sync) {
-            syncAllProductsUsingFeed(function() {
-              window.sendToFacebook('ack page access token', message.params);
-              window.facebookAdsToolboxConfig.page_id = message.params.page_id;
-            });
-          } else {
-            // refresh the screen to update the error message
-            refreshUIForDiaSettings();
-          }
+          refreshUIForDiaSettings();
         }
       );
     };
@@ -212,58 +190,6 @@
       );
     };
 
-    var syncAllProducts = function(onSuccess) {
-      $.get(
-        'index.php?route=extension/facebookadsextension/syncallproductsusingfeed&' +
-          window.facebookAdsToolboxConfig.token_string
-      )
-      .done(function(json) {
-        if (json.total_to_be_sync === json.successfully_sync) {
-          if (typeof onSuccess === "function") {
-            onSuccess();
-          }
-          refreshUIForDiaSettings();
-        } else {
-          window.sendToFacebook('fail catalog', json);
-        }
-      })
-      .fail(function(xhr, ajaxOptions, thrownError) {
-        showError(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
-      });
-    };
-
-    var resyncAllProducts = function(resyncConfirmText) {
-      if (confirm(resyncConfirmText)) {
-        syncAllProducts(function() {});
-      }
-    };
-
-    var syncAllProductsUsingFeed = function(onSuccess) {
-      $.get(
-        'index.php?route=extension/facebookadsextension/syncallproductsusingfeed&' +
-          window.facebookAdsToolboxConfig.token_string
-      )
-      .done(function(json) {
-        if (json.success === 'true') {
-          window.initial_product_sync = true;
-          if (typeof onSuccess === "function") {
-            onSuccess();
-          }
-        } else {
-          window.sendToFacebook('fail ack custom_feed_sync', json);
-        }
-        if (window.facebookAdsToolboxConfig.diaSettingId) {
-          refreshUIForDiaSettings();
-        }
-      })
-      .fail(function(xhr, ajaxOptions, thrownError) {
-        if (xhr.status === 400) {
-          showErrorText(xhr.statusText);
-        }
-        showError(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
-      });
-    };
-
     var deleteSettings = function() {
       $.ajax({
         url: 'index.php?route=extension/facebookadsextension/deletesettings&' +
@@ -273,11 +199,8 @@
           if (json.success === 'true') {
             window.facebookAdsToolboxConfig.diaSettingId = '';
             window.facebookAdsToolboxConfig.pixel.pixelId = '';
-            window.initial_product_sync = false;
-            clearAllFacebookProducts(function() {
-              window.sendToFacebook('ack reset');
-              refreshUIForDiaSettings();
-            });
+            window.sendToFacebook('ack reset');
+            refreshUIForDiaSettings();
           } else {
             window.sendToFacebook('fail reset');
             showError('Error deleting DIA settings');
@@ -290,51 +213,18 @@
     };
 
     var refreshUIForDiaSettings = function() {
-      $("#btnResyncProducts").hide();
       $("#divErrorText").hide();
       if (window.facebookAdsToolboxConfig.diaSettingId) {
         showExistingDiaSettings(window.facebookAdsToolboxConfig.diaSettingId);
-        monitorProductSyncStatus();
       } else {
         showNewDiaSettings();
       }
-    };
-
-    var monitorProductSyncStatus = function() {
-      showCheckingUploadStatus();
-      $.get(
-        'index.php?route=extension/facebookadsextension/getinitialproductsyncstatus&' +
-          window.facebookAdsToolboxConfig.token_string
-      )
-      .done(function(json) {
-        switch (json.status) {
-          case 'success':
-            showUploadComplete();
-            break;
-          case 'in_progress':
-            showUploadInProgress();
-            window.setTimeout(monitorProductSyncStatus, 30000);
-            break;
-        }
-      })
-      .fail(function(xhr, ajaxOptions, thrownError) {
-        if (xhr.status >= 400 && xhr.status < 500) {
-          showErrorText(xhr.statusText);
-          if (xhr.status === 452) {
-            // specific to access token update
-            window.facebookAdsToolboxConfig.tokenExpired = 'true';
-          }
-        }
-        showError(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
-      });
     };
 
     var showNewDiaSettings = function() {
       $("#h2DiaSettingId").html('');
       $("#btnLaunchDiaWizard").html('Get Started');
       $("#btnLaunchDiaWizard").hide();
-      $("#divProductSyncStatus").hide();
-      $("#divProductSyncErrorText").hide();
       $("#divSettings").hide();
       $.get(
         'index.php?route=extension/facebookadsextension/iswritableproductfeedfolderavailable&' +
@@ -356,26 +246,11 @@
     var showExistingDiaSettings = function(dia_setting_id) {
       $("#h2DiaSettingId").html('Your Facebook Store ID: ' + dia_setting_id);
       $("#btnLaunchDiaWizard").html('Manage Settings');
-      $("#divProductSyncStatus").show();
       $("#divErrorText").hide();
       $("#divSettings").show();
     };
 
-    var showCheckingUploadStatus = function() {
-      $("#divProductSyncStatusText").html('Checking on upload status...');
-    };
-
-    var showUploadComplete = function() {
-      $("#btnResyncProducts").show();
-      $("#divProductSyncStatus").hide();
-    };
-
-    var showUploadInProgress = function() {
-      $("#divProductSyncStatusText").html('Product upload in progress...');
-    };
-
     var showErrorText = function(errorMessage) {
-      $("#divProductSyncStatus").hide();
       $("#divErrorText").show();
       $("#divErrorText").html(errorMessage);
     };
@@ -401,15 +276,18 @@
           setPixel(event.data);
           break;
         case 'gen feed':
+          genFeed(event.data);
           break;
         case 'set page access token':
-          setPage(event.data);
           break;
         case 'reset':
           deleteSettings();
           break;
         case 'set msger chat':
           setMessenger(event.data);
+          break;
+        case 'set feed migrated':
+          setFeedMigrated(event.data);
           break;
       }
     };
@@ -442,7 +320,6 @@
     return {
       launchDiaWizard: launchDiaWizard,
       addEventListenerForDIA: addEventListenerForDIA,
-      resyncAllProducts: resyncAllProducts,
       refreshUIForDiaSettings: refreshUIForDiaSettings,
       updateSettings: updateSettings
     };

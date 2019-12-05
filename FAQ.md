@@ -64,10 +64,11 @@ Always check that you have installed the latest version of the plugin as we are 
 
 # Syncing of OpenCart products to Facebook catalog
 1. How does the plugin sync the OpenCart products to Facebook catalog?
-    - We are adopting a 2 mechanism approach to ensure a good experience for you when you setup the Facebook Business Extension. When you first complete the setup, we will automatically create a Facebook product catalog and sync all your OpenCart products through the use of a one time feed file. This ensures a smooth operation even if you have a large number of products on your store. Subsequently, we will send real time product updates to Facebook whenever you make changes or new additions to your OpenCart products using the default OpenCart product management module.
+    - We are using a daily scheduled generated feed to sync the OpenCart products to Facebook catalog.
 
 2. I made changes to my OpenCart products by using 3rd party extensions, such as importing new products in bulk or updating product prices in bulk. Why are my changes not reflected on Facebook catalog.
-    - Our plugin integrates with the default OpenCart product management module to directly send real time product updates. Our plugin does not cater for 3rd party extensions and so product changes made through these 3rd party extensions are not reflected on Facebook catalog.
+    - Our scheduled sync is performed on a daily basis.
+    - If you like the product changes to be reflected on Facebook catalog immediately, you can access the Facebook Business Extension module, click on Manage Settings, click on Your Products. Click on Fetch Now to sync your products to Facebook. [Screenshot](https://drive.google.com/open?id=1bCTT4gU4gC8pi6T6HLhpe2fkHWI-RvhN)
 
 3. I am getting "There is an error with Facebook Business Extension setup. Click on Facebook Business Extension, Manage Settings, go to Advanced options and click on Delete Settings to restart the setup." or "MYSQL server has gone away" errors.
     - If you have a large catalog, eg more than 5000 products, there could be memory limitations due to your webserver/database configurations when we are pulling all the available products to generate the initial product catalog feed file. Here are some suggestions for you to solve the problem.

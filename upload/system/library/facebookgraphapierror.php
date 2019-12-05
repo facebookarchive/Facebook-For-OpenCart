@@ -16,10 +16,6 @@ class FacebookGraphAPIError {
   public function __construct() {
   }
 
-  public function hasErrorMessageFromFBAPICall($result) {
-    return isset($result['error']);
-  }
-
   private function getErrorCode($result) {
     return (isset($result['error']['code']))
       ? $result['error']['code']
@@ -48,22 +44,6 @@ class FacebookGraphAPIError {
         $error_message,
         self::ACCESS_TOKEN_EXCEPTION_CODE);
     }
-  }
-
-  public function getErrorMessageFromFBAPICall($result) {
-    if (!$this->hasErrorMessageFromFBAPICall($result)) {
-      return null;
-    }
-
-    return is_array($result['error'])
-      ? json_encode($result['error'])
-      : $result['error'];
-  }
-
-  public function isInvalidIdError($result) {
-    // gets the code and subcode and checks if it is invalid id
-    return ($this->getErrorCode($result) == self::INVALID_ID_EXCEPTION_CODE
-      && $this->getErrorSubCode($result) == self::INVALID_ID_EXCEPTION_SUBCODE);
   }
 
   // checks if there is already an existing

@@ -92,6 +92,10 @@ class FacebookCommonUtils {
   const FACEBOOK_PAGE_ID = 'facebook_page_id';
   const FACEBOOK_PAGE_TOKEN = 'facebook_page_token';
   const FACEBOOK_FEED_ID = 'facebook_feed_id';
+  const FACEBOOK_FEED_FILENAME = 'fbe_product_catalog.csv';
+  const FACEBOOK_FEED_RUNTIME_AVG = 'facebook_feed_runtime_avg';
+  const FACEBOOK_FEED_DRYRUN_FILENAME = 'fbe_feed_dryrun.txt';
+  const FACEBOOK_FEED_MIGRATED = 'facebook_feed_migrated';
   const FACEBOOK_UPLOAD_ID = 'facebook_upload_id';
   const FACEBOOK_UPLOAD_END_TIME = 'facebook_upload_end_time';
   const FACEBOOK_MESSENGER = 'facebook_messenger_activated';
@@ -114,9 +118,12 @@ class FacebookCommonUtils {
   const PRODUCT_COUNT_THRESHOLD = 5000;
 
   const FACEBOOK_PRODUCT_QUERY_BATCH_COUNT = 100;
+  const FACEBOOK_THRESHOLD_FOR_DRY_RUN_FEED = 500;
+
+  const FACEBOOK_GEN_FEED_BUFFER_TIME = 30;
 
   const NO_CATALOG_ID_PAGE_ID_ACCESS_TOKEN_ERROR_MESSAGE =
-    'Failure - no catalog, page or access token';
+    'Failure - no catalog';
   const FEED_NOT_CREATED_ERROR_MESSAGE =
     'Failure - facebook feed not created';
   const UPLOAD_NOT_CREATED_ERROR_MESSAGE =
@@ -135,13 +142,15 @@ class FacebookCommonUtils {
     'The product sync on Facebook catalog is still ongoing. Please wait for the sync to complete before making any product changes.';
   const REQUEST_PIXEL_SIGNATURE_ERROR_MESSAGE = 'There is an error requesting a signature key for your pixel, please try again later. Please contact Facebook via our <a href="https://github.com/facebookincubator/Facebook-For-OpenCart/issues" target="_blank">Github</a> if this error keeps showing up.';
   const PLUGIN_UPGRADE_MESSAGE = 'A newer version of the Facebook Business Extension plugin is available. To download it, go to <a href="https://github.com/facebookincubator/Facebook-For-OpenCart/releases" target="_blank">Github</a> or <a href="https://www.opencart.com/index.php?route=marketplace/extension/info&extension_id=32336" target="_blank">OpenCart marketplace</a>.';
-  const MISSING_WEB_STORE_CODE_ERROR_MESSAGE = 'We have detected the %s is not correctly setup in your web store site. You can try these below steps to fix the problem.<br/>1. Ensure that you have Refresh the modifications, <a href="https://drive.google.com/open?id=1qy-ipwK1HCk8oSnUmGuy6MCJxQdUyGfw" target="_blank">View steps</a><br/>2. For OpenCart 3.x, ensure that you have disabled the theme and SASS cache, <a href="https://drive.google.com/open?id=1bY-bworYxX36b88HDvFW0_32C3Wtq_Tm" target="_blank">View steps</a><br/>3. For OpenCart 3.x, ensure that you do not have modifications to the header design, <a href="https://drive.google.com/open?id=1066BSKAqjKegzw-5oKuvtZuzu_PzkRZT" target="_blank">View steps</a><br/>';
+  const MISSING_WEB_STORE_CODE_ERROR_MESSAGE = 'We have detected the %s is not correctly setup in your web store site. You can try these below steps to fix the problem.<br/>1. Ensure that you have given read+write permissions to the admin, catalog and system folders on your OpenCart webserver<br/>2. Ensure that you have Refresh the modifications, <a href="https://drive.google.com/open?id=1qy-ipwK1HCk8oSnUmGuy6MCJxQdUyGfw" target="_blank">View steps</a><br/>3. For OpenCart 3.x, ensure that you have disabled the theme and SASS cache, <a href="https://drive.google.com/open?id=1bY-bworYxX36b88HDvFW0_32C3Wtq_Tm" target="_blank">View steps</a><br/>4. For OpenCart 3.x, ensure that you do not have modifications to the header design, <a href="https://drive.google.com/open?id=1066BSKAqjKegzw-5oKuvtZuzu_PzkRZT" target="_blank">View steps</a><br/>';
+  const FACEBOOK_FEED_NOT_MIGRATED_MESSAGE = 'Warning: We have updated the catalog sync process and requires you to do an update immediately. Please click on Facebook Business Extension, Manage Settings, go to Advanced Options and follow the instructions. <a href="https://drive.google.com/open?id=1dAF88Spg-iAwPXmkwcVvAqg82UYJ5IJ0" target="_blank">View steps</a>';
+  const FACEBOOK_FEED_MIGRATED_AND_WEBSITE_IN_MAINTENANCE_MESSAGE = 'Warning: We have detected that your web store is in maintenance mode. This will cause the Facebook catalog scheduled sync to fail. To disable the maintenance mode, access Settings, click on your Store, select Server tab and choose No for Maintenance mode.';
 
   const ACCESS_TOKEN_INVALID_EXCEPTION_CODE = 452;
 
   private $pluginAgentName = 'exopencart';
 // system auto generated, DO NOT MODIFY
-private $pluginVersion = '2.1.13';
+private $pluginVersion = '2.2.0';
 // system auto generated, DO NOT MODIFY
 
   public function __construct() {
@@ -286,33 +295,6 @@ private $pluginVersion = '2.1.13';
     return $facebook_pixel_params;
   }
 
-  public function updateProductAvailability(
-    $registry,
-    $products) {
-    // this is a hack which allows catalog (shop front)
-    // to access the controllers and models on the admin panel side,
-    // as the admin and catalog modules physically resides in 2
-    // separate different folders
-    // this is to allow reuse of existing codes instead of
-    // duplicating the same to both catalog and admin folder
-    require_once
-      DIR_APPLICATION . "../admin/controller/extension/facebookproduct.php";
-    $product_ids =
-      array_unique(
-        array_map(function($product) { return $product['product_id'];},
-          $products));
-    $facebook_product_controller =
-      new ControllerExtensionFacebookProduct($registry);
-    try {
-      $facebook_product_controller->updateProductsForAvailabilityChange(
-        $product_ids);
-    } catch (Exception $e) {
-      // access token not available, hence just logging to local log file
-      $this->faeLog = new Log(self::FAE_LOG_FILENAME);
-      $this->faeLog->write($e->getMessage());
-    }
-  }
-
   public function doesDefaultCurrencySupportCents(
     $default_currency_code,
     $default_currency) {
@@ -433,6 +415,7 @@ private $pluginVersion = '2.1.13';
       case FacebookCommonUtils::FACEBOOK_ENABLE_COOKIE_BAR:
       case FacebookCommonUtils::FACEBOOK_ENABLE_SPECIAL_PRICE:
       case FacebookCommonUtils::FACEBOOK_MESSENGER:
+      case FacebookCommonUtils::FACEBOOK_FEED_MIGRATED:
         $is_valid = $this->isTrueFalseString($value);
         break;
     }

@@ -6,58 +6,6 @@
 // LICENSE file in the root directory of this source tree.
 
 class ModelExtensionFacebookProduct extends Model {
-  public function addFacebookProduct(
-    $product_id,
-    $facebook_product_id,
-    $facebook_product_group_id) {
-    $this->db->query("INSERT INTO " . DB_PREFIX . "facebook_product " .
-      "SET product_id = " . (int)$product_id . "," .
-      "facebook_product_id = '" . $facebook_product_id . "'," .
-      "facebook_product_group_id = '" . $facebook_product_group_id . "'");
-  }
-
-  public function deleteAllFacebookProducts() {
-    $this->db->query("DELETE FROM " . DB_PREFIX . "facebook_product ");
-  }
-
-  public function getFacebookProductIdAndProductGroupId($product_id) {
-    $query = $this->db->query("SELECT facebook_product_id, " .
-      "facebook_product_group_id " .
-      "FROM " . DB_PREFIX . "facebook_product " .
-      "WHERE product_id = " . (int)$product_id);
-    return (isset($query->row['facebook_product_id'])
-      && $query->row['facebook_product_group_id'])
-      ? array(
-        $query->row['facebook_product_id'],
-        $query->row['facebook_product_group_id'])
-      : array('', '');
-  }
-
-  public function deleteFacebookProduct($product_id) {
-    $this->db->query("DELETE FROM " . DB_PREFIX . "facebook_product " .
-      "WHERE product_id = " . (int)$product_id);
-  }
-
-  public function getFacebookProductAvailabiltyStatus($product_ids) {
-    $sql = "SELECT p.product_id, fbp.facebook_product_id, " .
-      "p.quantity, p.subtract, p.stock_status_id " .
-      "FROM " . DB_PREFIX . "product p " .
-      "LEFT JOIN " .DB_PREFIX . "facebook_product fbp " .
-      "ON fbp.product_id = p.product_id " .
-      "WHERE p.product_id IN (" . implode(",", $product_ids) . ")";
-    return $this->db->query($sql)->rows;
-  }
-
-  public function updateFacebookProduct(
-    $product_id,
-    $facebook_product_id,
-    $facebook_product_group_id) {
-    $this->db->query("UPDATE " . DB_PREFIX . "facebook_product " .
-      "SET facebook_product_id = '" . $facebook_product_id . "'," .
-      "facebook_product_group_id = '" . $facebook_product_group_id . "' " .
-      "WHERE product_id = " . (int)$product_id);
-  }
-
   // this function is a direct lifting from admin/model/catalog/product.php
   // except that the SQL query is joining other tables to obtain
   // brand, category, facebook_product_id and facebook_product_group_id
@@ -68,16 +16,12 @@ class ModelExtensionFacebookProduct extends Model {
     $sql = "SELECT p.*, " .
       "pd.*, " .
       "m.name AS manufacturer_name, " .
-      "fbp.facebook_product_id, " .
-      "fbp.facebook_product_group_id, " .
       "ptc.category_name " .
       "FROM " . DB_PREFIX . "product p " .
       "LEFT JOIN " . DB_PREFIX . "product_description pd " .
         " ON (p.product_id = pd.product_id) " .
       "LEFT JOIN " . DB_PREFIX . "manufacturer m " .
         " ON (p.manufacturer_id = m.manufacturer_id) " .
-      "LEFT JOIN " . DB_PREFIX . "facebook_product fbp " .
-        " ON (p.product_id = fbp.product_id) " .
       // Retrieving category name for each product.
       // OpenCart allows each product to tag to multiple categories
       // and this relationship is stored in product_to_category.
@@ -181,15 +125,12 @@ class ModelExtensionFacebookProduct extends Model {
         "p.*, " .
         "pd.*, " .
         "m.name AS manufacturer_name, " .
-        "fbp.facebook_product_id, " .
         "ptc.category_name " .
       "FROM " . DB_PREFIX . "product p " .
       "LEFT JOIN " . DB_PREFIX . "product_description pd " .
         "ON (p.product_id = pd.product_id) " .
       "LEFT JOIN " . DB_PREFIX . "manufacturer m " .
         "ON (p.manufacturer_id = m.manufacturer_id) " .
-      "LEFT JOIN " . DB_PREFIX . "facebook_product fbp " .
-        "ON (p.product_id = fbp.product_id) " .
       "LEFT JOIN " .
         "(SELECT ptc.product_id, " .
           "ptc.category_id, " .
@@ -206,5 +147,13 @@ class ModelExtensionFacebookProduct extends Model {
 
     return $query->row;
   }
+  
+  // this function is a direct lifting from admin/model/catalog/product.php
+  public function getProductSpecials($product_id) {
+		$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "product_special WHERE product_id = '" . (int)$product_id . "' ORDER BY priority, price");
+
+		return $query->rows;
+	}
+
 
 }

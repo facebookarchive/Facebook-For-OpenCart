@@ -85,6 +85,7 @@ abstract class FacebookProductFormatter {
   }
 
   public function getProductData(
+    $registry,
     $product) {
     $product_data = array(
       'retailer_id' => $this->getRetailerID($product),
@@ -102,7 +103,7 @@ abstract class FacebookProductFormatter {
       'checkout_url' => $this->getCheckoutUrl($product),
       'additional_image_urls' => $this->getAdditionalImageUrls($product),
       'condition' => 'new');
-    $product_discount_data = $this->getDiscountPrice($product);
+    $product_discount_data = $this->getDiscountPrice($registry, $product);
     $product_data = array_merge($product_data, $product_discount_data);
     return $this->postFormatting($product_data);
   }
@@ -158,8 +159,15 @@ abstract class FacebookProductFormatter {
     return $this->formatImageUrl($product['image']);
   }
 
+  private function getStoreBaseUrl() {
+    if(defined('HTTP_CATALOG')) {
+      return HTTP_CATALOG;
+    }
+    return HTTP_SERVER;
+  }
+
   private function getUrl($product) {
-    return HTTP_CATALOG .
+    return $this->getStoreBaseUrl() .
       'index.php?route=product/product&product_id=' .
       $product['product_id'];
   }
@@ -224,8 +232,9 @@ abstract class FacebookProductFormatter {
     return $this->getUrl($product);
   }
 
-  private function getDiscountPrice($product) {
-    $product_specials = $this->params->getModelCatalogProduct()->
+  private function getDiscountPrice($registry, $product) {
+    $this->model_extension_facebookproduct = $this->facebookcommonutils->loadFacebookProductModel($registry);
+    $product_specials = $this->model_extension_facebookproduct->
       getProductSpecials($product['product_id']);
 
     $product_discount_data = array();
@@ -289,7 +298,7 @@ abstract class FacebookProductFormatter {
     return (strncmp($image_url, "http://", 7) === 0
       || strncmp($image_url, "https://", 8) === 0)
       ? $image_url
-      : HTTP_CATALOG . "image/" . $image_url;
+      : $this->getStoreBaseUrl() . "image/" . $image_url;
   }
 
   public function getAdditionalImageUrls($product) {

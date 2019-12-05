@@ -1,7 +1,15 @@
 Facebook Business Extension
-Latest version: 2.1.13
+Latest version: 2.2.0
 
 Change log
+2.2.0 - 11 Nov 2019
+* Changed the product catalog sync method. On earlier versions, the plugin adopted 2 approaches - using feed file for initial catalog sync and API for subsequent product changes. From this version onwards, the plugin is adopting feed file for both initial catalog sync as well as subsequent product changes.
+  1. There will be a daily feed pull to update the product catalog changes from your OpenCart website to Facebook product catalog.
+  2. For existing plugin merchants, you need to perform a step to automatically generate the daily pull mechanism. Access the Facebook Business Extension module, click on Manage Settings, click on Advanced options. You will be able to see the notification indicating that the Catalog sync is successful. See screenshot here - https://drive.google.com/open?id=1dAF88Spg-iAwPXmkwcVvAqg82UYJ5IJ0
+  3. Access token is no longer needed and there is no longer any need to update the access token nor to keep the Facebook account signed in.
+  4. Better integration with other 3rd party product plugins. You can use any of the 3rd party product plugins to perform add/edit/delete product changes. These product changes will be automatically updated to Facebook via the daily feed mechanism.
+  5. You can trigger immediate product sync to Facebook. Access the Facebook Business Extension module, click on Manage Settings, click on Your Products. Click on Fetch Now to sync your products to Facebook. See screenshot here - https://drive.google.com/open?id=1bCTT4gU4gC8pi6T6HLhpe2fkHWI-RvhN
+
 2.1.13 - 18 Oct 2019
 * Fixed a bug where the Messenger chat is not shown correctly on the footer, if it is enabled
 * Fixed a compatibility issue for PHP 5.3 to PHP 5.5

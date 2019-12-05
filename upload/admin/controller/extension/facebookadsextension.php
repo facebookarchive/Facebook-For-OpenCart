@@ -5,6 +5,8 @@
 // This source code is licensed under the license found in the
 // LICENSE file in the root directory of this source tree.
 
+require_once(DIR_APPLICATION.'../system/library/controller/extension/facebookproductfeed.php');
+
 class ControllerExtensionFacebookAdsExtension extends Controller {
   private $faeLog;
 
@@ -16,6 +18,7 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
     } else {
       error_log("class FacebookCommonUtils does not exist");
     }
+    $this->facebook_product_feed_controller = new ControllerExtensionFacebookProductFeed($registry);
   }
 
   public function index() {
@@ -98,11 +101,14 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
     $data['opencart_version'] = VERSION;
     $data['plugin_version'] = $this->facebookcommonutils->getPluginVersion();
 
-    $data['total_visible_products'] = $this->load->controller(
-      'extension/facebookproduct/getTotalEnabledProducts');
+    $data['total_visible_products'] =
+      $this->facebook_product_feed_controller->getTotalEnabledProducts();
 
-    $data['sample_feed'] = $this->load->controller(
-      'extension/facebookproduct/getSampleProductFeed');
+    $data['feed_url'] = HTTP_CATALOG.'index.php?route=extension/facebookfeed/genFeed';
+    $data['feed_ping_url'] = HTTP_CATALOG.'index.php?route=extension/facebookfeed/genFeedPing';
+    $data['feed_migrated'] = $this->getFeedMigrated();
+
+    $data['sample_feed'] = $this->facebook_product_feed_controller->getSampleProductFeed();
     if (!$data['sample_feed']) {
       $data['sample_feed'] = '[[]]';
     }
@@ -138,13 +144,6 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
         : '';
     $this->session->data['download_log_file_error_warning'] = '';
 
-    // checking if there is a facebook upload id
-    // to decide if the initial product sync has taken place
-    $data['initial_product_sync'] =
-      isset($facebook_setting[FacebookCommonUtils::FACEBOOK_UPLOAD_ID])
-        ? 'true'
-        : 'false';
-
     // checking if there is a newer upgrade available
     $data['plugin_upgrade_message'] = ($this->hasNewUpgradeAvailable())
       ? FacebookCommonUtils::PLUGIN_UPGRADE_MESSAGE
@@ -170,6 +169,17 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
     $data['plugin_code_injection_error_messages'] =
       $this->validatePluginCodeInjection();
 
+    // display warning only for existing user who are not migrated
+    $data['plugin_feed_not_migrated_message'] = $this->showFeedMigrationWarningMessage()
+      ? FacebookCommonUtils::FACEBOOK_FEED_NOT_MIGRATED_MESSAGE
+      : '';
+
+    // display warning only if user has migrated and set webstore to maintenance mode
+    $data['plugin_feed_migrated_and_website_in_maintenance_message'] =
+      $this->isFeedMigratedAndWebsiteInMaintenance()
+      ? FacebookCommonUtils::FACEBOOK_FEED_MIGRATED_AND_WEBSITE_IN_MAINTENANCE_MESSAGE
+      : '';
+
     // default the special price to be enabled if the setting is not available
     $data['enable_special_price'] =
       isset($facebook_setting[FacebookCommonUtils::FACEBOOK_ENABLE_SPECIAL_PRICE])
@@ -189,6 +199,30 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
       $this->load->view(
         'extension/facebookadsextension' . $template_file_extension,
         $data));
+  }
+
+  public function isFeedMigratedAndWebsiteInMaintenance() {
+    $facebook_settings = $this->model_extension_facebooksetting->getSettings();
+    return $facebook_settings
+      && isset($facebook_settings[FacebookCommonUtils::FACEBOOK_DIA_SETTING_ID])
+      && $facebook_settings[FacebookCommonUtils::FACEBOOK_DIA_SETTING_ID]
+      && $this->getFeedMigrated()
+      && $this->config->get('config_maintenance');
+  }
+
+  public function showFeedMigrationWarningMessage() {
+    $facebook_settings = $this->model_extension_facebooksetting->getSettings();
+    return $facebook_settings
+      && isset($facebook_settings[FacebookCommonUtils::FACEBOOK_DIA_SETTING_ID]) 
+      && $facebook_settings[FacebookCommonUtils::FACEBOOK_DIA_SETTING_ID]
+      && !$this->getFeedMigrated();
+  }
+
+  private function getFeedMigrated() {
+    $facebook_settings = $this->model_extension_facebooksetting->getSettings();
+    return $facebook_settings
+      && isset($facebook_settings[FacebookCommonUtils::FACEBOOK_FEED_MIGRATED]) 
+      && $facebook_settings[FacebookCommonUtils::FACEBOOK_FEED_MIGRATED];
   }
 
   private function validatePluginCodeInjection() {
@@ -335,28 +369,6 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
       $all_error_messages[] = $error_message;
     }
 
-    // 2. to ensure the required database tables are created
-    $missing_database_tables = $this->getMissingDatabaseTables();
-    $error_message_title = 'We have detected these missing database tables ' .
-      'for Facebook Ads Extension. ' .
-      'Please give the CREATE privilege for your database user.' .
-      '<br/>';
-    if (version_compare(VERSION, '3.0.0.0') >= 0) {
-      // provides an additional message to inform user
-      // to install the module for Opencart v3
-      $error_message_title = $error_message_title .
-        'Please also ensure Facebook Ads Extension module is installed. ' .
-        'Access Extensions -> Select Modules from dropdown list -> ' .
-        'Click on green install button for Facebook Ads Extension' .
-        '<br/><br/>';
-    }
-    $error_message = $this->getErrorMessageForMissingAssets(
-      $missing_database_tables,
-      $error_message_title);
-    if ($error_message) {
-      $all_error_messages[] = $error_message;
-    }
-
     return $all_error_messages;
   }
 
@@ -466,6 +478,14 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
         $this->request->post[FacebookCommonUtils::FACEBOOK_ENABLE_SPECIAL_PRICE];
     }
 
+    if (isset($this->request->post[FacebookCommonUtils::FACEBOOK_FEED_MIGRATED])
+    && $this->facebookcommonutils->isValidSetting(
+      FacebookCommonUtils::FACEBOOK_FEED_MIGRATED,
+      $this->request->post[FacebookCommonUtils::FACEBOOK_FEED_MIGRATED])) {
+    $data[FacebookCommonUtils::FACEBOOK_FEED_MIGRATED] =
+      $this->request->post[FacebookCommonUtils::FACEBOOK_FEED_MIGRATED];
+    } 
+
     $this->faeLog->write('Updating FAE settings - ' .
       implode(',', array_keys($data)));
     $this->model_extension_facebooksetting =
@@ -476,21 +496,6 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
     $this->response->addHeader('Content-Type: application/json');
     $this->response->setOutput(json_encode($json));
     $this->faeLog->write('Complete - Updating FAE settings');
-  }
-
-  public function clearAllFacebookProducts() {
-    $result = $this->load->controller(
-      'extension/facebookproduct/clearAllFacebookProducts');
-    $json = array('success' => 'true');
-    $this->response->addHeader('Content-Type: application/json');
-    $this->response->setOutput(json_encode($json));
-  }
-
-  public function syncAllProducts() {
-    $result = $this->load->controller(
-      'extension/facebookproduct/syncAllProducts');
-    $this->response->addHeader('Content-Type: application/json');
-    $this->response->setOutput(json_encode($result));
   }
 
   public function deleteSettings() {
@@ -541,84 +546,9 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
     }
   }
 
-  public function syncAllProductsUsingFeed() {
-    try {
-      $result = $this->load->controller(
-        'extension/facebookproductfeed/syncAllProductsUsingFeed');
-      if ($result['success'] !== 'true') {
-        // checks if the total number of products is within threshold
-        $total = $this->load->controller(
-          'extension/facebookproduct/getTotalEnabledProducts');
-        $this->faeLog->write('Total number of products = ' . $total);
-        if ($total <=
-          FacebookCommonUtils::FACEBOOK_THRESHOLD_FOR_INITIAL_SYNC_BY_API) {
-          // initial sync using feed fail
-          // fallback to use API to initial sync all the products
-          // this will result in significantly more time for
-          // merchants with many products, eg > 500
-          $this->faeLog->write('Syncing using API as fallback');
-
-          $this->updateSettingsToIndicateInitialSyncByAPI();
-          $api_result = $this->load->controller(
-            'extension/facebookproduct/syncAllProducts');
-          $result =
-            ($api_result['total_count'] === $api_result['success_count']);
-          $this->faeLog->write('Complete Syncing using API as fallback' .
-            ' Total=' . $api_result['total_count'] .
-            ' Success=' . $api_result['success_count']);
-        }
-      }
-
-      $this->response->addHeader('Content-Type: application/json');
-      $this->response->setOutput(json_encode($result));
-    } catch (Exception $e) {
-      header("HTTP/1.1 400 " . $e->getMessage());
-    }
-  }
-
-  private function updateSettingsToIndicateInitialSyncByAPI() {
-    $this->faeLog->write('Updating FAE settings - ');
-    $this->model_extension_facebooksetting =
-      $this->facebookcommonutils->loadFacebookSettingsModel($this->registry);
-    $data = array();
-    $data[FacebookCommonUtils::FACEBOOK_FEED_ID] =
-      'USING_API_FOR_INITIAL_SYNC';
-    $data[FacebookCommonUtils::FACEBOOK_UPLOAD_ID] =
-      'USING_API_FOR_INITIAL_SYNC';
-    $data[FacebookCommonUtils::FACEBOOK_UPLOAD_END_TIME] =
-      'USING_API_FOR_INITIAL_SYNC';
-    $this->model_extension_facebooksetting->updateSettings($data);
-  }
-
-  public function getInitialProductSyncStatus() {
-    try {
-      $result = $this->load->controller(
-        'extension/facebookproductfeed/getInitialProductSyncStatus');
-      $this->response->addHeader('Content-Type: application/json');
-      $this->response->setOutput(json_encode($result));
-    } catch (Exception $e) {
-      $error_message = $e->getMessage();
-      $error_code = ($e->getCode() != null)
-        ? $e->getCode()
-        : 400;
-      // special handling of error and Bad request as invalid access token
-      if (strtolower($e->getMessage()) === 'error'
-        || strtolower($e->getMessage()) === 'bad request') {
-        $error_message = sprintf(
-          FacebookCommonUtils::ACCESS_TOKEN_INVALID_EXCEPTION_MESSAGE,
-          $e->getMessage());
-      }
-      $this->faeLog->write(
-        'Error with getting the initial product sync status '
-        . $e->getMessage());
-      header("HTTP/1.1 " . $error_code . " " . $error_message);
-    }
-  }
-
   public function isWritableProductFeedFolderAvailable() {
     try {
-      $result = $this->load->controller(
-        'extension/facebookproductfeed/isWritableProductFeedFolderAvailable');
+      $result = $this->facebook_product_feed_controller->isWritableProductFeedFolderAvailable();
       $this->response->addHeader('Content-Type: application/json');
       $this->response->setOutput(json_encode(array('available' => $result)));
     } catch (Exception $e) {
@@ -644,7 +574,7 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
       DIR_APPLICATION . '/../admin/view/image/facebook/buttonbg.png',
       DIR_APPLICATION . '/../admin/view/image/facebook/fbicons.png',
       DIR_APPLICATION . '/../admin/view/image/facebook/loadingicon.gif',
-      DIR_APPLICATION . '/../admin/view/javascript/facebook/dia_2_1_13.js',
+      DIR_APPLICATION . '/../admin/view/javascript/facebook/dia_2_2_0.js',
       DIR_APPLICATION . '/../admin/view/stylesheet/facebook/dia.css',
       DIR_APPLICATION . '/../admin/view/stylesheet/facebook/feed.css',
       DIR_APPLICATION . '/../admin/view/stylesheet/facebook/pixel.css',
@@ -652,21 +582,23 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
       DIR_APPLICATION . '/../admin/view/template/extension/facebookadsextension.twig',
       DIR_APPLICATION . '/../admin/view/template/extension/module/facebookadsextension_installer.tpl',
       DIR_APPLICATION . '/../admin/view/template/extension/module/facebookadsextension_installer.twig',
+      DIR_APPLICATION . '/../system/library/controller/extension/facebookproductfeed.php',
       DIR_APPLICATION . '/../system/library/facebookcommonutils.php',
       DIR_APPLICATION . '/../system/library/facebookgraphapi.php',
       DIR_APPLICATION . '/../system/library/facebookgraphapierror.php',
-      DIR_APPLICATION . '/../system/library/facebookproductapiformatter.php',
       DIR_APPLICATION . '/../system/library/facebookproductfeedformatter.php',
       DIR_APPLICATION . '/../system/library/facebookproductformatter.php',
+      DIR_APPLICATION . '/../system/library/facebookproducttrait.php',
       DIR_APPLICATION . '/../system/library/facebooksampleproductfeedformatter.php',
       DIR_APPLICATION . '/../system/library/facebooktax.php',
       DIR_APPLICATION . '/../system/library/model/extension/facebookproduct.php',
       DIR_APPLICATION . '/../system/library/model/extension/facebooksetting.php',
       DIR_APPLICATION . '/../catalog/controller/extension/facebookeventparameters.php',
+      DIR_APPLICATION . '/../catalog/controller/extension/facebookfeed.php',
       DIR_APPLICATION . '/../catalog/controller/extension/facebookpageshopcheckoutredirect.php',
       DIR_APPLICATION . '/../catalog/controller/extension/facebookproduct.php',
       DIR_APPLICATION . '/../catalog/view/javascript/facebook/cookieconsent.min.js',
-      DIR_APPLICATION . '/../catalog/view/javascript/facebook/facebook_pixel_2_1_13.js',
+      DIR_APPLICATION . '/../catalog/view/javascript/facebook/facebook_pixel_2_2_0.js',
       DIR_APPLICATION . '/../catalog/view/theme/css/facebook/cookieconsent.min.css',
 // system auto generated, DO NOT MODIFY
       null
@@ -747,35 +679,6 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
     } else {
       return dirname($path);
     }
-  }
-
-  private function getRequiredDatabaseTables() {
-    // holds all the new tables which we added to the opencart system
-    return array("facebook_product");
-  }
-
-  private function getMissingDatabaseTables() {
-    // retrieves all missing database tables
-    $required_tables = $this->getRequiredDatabaseTables();
-    $missing_database_tables = array();
-    array_walk(
-      $required_tables,
-      function($required_table) use (&$missing_database_tables) {
-        if (!$required_table) {
-          return;
-        }
-
-        // checks if the table exist on the database
-        $check_table_exist_sql =
-          sprintf("SHOW TABLES IN `%s` LIKE '%sfacebook_product'",
-            DB_DATABASE,
-            DB_PREFIX);
-        $data = $this->db->query($check_table_exist_sql)->rows;
-        if (sizeof($data) == 0) {
-          $missing_database_tables[] = DB_PREFIX . $required_table;
-        }
-      });
-    return $missing_database_tables;
   }
 
   private function getErrorMessageForMissingAssets(
