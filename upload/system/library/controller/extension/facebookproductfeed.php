@@ -333,7 +333,7 @@ class ControllerExtensionFacebookProductFeed extends Controller {
       $this->estimateFeedGenerationTimeWithDecay($feed_gen_time);
 
       // genFeedPing return time estimation only
-      if($this->request->get['from'] == 'genFeedPing') {
+      if(isset($_GET['from']) && $_GET['from'] == 'genFeedPing') {
         return;
       }
 

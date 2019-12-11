@@ -9,7 +9,7 @@
 <modification>
 	<name>Facebook Business Extension</name>
 	<code>facebook_business_extension</code>
-	<version>2.2.0</version>
+	<version>2.2.1</version>
 	<author>Facebook</author>
 	<link>https://github.com/facebookincubator/Facebook-For-OpenCart</link>
 
@@ -252,7 +252,7 @@
           // we are using this flag to determine if the pixel
           // is successfully added to the header
           window.isFacebookPixelInHeaderAdded = 1;
-          window.isFacebookPixelAdded = 1;
+          window.isFacebookPixelAdded=1;
         </script>
 
         <script type="text/javascript">
@@ -360,7 +360,7 @@
 
             <?php if ($facebook_pixel_id_FAE) { ?>
 // system auto generated facebook_pixel.js, DO NOT MODIFY
-pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_2_0.js';
+pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_2_1.js';
 // system auto generated facebook_pixel.js, DO NOT MODIFY
               facebook_loadScript(
                 pixel_script_filename,
@@ -393,7 +393,7 @@ pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_2_0.j
           // we are using this flag to determine if the customer chat
           // is successfully added to the header
           window.isFacebookCustomerChatInHeaderAdded = 1;
-          window.isFacebookCustomerChatAdded = 1;
+          window.isFacebookCustomerChatAdded=1;
         </script>
 
         <?php if ($facebook_messenger_enabled_FAE == 'true') { ?>
@@ -454,7 +454,7 @@ pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_2_0.j
           // we are using this flag to determine if the pixel
           // is successfully added to the header
           window.isFacebookPixelInHeaderAdded = 1;
-          window.isFacebookPixelAdded = 1;
+          window.isFacebookPixelAdded=1;
         </script>
 
         <script type="text/javascript">
@@ -562,7 +562,7 @@ pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_2_0.j
 
             {% if facebook_pixel_id_FAE %}
 // system auto generated facebook_pixel.js, DO NOT MODIFY
-pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_2_0.js';
+pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_2_1.js';
 // system auto generated facebook_pixel.js, DO NOT MODIFY
               facebook_loadScript(
                 pixel_script_filename,
@@ -595,7 +595,7 @@ pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_2_0.j
           // we are using this flag to determine if the customer chat
           // is successfully added to the header
           window.isFacebookCustomerChatInHeaderAdded = 1;
-          window.isFacebookCustomerChatAdded = 1;
+          window.isFacebookCustomerChatAdded=1;
         </script>
 
         {% if facebook_messenger_enabled_FAE == 'true' %}
@@ -1080,7 +1080,7 @@ pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_2_0.j
 
               <?php if ($facebook_pixel_id_FAE) { ?>
 // system auto generated facebook_pixel.js, DO NOT MODIFY
-pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_2_0.js';
+pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_2_1.js';
 // system auto generated facebook_pixel.js, DO NOT MODIFY
                 facebook_loadScript(
                   pixel_script_filename,
@@ -1098,7 +1098,7 @@ pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_2_0.j
               <?php } ?>
             })();
           }
-          window.isFacebookPixelAdded = 1;
+          window.isFacebookPixelAdded=1;
         </script>
 
         <?php if ($facebook_messenger_enabled_FAE == 'true') { ?>
@@ -1124,7 +1124,7 @@ pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_2_0.j
                fjs.parentNode.insertBefore(js, fjs);
              }(document, 'script', 'facebook-jssdk'));
           }
-          window.isFacebookCustomerChatAdded = 1;
+          window.isFacebookCustomerChatAdded=1;
         </script>
         <div
           id="fb-customerchat-footer"
@@ -1278,7 +1278,7 @@ pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_2_0.j
 
               {% if facebook_pixel_id_FAE %}
 // system auto generated facebook_pixel.js, DO NOT MODIFY
-pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_2_0.js';
+pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_2_1.js';
 // system auto generated facebook_pixel.js, DO NOT MODIFY
                 facebook_loadScript(
                   pixel_script_filename,
@@ -1296,7 +1296,7 @@ pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_2_0.j
               {% endif %}
             })();
           }
-          window.isFacebookPixelAdded = 1;
+          window.isFacebookPixelAdded=1;
         </script>
 
         {% if facebook_messenger_enabled_FAE == 'true' %}
@@ -1322,7 +1322,7 @@ pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_2_0.j
                fjs.parentNode.insertBefore(js, fjs);
              }(document, 'script', 'facebook-jssdk'));
           }
-          window.isFacebookCustomerChatAdded = 1;
+          window.isFacebookCustomerChatAdded=1;
         </script>
         <div
           id="fb-customerchat-footer"

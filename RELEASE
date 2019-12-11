@@ -1,7 +1,12 @@
 Facebook Business Extension
-Latest version: 2.2.0
+Latest version: 2.2.1
 
 Change log
+2.2.1 - 12 Dec 2019
+* Improved the pixel diagnostics check to cater for web optimzers which strips away empty spaces in javascript codes
+* Fixed an issue - Undefined index: from in system/library/controller/extension/facebookproductfeed.php on line 336
+* Fixed an warning issue - A non-numeric value in catalog/controller/extensino/facebookeventparameters.php on line 494
+
 2.2.0 - 11 Nov 2019
 * Changed the product catalog sync method. On earlier versions, the plugin adopted 2 approaches - using feed file for initial catalog sync and API for subsequent product changes. From this version onwards, the plugin is adopting feed file for both initial catalog sync as well as subsequent product changes.
   1. There will be a daily feed pull to update the product catalog changes from your OpenCart website to Facebook product catalog.

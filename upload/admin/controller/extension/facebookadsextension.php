@@ -242,11 +242,15 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
     curl_close($curl);
 
     // always do the check for pixel
+    // added in a second check for the codeline with no spaces
+    // this is to cater for websites that have optimizers that strip away empty spaces
     if (strpos($result, FacebookCommonUtils::FACEBOOK_PIXEL_CODE_INDICATOR) == 0) {
       array_push($error_sections, 'Facebook pixel');
     }
 
     // only do the check for messenger chat if it is enabled
+    // added in a second check for the codeline with no spaces
+    // this is to cater for websites that have optimizers that strip away empty spaces
     if (strpos($result, FacebookCommonUtils::FACEBOOK_MESSENGER_CHAT_CODE_INDICATOR) == 0
       && $this->config->get(FacebookCommonUtils::FACEBOOK_MESSENGER) === 'true') {
       array_push($error_sections, 'Messenger customer chat');
@@ -574,7 +578,7 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
       DIR_APPLICATION . '/../admin/view/image/facebook/buttonbg.png',
       DIR_APPLICATION . '/../admin/view/image/facebook/fbicons.png',
       DIR_APPLICATION . '/../admin/view/image/facebook/loadingicon.gif',
-      DIR_APPLICATION . '/../admin/view/javascript/facebook/dia_2_2_0.js',
+      DIR_APPLICATION . '/../admin/view/javascript/facebook/dia_2_2_1.js',
       DIR_APPLICATION . '/../admin/view/stylesheet/facebook/dia.css',
       DIR_APPLICATION . '/../admin/view/stylesheet/facebook/feed.css',
       DIR_APPLICATION . '/../admin/view/stylesheet/facebook/pixel.css',
@@ -598,7 +602,7 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
       DIR_APPLICATION . '/../catalog/controller/extension/facebookpageshopcheckoutredirect.php',
       DIR_APPLICATION . '/../catalog/controller/extension/facebookproduct.php',
       DIR_APPLICATION . '/../catalog/view/javascript/facebook/cookieconsent.min.js',
-      DIR_APPLICATION . '/../catalog/view/javascript/facebook/facebook_pixel_2_2_0.js',
+      DIR_APPLICATION . '/../catalog/view/javascript/facebook/facebook_pixel_2_2_1.js',
       DIR_APPLICATION . '/../catalog/view/theme/css/facebook/cookieconsent.min.css',
 // system auto generated, DO NOT MODIFY
       null
