@@ -9,7 +9,7 @@
 <modification>
 	<name>Facebook Business Extension</name>
 	<code>facebook_business_extension</code>
-	<version>2.2.1</version>
+	<version>3.0.0</version>
 	<author>Facebook</author>
 	<link>https://github.com/facebookincubator/Facebook-For-OpenCart</link>
 
@@ -71,13 +71,6 @@
           $data['plugin_upgrade_message'] = ($hasNewUpgradeAvailable)
             ? FacebookCommonUtils::PLUGIN_UPGRADE_MESSAGE
             : '';
-          
-          $showFeedMigrationWarningMessage = $this->load->controller(
-            'extension/facebookadsextension/showFeedMigrationWarningMessage'
-          );
-          $data['plugin_feed_not_migrated_message'] = $showFeedMigrationWarningMessage
-            ? $this->language->get('text_warning_feed_not_migrated')
-            : '';
 
           $showFeedMigratedAndWebsiteInMaintenanceWarningMessage = $this->load->controller(
             'extension/facebookadsextension/isFeedMigratedAndWebsiteInMaintenance'
@@ -108,11 +101,6 @@
         <?php } ?>
         <?php if (isset($plugin_upgrade_message) && !!($plugin_upgrade_message)) {?>
         <div class="alert alert-info"><i class="fa fa-exclamation-circle"></i> <?php echo $plugin_upgrade_message; ?>
-          <button type="button" class="close" data-dismiss="alert">&times;</button>
-        </div>
-        <?php } ?>
-        <?php if (isset($plugin_feed_not_migrated_message) && !!($plugin_feed_not_migrated_message)) {?>
-        <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> <?php echo $plugin_feed_not_migrated_message; ?>
           <button type="button" class="close" data-dismiss="alert">&times;</button>
         </div>
         <?php } ?>
@@ -360,7 +348,7 @@
 
             <?php if ($facebook_pixel_id_FAE) { ?>
 // system auto generated facebook_pixel.js, DO NOT MODIFY
-pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_2_1.js';
+pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_3_0_0.js';
 // system auto generated facebook_pixel.js, DO NOT MODIFY
               facebook_loadScript(
                 pixel_script_filename,
@@ -562,7 +550,7 @@ pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_2_1.j
 
             {% if facebook_pixel_id_FAE %}
 // system auto generated facebook_pixel.js, DO NOT MODIFY
-pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_2_1.js';
+pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_3_0_0.js';
 // system auto generated facebook_pixel.js, DO NOT MODIFY
               facebook_loadScript(
                 pixel_script_filename,
@@ -658,11 +646,6 @@ pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_2_1.j
           <button type="button" class="close" data-dismiss="alert">&times;</button>
         </div>
         {% endif %}
-        {% if plugin_feed_not_migrated_message %}
-        <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> {{ plugin_feed_not_migrated_message }}
-          <button type="button" class="close" data-dismiss="alert">&times;</button>
-        </div>
-        {% endif %}
         {% if plugin_feed_migrated_and_website_in_maintenance_message %}
         <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> {{ plugin_feed_migrated_and_website_in_maintenance_message }}
           <button type="button" class="close" data-dismiss="alert">&times;</button>
@@ -681,7 +664,6 @@ pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_2_1.j
         $_['text_warning_facebook_access_token_problem'] = 'Warning: There is a problem with your Facebook access token. Please go to Facebook Business Extension to refresh the access token.';
         $_['text_warning_facebook_fae_install_problem'] = 'Warning: There is a problem with your Facebook Business Extension installation. Please go to Facebook Business Extension to view more details.';
         $_['text_warning_facebook_missing_facebookadsextension'] = 'Warning: There is a problem with your Facebook Business Extension installation. We are unable to locate the admin/controller/extension/facebookadsextension.php file on your webserver. Please ensure that you have given read+write+execute permission to the admin/controller folder and reinstall the plugin again. Click <a href="https://github.com/facebookincubator/Facebook-For-OpenCart/blob/master/INSTALL_GUIDE.md" target="_blank">here</a> for details on the plugin installation.';
-        $_['text_warning_feed_not_migrated'] = 'Warning: We have updated the catalog sync process and requires you to do an update immediately. Please click on Facebook Business Extension, Manage Settings, go to Advanced Options and follow the instructions. <a href="https://drive.google.com/open?id=1dAF88Spg-iAwPXmkwcVvAqg82UYJ5IJ0" target="_blank">View steps</a>';
         $_['text_warning_plugin_feed_migrated_and_website_in_maintenance_message'] = 'Warning: We have detected that your web store is in maintenance mode. This will cause the Facebook catalog scheduled sync to fail. To disable the maintenance mode, access Settings, click on your Store, select Server tab and choose No for Maintenance mode.';
       ]]></add>
     </operation>
@@ -1080,7 +1062,7 @@ pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_2_1.j
 
               <?php if ($facebook_pixel_id_FAE) { ?>
 // system auto generated facebook_pixel.js, DO NOT MODIFY
-pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_2_1.js';
+pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_3_0_0.js';
 // system auto generated facebook_pixel.js, DO NOT MODIFY
                 facebook_loadScript(
                   pixel_script_filename,
@@ -1278,7 +1260,7 @@ pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_2_1.j
 
               {% if facebook_pixel_id_FAE %}
 // system auto generated facebook_pixel.js, DO NOT MODIFY
-pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_2_2_1.js';
+pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_3_0_0.js';
 // system auto generated facebook_pixel.js, DO NOT MODIFY
                 facebook_loadScript(
                   pixel_script_filename,
