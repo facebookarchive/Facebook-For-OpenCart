@@ -3,9 +3,7 @@ Frequently Asked Questions for Facebook Business Extension
 - The latest version of the plugin can be found at [here](https://github.com/facebookincubator/Facebook-For-OpenCart/releases/latest)
 - The latest version of the README can be found at [here](https://github.com/facebookincubator/Facebook-For-OpenCart/blob/master/README.md)
 - The latest version of the INSTALL_GUIDE can be found at [here](https://github.com/facebookincubator/Facebook-For-OpenCart/blob/master/INSTALL_GUIDE.md)
-- The previous version of INSTALL_GUIDE before v3.0.0 can be found at [here](https://github.com/facebookincubator/Facebook-For-OpenCart/blob/master/INSTALL_GUIDE_2.x.x.md)
 - The latest version of the FAQ can be found at [here](https://github.com/facebookincubator/Facebook-For-OpenCart/blob/master/FAQ.md)
-- The previous version of the FAQ before v3.0.0 can be found at [here](https://github.com/facebookincubator/Facebook-For-OpenCart/blob/master/FAQ_2.x.x.md)
 - For other questions or bug reporting, please create a ticket at our [github](https://github.com/facebookincubator/Facebook-For-OpenCart/issues)
 
 ====
@@ -45,33 +43,21 @@ Always check that you have installed the latest version of the plugin as we are 
 5. I have installed the OpenCart plugin but I am unable to see the Facebook Business Extension module from the menu bar. [Screenshot](https://drive.google.com/open?id=1YUDir2bkB5dWPyNi-xpd7APZsKnrbj0M)
     - Check that you have refreshed the plugin modifications. Click on Refresh button to refresh the existing plugins on your OpenCart server. [Screenshot](https://drive.google.com/open?id=1Mfr49CzavKogSrOvZurJIvadfCwtR_6p)
 
-# Setup for Facebook business manager, page, pixel, catalog and page shop
-1. I see an error that says "The message received is not from the verified source" or "An error occured when receiving message from the verified source" or "An error occured when creating Facebook Business Extension setup" or "[Object Object]".
-    - Generally speaking it means there're issues when setup FBE with your account and the selected assets.
-    - It could be due to permission errors that you don't have right permissions to update the assets, or your assets are invalid. 
-    - We're working on a better version to provide you with more visibility on the errors.
-
-
-2. I can't see my page.
-    - Usually this is due to a lack of permissions to access the page.
-    - Ensure that you are the admin of the page, or were added as an admin at least one week ago due to existing security control to prevent bad actor.
-    - Ensure you own the Business Manager associated with the page. You can go to Page Settings, click Page Roles tab, under Page Owner section, check whether you have access to the Business Manager. [Screenshot](https://drive.google.com/open?id=1nZjt9oK8xIe3rBunsVnnRF6rmlNKhudr)
-
-
-3. I am unable to see the pixel fired on my webstore after completing the setup. [Screenshot](https://drive.google.com/open?id=1rSQYT9mQViGkloFkRJKpEmfxl4iOU161)
+# Setup for Facebook pixel, catalog and page shop
+1. I am unable to see the pixel fired on my webstore after completing the setup. [Screenshot](https://drive.google.com/open?id=1rSQYT9mQViGkloFkRJKpEmfxl4iOU161)
     - Check that you have refreshed the plugin modifications. Click on Refresh button to refresh the existing plugins on your OpenCart server. [Screenshot](https://drive.google.com/open?id=1Mfr49CzavKogSrOvZurJIvadfCwtR_6p)
     - If you are using OpenCart 3.x, check that you have disabled the theme cache. [Screenshot](https://drive.google.com/open?id=1bY-bworYxX36b88HDvFW0_32C3Wtq_Tm)
     - Please check if you are using the version 2.1.4 and above for the Facebook for OpenCart plugin.
     - If you are on OpenCart v3.x, please check that you have not made any changes to the common/header.twig template file using the Theme Editor. It is a known issue that the Theme Editor is not compatible with ocmod plugins, and the Facebook for OpenCart plugin is using ocmod. [Screenshot](https://drive.google.com/open?id=1c5lnHR0fw9laZXOs9UEyhpMpsDaij_mU)
 
-4. I am getting "There is an error with Facebook Business Extension setup. Click on Facebook Business Extension, Manage Settings, go to Advanced options and click on Delete Settings to restart the setup." error after completing the setup. [Screenshot](https://drive.google.com/open?id=1PadMA4cE1M-l_PgmyYo3_qg2JGU8E0Iy)
+2. I am getting "There is an error with Facebook Business Extension setup. Click on Facebook Business Extension, Manage Settings, go to Advanced options and click on Delete Settings to restart the setup." error after completing the setup. [Screenshot](https://drive.google.com/open?id=1PadMA4cE1M-l_PgmyYo3_qg2JGU8E0Iy)
     - If you have a large catalog, eg more than 5000 products, there could be memory limitations due to your webserver/database configurations. Please refer to the next section "Syncing of OpenCart products to Facebook catalog" for more details.
     - The problem may occur if there is some connection problem during the setup process. You can delete away the existing settings and re-setup fpr Facebook Business Extension again. [Video guide](https://drive.google.com/open?id=1PenBy_xizQGszdiS5BrmVFPypn5HKnkL)
 
-5. I see an error that says We're unable to proceed since the selected page has already been configured for the Facebook Business Extension.
+3. I see an error that says We're unable to proceed since the selected page has already been configured for the Facebook Business Extension.
     - If you see this error, it means that your Page is associated with another store. You'll need to decide whether you want to keep the Facebook Page associated with your old OpenCart store, or associate it with a different store. [Screenshot](https://drive.google.com/open?id=1gntxIF0YGa5XQEk2Pe-ichA-yQ5ZMr-J)
 
-6. I see an error that says the access token is invalid.
+4. I see an error that says the access token is invalid.
     - If you see that the access token is invalid due to password change or invalid user session, you will need to update your access token and check that you do not log out of Facebook on your browser.
     - If you see that the access token is invalid due to unable to decrypt reasons, you will need to update your access token.
     - To refresh your access token, you can follow the steps in this screenshot. [Screenshot](https://drive.google.com/open?id=18koOQZmV3ra6wMsjsaWUPDuYZR_phl3J)

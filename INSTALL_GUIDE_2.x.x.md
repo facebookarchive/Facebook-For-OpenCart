@@ -1,11 +1,9 @@
-Installation Guide for Facebook Business Extension v3.0.0
+Installation Guide for Facebook Business Extension before v3.0.0
 ====
 - The latest version of the plugin can be found at [here](https://github.com/facebookincubator/Facebook-For-OpenCart/releases/latest)
 - The latest version of the README can be found at [here](https://github.com/facebookincubator/Facebook-For-OpenCart/blob/master/README.md)
 - The latest version of the INSTALL_GUIDE can be found at [here](https://github.com/facebookincubator/Facebook-For-OpenCart/blob/master/INSTALL_GUIDE.md)
-- The previous version of INSTALL_GUIDE before v3.0.0 can be found at [here](https://github.com/facebookincubator/Facebook-For-OpenCart/blob/master/INSTALL_GUIDE_2.x.x.md)
 - The latest version of the FAQ can be found at [here](https://github.com/facebookincubator/Facebook-For-OpenCart/blob/master/FAQ.md)
-- The previous version of the FAQ before v3.0.0 can be found at [here](https://github.com/facebookincubator/Facebook-For-OpenCart/blob/master/FAQ_2.x.x.md)
 - For other questions or bug reporting, please create a ticket at our [github](https://github.com/facebookincubator/Facebook-For-OpenCart/issues)
 
 ====
@@ -62,8 +60,19 @@ Installation Guide for Facebook Business Extension v3.0.0
       - Go to the admin panel of OpenCart and click on Menu -> Extensions -> Extensions. [Screenshot](https://drive.google.com/open?id=1ftZTL2M8S11g4XKqUIESalLraltFHlC-)
       - Click on the Extension type dropdown list and select Modules. [Screenshot](https://drive.google.com/open?id=1xQ-1yp22x6khgfduPw8CrtVpIHtPrS4T)
       - Scroll down the list to locate Facebook Business Extension and click on Install button. [Screenshot](https://drive.google.com/open?id=1sfryAfbG9rUyF0skyZ4BI7nLma8uM1KI)
-  
-  3. Setup the permission rights for Facebook Business Extension if you encounter "Permission Denied". [Screenshot.](https://drive.google.com/open?id=1wgBr11M5ikAVNXtxYw0bkYMsksTGW2ri) [Video guide](https://drive.google.com/open?id=1JUwZPlUNIhFO7I8U0slbJSQNjyu4al_J)
+
+# Setup for Facebook pixel, catalog and page shop
+  1. Access the Facebook Business Extension to install pixel, catalog and page shop. [Video guide](https://drive.google.com/open?id=1JPXQ0mS1pGk2Bat9RV02vYNdbRfCLP9r)
+      - Go to the admin panel of OpenCart and click on Menu -> Facebook Business Extension -> Facebook Business Extension. [Screenshot](https://drive.google.com/open?id=1xC5hQLqn-6AR7mxPME3y-safDTY-LFya)
+      - Click on the Get Started button. [Screenshot](https://drive.google.com/open?id=1NOmU1ujQS98PCrSe_lN9g4MTa-ig7CZy)
+      - Read the welcome text and click on Next button. [Screenshot](https://drive.google.com/open?id=1k7eEaao8zznOHGtvc4yUs0-8w4YymzPf)
+      - Select an existing Facebook Page or create a new Facebook Page and click on Next button. [Screenshot](https://drive.google.com/open?id=1hc66N_wa1GgqEP4yUgHuFxbeDXpqVl_b)
+      - Select the Facebook pixel you wish to use for your OpenCart store website. Toggle Advanced matching if you wish to active Facebook Advanced matching and click on Next button. [Screenshot](https://drive.google.com/open?id=1nood2Oq1YSWdHsFXBQtF6PBTmOoy5tDr)
+      - Toggle Page shop if you wish to enable the catalog on your Facebook Page. Click on Finish to complete the setup. [Screenshot](https://drive.google.com/open?id=1LqmQYAjuvgdsz6YTeRsIXTayIWYu_kQu)
+      - Click on Continue button and Close button to close the popup screen. [Screenshot](https://drive.google.com/open?id=1yDn2AstNadjfCAGtcVY13mi1S0fTjwNt)
+      - Observe that the Facebook Business Extension setup is completed successfully. [Screenshot](https://drive.google.com/open?id=1QYqAsRRym3uxxZWfT-ZsQXCmAAqXShvu)
+
+  2. Setup the permission rights for Facebook Business Extension if you encounter "Permission Denied". [Screenshot.](https://drive.google.com/open?id=1wgBr11M5ikAVNXtxYw0bkYMsksTGW2ri) [Video guide](https://drive.google.com/open?id=1JUwZPlUNIhFO7I8U0slbJSQNjyu4al_J)
       - Ensure you are on the latest version of the Facebook Business Extension plugin. [Latest version](https://github.com/facebookincubator/Facebook-For-OpenCart/releases/latest)
       - If you are on OpenCart v3.x, ensure that you have performed the additional installation step. [Video guide](https://drive.google.com/open?id=1-ljN_pNcyZBbN2LoXtxwaJEy0dfnxAum)
       - The Facebook Business Extension plugin will automatically enable the permission access for the default Administrator group. For other user groups, you will need to provide the permission access manually.
@@ -72,52 +81,16 @@ Installation Guide for Facebook Business Extension v3.0.0
         - Locate the Access and Modify permissions, extension/facebookadsextension. Ensure the permissions are selected and click on Save button. [Screenshot](https://drive.google.com/open?id=1GdwPxVE2xBz-R__1EVtsYeJylhhHMr-t)
         - Access the Facebook Business Extension to verify that you are able to view the plugin.
 
-# Setup for Facebook business manager, page, pixel and catalog
-  1. Access the Facebook Business Extension to setup business manager, page, pixel and catalog.
-      - Go to the admin panel of OpenCart and click on Menu -> Facebook Business Extension -> Facebook Business Extension. [Screenshot](https://drive.google.com/open?id=1SlQlEMvn5XJ8Tk58gJffZqy7o_7Ihwhn)
-      - Click on the Get Started button. [Screenshot](https://drive.google.com/open?id=11rel4BoOcxcmU_aqB6Pn-CIUwFVNTi2w)
-      - Facebook login popup requests you to log in first. [Screenshot](https://drive.google.com/open?id=1k7eEaao8zznOHGtvc4yUs0-8w4YymzPf)
-      - Read the welcome text and click Get Started button. [Screenshot](https://drive.google.com/open?id=1Lqd9WKHt0t2tXucwiQAKm3brvIuPrw2z)
-      - Select an existing Facebook Business Manager or create a new Facebook Business Manager and click on Continue button. [Screenshot](https://drive.google.com/open?id=1nU1kGUke4pHMNX_XqZfQviJAJ49sUlZ-)
-      - Select an existing Facebook Page or create a new Facebook Page and click on Continue button. [Screenshot](https://drive.google.com/open?id=1OlxR6EP7usoIH_Yy-5Z_gtFeOlkjvT6M)
-      - Select the Facebook pixel you wish to use for your OpenCart store website. Toggle Advanced matching if you wish to active Facebook Advanced matching and click on Continue button. [Screenshot](https://drive.google.com/open?id=1yQBJ3IvhtgH-pdVUkLfxGHidayg7NCC3)
-      - Enter the name of your Facebook Catalog and click Create button. [Screenshot](https://drive.google.com/open?id=1uem2hkQtsftdyxwl0umaEEeuSI4NNone)
-      - Click Next button to grant user permissions. [Screenshot](https://drive.google.com/open?id=120uo9sUrtdnW-HEQBY2rp6XhKn5oWfxO)
-      - Observe that the Facebook Business Extension setup is completed successfully. [Screenshot](https://drive.google.com/open?id=1GMZr3YVwq6V2Wq8-DwleZq9z3ml6Ov4S)
-  
-  2. If you are an existing user of previous versions of Facebook Business Extension, you should see a different screen on which all of your previously connected assets were automatically populated. Click Continue button to finish the setup. [Screenshot](https://drive.google.com/open?id=1QdOM1ZdcoY8YfrJJPD6MeN76XpLRH6bm)
-
-# Launch Management View
-In Management View, you can add more features such as enable Facebook Page Shop plugin, Facebook Messenger Chat plugin and etc.
-  1. Access the Facebook Business Extension Management View.
-      - Ensure you are on versions 3.0.0 and above of the Facebook Business Extension plugin. [Latest version](https://github.com/facebookincubator/Facebook-For-OpenCart/releases/latest)
-      - You must have already completed the setup for business manager, page, pixel and catalog for Facebook Business Extension. Steps [here](#setup-for-facebook-business-manager-page-pixel-and-catalog).
-      - Go to the admin panel and click on Menu -> Facebook Business Extension -> Facebook Business Extension. Click on Manage Settings button. [Screenshot](https://drive.google.com/open?id=1mJu7poPn2rBtnkg2UgfSYi2cGdFDztMp)
-  2. (Optional) Follow steps [here](#setup-for-facebook-page-shop) to enable Facebook Page Shop plugin.
-  3. (Optional) Follow steps [here](#setup-for-facebook-messenger-chat) to enable Facebook Messenger Chat plugin.
-
-# Setup for Facebook Page Shop
-  1. Enable the Facebook Page Shop plugin.
-      - In the Management View popup window, ensure you are on Home tab, locate the feature section and click on View button next to Create a Shop on Your Page. [Screenshot](https://drive.google.com/open?id=100qDRgpxA0Rr2HyV49xSBPoRUWsnxLtR)
-      - In the popup, click on Add plugin button. [Screenshot](https://drive.google.com/open?id=1ivRBVCrJTu3ND-azhkdV4s-_IOsQdIvv)
-      - If added successfully, the Page Shop plugin status is shown as Added. [Screenshot](https://drive.google.com/open?id=1EcaufbbkJh0dtg3lWIatA08n9IKZrn3m)
-  2. Verify that your Facebook Catalog is correctly connected to your Page Shop. 
-      - In the Managment View popup window, click Catalog tab, and click Open Catalog Manager button. [Screenshot](https://drive.google.com/open?id=18OCYzQMBtbQxW0II2-JtxzasA1_TD7e1)
-      - In the Catalog Manager, click Settings tab, verify that your Page Shop is correctly connected. [Screenshot](https://drive.google.com/open?id=1P2LrqzLhzIBcHphNHt_L6KE-E9M4H3TT)
-  3. Disable the Facebook Page Shop plugin.
-      - Ensure you have enabled the Facebook Page Shop plugin, i.e. the Page Shop Plugin status is shown as Added. [Screenshot](https://drive.google.com/open?id=1EcaufbbkJh0dtg3lWIatA08n9IKZrn3m)
-      - Click on View button next to Create a Shop on Your Page. [Screenshot](https://drive.google.com/open?id=12XRUxhzN4_9u3ojgZA_mHQD9LhAE17Zi)
-      - In the popup, click on Delete button. [Screenshot](https://drive.google.com/open?id=1J_kOcyIWBZeO3YJZMJFMQlWui5eSn3Kq)
-
-# Setup for Facebook Messenger chat
-Currently not available in v3.0.0. Please use previous versions if you need the feature.
-
 # Delete the existing settings for Facebook for OpenCart
-  1. Delete the existing settings. [Video guide](https://drive.google.com/open?id=1_rJZrqnVQNS_dFngiCI6Jh2iaDW8tAqh) 
-      - You must have already completed the setup for business manager, page, pixel and catalog for Facebook Business Extension. Steps [here](#setup-for-facebook-business-manager-page-pixel-and-catalog).
-      - Go to the admin panel of OpenCart and click on Menu -> Facebook Business Extension -> Facebook Business Extension. Click on the Uninstall button. [Screenshot](https://drive.google.com/open?id=1a82MuZOKcNKAmgs2RLnriOgmnuBtGzFz)
-      - In the alert window, click on the OK button to proceed with deletion. [Screenshot](https://drive.google.com/open?id=1-1zedtOwlSG7L9a_h2hihD8dRL8cE08H)
-  2. Once deleted successfully, you should see the page with 'Get Started' button. [Screenshot](https://drive.google.com/open?id=11rel4BoOcxcmU_aqB6Pn-CIUwFVNTi2w)
+  1. [Video guide](https://drive.google.com/open?id=1PenBy_xizQGszdiS5BrmVFPypn5HKnkL)
+  
+  2. You must have already completed the setup for pixel, catalog for Facebook Business Extension.
+  
+  3. Go to the admin panel of OpenCart and click on Menu -> Facebook Business Extension -> Facebook Business Extension. Click on the Manage Settings button. [Screenshot](https://drive.google.com/open?id=1nUNSsphp7ID8Ma4_5ESWI8DR_eQ4-IfI)
+  
+  4. In the popup window, click on the Advanced options and click on the Delete Settings button. [Screenshot](https://drive.google.com/open?id=1MteMvqhAlnt44uowXeTlDBPM0bHT1dmB)
+  
+  5. Read the confirmation message and click on Confirm button to proceed with the deletion. [Screenshot](https://drive.google.com/open?id=1iwrOTZOw9xt5h_mhUSY5qi-TfkOduUht)
 
 # Uninstall the plugin
   1. [Video guide](https://drive.google.com/open?id=1aPxqEcH1J3tT3bG0vMIC5DLnkDN7fo_d)
@@ -164,4 +137,25 @@ Currently not available in v3.0.0. Please use previous versions if you need the 
       - Go to the admin panel and click on Menu -> Facebook Business Extension -> Facebook Business Extension. Click on Manage Settings button. [Screenshot](https://drive.google.com/open?id=1nUNSsphp7ID8Ma4_5ESWI8DR_eQ4-IfI)
       - Check the Sync product special price as discount option and click on Save button. [Screenshot](https://drive.google.com/open?id=1CSeaZ0BPsue6eNKsLHXjahodXWgNh5ss)
 
+# Setup for Facebook Messenger chat
+  1. Enable the Facebook Messenger chat plugin. [Video guide](https://drive.google.com/open?id=1XubpAUFYw6m7lB9A8RqrdOPq3IjEQvIq)
+      - Ensure you are on versions 2.1.0 and above of the Facebook Business Extension plugin. [Latest version](https://github.com/facebookincubator/Facebook-For-OpenCart/releases/latest)
+      - You must have already completed the setup for pixel, catalog for Facebook Business Extension. [Video guide](https://drive.google.com/open?id=1JPXQ0mS1pGk2Bat9RV02vYNdbRfCLP9r)
+      - Go to the admin panel and click on Menu -> Facebook Business Extension -> Facebook Business Extension. Click on Manage Settings button. [Screenshot](https://drive.google.com/open?id=1nUNSsphp7ID8Ma4_5ESWI8DR_eQ4-IfI)
+      - In the popup window, locate the Messenger Chat plugin and click on View button. [Screenshot](https://drive.google.com/open?id=1Bs1bYqZFGWr2Da56vbAgcNQBsL1yd0qo)
+      - Click on Add plugin button. [Screenshot](https://drive.google.com/open?id=1FOH4JgAtYUeK1vnkrhYC7TDdRwRmfTcJ)
+      - Setup your language settings and click on Next button. [Screenshot](https://drive.google.com/open?id=1qtYfnjoIeLfcuQ2rxYR0hwEfbxCnXZaT)
+      - Setup your appearance settings and click on Finish button. [Screenshot](https://drive.google.com/open?id=1tf70_6uqrhJyKlCE-1Od1Ozo_EwjEeqb)
+      - Verify that the Messenger chat plugin has been added to your web store. [Screenshot](https://drive.google.com/open?id=1QRfvlPiFkywJEAqEIlQz0oxQTCStQMhS)
 
+  2. Edit the Facebook Messenger chat plugin settings.
+      - Ensure you have enabled the Facebook Messenger chat plugin.
+      - Go to the admin panel and click on Menu -> Facebook Business Extension -> Facebook Business Extension. Click on Manage Settings button. [Screenshot](https://drive.google.com/open?id=1nUNSsphp7ID8Ma4_5ESWI8DR_eQ4-IfI)
+      - In the popup window, locate the Messenger Chat plugin and click on View button. [Screenshot](https://drive.google.com/open?id=1Bs1bYqZFGWr2Da56vbAgcNQBsL1yd0qo)
+      - CLick on Edit button. Complete your changes and click on Finish button. [Screenshot](https://drive.google.com/open?id=1GZE4EGTrUVdFLwC7FCt98S_Bzynas21a)
+
+  3. Disable the Facebook Messenger chat plugin settings.
+      - Ensure you have enabled the Facebook Messenger chat plugin.
+      - Go to the admin panel and click on Menu -> Facebook Business Extension -> Facebook Business Extension. Click on Manage Settings button. [Screenshot](https://drive.google.com/open?id=1nUNSsphp7ID8Ma4_5ESWI8DR_eQ4-IfI)
+      - In the popup window, locate the Messenger Chat plugin and click on View button. [Screenshot](https://drive.google.com/open?id=1Bs1bYqZFGWr2Da56vbAgcNQBsL1yd0qo)
+      - CLick on Disable button. Complete your changes and click on Finish button. [Screenshot](https://drive.google.com/open?id=1J_kOcyIWBZeO3YJZMJFMQlWui5eSn3Kq)
