@@ -115,7 +115,7 @@ Currently not available in v3.0.0. Please use previous versions if you need the 
 # Delete the existing settings for Facebook for OpenCart
   1. Delete the existing settings. [Video guide](https://drive.google.com/open?id=1_rJZrqnVQNS_dFngiCI6Jh2iaDW8tAqh) 
       - You must have already completed the setup for business manager, page, pixel and catalog for Facebook Business Extension. Steps [here](#setup-for-facebook-business-manager-page-pixel-and-catalog).
-      - Go to the admin panel of OpenCart and click on Menu -> Facebook Business Extension -> Facebook Business Extension. Click on the Uninstall button. [Screenshot](https://drive.google.com/open?id=1a82MuZOKcNKAmgs2RLnriOgmnuBtGzFz)
+      - Go to the admin panel of OpenCart and click on Menu -> Facebook Business Extension -> Facebook Business Extension. Click on the Uninstall button. [Screenshot](https://drive.google.com/open?id=1uE7PXtt0iKca60zCSra3k2vuvoe0alji)
       - In the alert window, click on the OK button to proceed with deletion. [Screenshot](https://drive.google.com/open?id=1-1zedtOwlSG7L9a_h2hihD8dRL8cE08H)
   2. Once deleted successfully, you should see the page with 'Get Started' button. [Screenshot](https://drive.google.com/open?id=11rel4BoOcxcmU_aqB6Pn-CIUwFVNTi2w)
 

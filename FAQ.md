@@ -46,11 +46,10 @@ Always check that you have installed the latest version of the plugin as we are 
     - Check that you have refreshed the plugin modifications. Click on Refresh button to refresh the existing plugins on your OpenCart server. [Screenshot](https://drive.google.com/open?id=1Mfr49CzavKogSrOvZurJIvadfCwtR_6p)
 
 # Setup for Facebook business manager, page, pixel, catalog and page shop
-1. I see an error that says "The message received is not from the verified source" or "An error occured when receiving message from the verified source" or "An error occured when creating Facebook Business Extension setup" or "[Object Object]".
+1. I see an error that says "An error occured when creating Facebook Business Extension setup" or "[Object Object]".
     - Generally speaking it means there're issues when setup FBE with your account and the selected assets.
     - It could be due to permission errors that you don't have right permissions to update the assets, or your assets are invalid. 
-    - We're working on a better version to provide you with more visibility on the errors.
-
+    - If you see "An error occured when creating Facebook Business Extension setup", you can attach the screeshot of the error message details for us to troubleshoot. [Screenshot](https://drive.google.com/open?id=1Kc31pxu9aXehB7a2sR3ea3gqO9vc_RSc)
 
 2. I can't see my page.
     - Usually this is due to a lack of permissions to access the page.
@@ -79,6 +78,10 @@ Always check that you have installed the latest version of the plugin as we are 
 # Syncing of OpenCart products to Facebook catalog
 1. How does the plugin sync the OpenCart products to Facebook catalog?
     - We are using a daily scheduled generated feed to sync the OpenCart products to Facebook catalog.
+    - If you need to re-sync the catalog immediately after updating product details in OpenCart, please follow the steps as below:
+        - Click button Manage Settings, in the Management View, click Catalog in the left menu.
+        - In Catalog page, click the button to Open Catalog Manager.
+        - In Catalog Manager, open Product Data Sources, click Request Update Now button whenever you need to sync catalog immediately. [Screenshot](https://drive.google.com/open?id=1zdpdAHnG7-Tte_iyAjBswRgwTX6g-4wG)
 
 2. I made changes to my OpenCart products by using 3rd party extensions, such as importing new products in bulk or updating product prices in bulk. Why are my changes not reflected on Facebook catalog.
     - Our scheduled sync is performed on a daily basis.

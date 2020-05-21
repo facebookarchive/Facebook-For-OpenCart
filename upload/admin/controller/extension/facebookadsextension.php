@@ -107,6 +107,7 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
     $data['feed_url'] = HTTP_CATALOG.'index.php?route=extension/facebookfeed/genFeed';
     $data['feed_ping_url'] = HTTP_CATALOG.'index.php?route=extension/facebookfeed/genFeedPing';
     $data['feed_migrated'] = $this->getFeedMigrated();
+    $data['feed_now_url'] = HTTP_CATALOG.'index.php?route=extension/facebookfeed/genFeedNow';
 
     $data['sample_feed'] = $this->facebook_product_feed_controller->getSampleProductFeed();
     if (!$data['sample_feed']) {
@@ -196,7 +197,7 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
     $data['opencart_iframe_url'] = $data['opencart_server_base_url'] . FacebookCommonUtils::OPENCART_FBE_IFRAME_PATH . '?' 
     . 'external_business_id=' . urlencode($data['external_business_id'])
     . '&business_name=' . $data['store_name']
-    . '&feed_url=' . urlencode($data['feed_url'])
+    . '&feed_url=' . urlencode($data['feed_now_url'])
     . '&feed_ping_url=' . urlencode($data['feed_ping_url'])
     . '&timezone=' . date_default_timezone_get()
     . '&currency=' . $data['base_currency'];
@@ -551,7 +552,7 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
       DIR_APPLICATION . '/../catalog/controller/extension/facebookpageshopcheckoutredirect.php',
       DIR_APPLICATION . '/../catalog/controller/extension/facebookproduct.php',
       DIR_APPLICATION . '/../catalog/view/javascript/facebook/cookieconsent.min.js',
-      DIR_APPLICATION . '/../catalog/view/javascript/facebook/facebook_pixel_3_0_0.js',
+      DIR_APPLICATION . '/../catalog/view/javascript/facebook/facebook_pixel_3_0_1.js',
       DIR_APPLICATION . '/../catalog/view/theme/css/facebook/cookieconsent.min.css',
 // system auto generated, DO NOT MODIFY
       null

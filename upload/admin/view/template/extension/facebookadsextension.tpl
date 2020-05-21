@@ -38,19 +38,16 @@ window.fbAsyncInit = function() {
 })();
 
 function receiveMessage(e) {
-  return new Promise(function(resolve, reject) {
-    if(e.origin !== "<?php echo $opencart_server_base_url; ?>") {
-      reject(new Error("The message received is not from the verified source."));
-    } else if(!e.data) {
-      reject(new Error("An error occured when receiving messesage from the verified source."));
-    } else {
+  return new Promise(function(resolve, reject) {  
+    if(e.origin === "<?php echo $opencart_server_base_url; ?>" && e.data) {
       var message = JSON.parse(e.data);
       if(!message.success && message.error_message) {
         reject(new Error(message.error_message));
       } else if(message.installed) {
         // installed
         if(!message.pixel_id || !message.profiles || !message.profiles[0]) {
-          reject(new Error("An error occured when creating Facebook Business Extension setup."));
+          const messageStr = JSON.stringify(message);
+          reject(new Error(`An error occured when creating Facebook Business Extension setup. ${messageStr}`));
         } else {
           var settingsKeyValueData = {
             facebook_pixel_id: message.pixel_id,

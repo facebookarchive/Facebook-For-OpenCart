@@ -1,7 +1,13 @@
 Facebook Business Extension
-Latest version: 3.0.0
+Latest version: 3.0.1
 
 Change log
+3.0.1 - 21 May 2020
+* Fix issue 'The message received is not from the verified source'.
+* Fix catalog can't be synced immediately after updating product.
+* Show response details in error popup to help troubleshooting.
+* Update FAQ.
+
 3.0.0 - 31 Mar 2020
 * A new UI of Facebook Business Extension setup flow
 * Enable to set up Business Manager and easily assign your pixel, ad account and catalog under the Business Manager

@@ -154,7 +154,7 @@ class FacebookCommonUtils {
 
   private $pluginAgentName = 'exopencart';
 // system auto generated, DO NOT MODIFY
-private $pluginVersion = '3.0.0';
+private $pluginVersion = '3.0.1';
 // system auto generated, DO NOT MODIFY
 
   public function __construct() {
