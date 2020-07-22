@@ -49,6 +49,8 @@ Installation Guide for Facebook Business Extension v3.0.0
 
   9. Our plugin will create the catalog feed of all your products to be uploaded to Facebook after completing the setup for Facebook pixel and catalog. Depending on your web server and database server configurations, you may experience issues with your database server if you have a large product catalog, eg more than 5000 products. You may need to increase the memory settings for your webserver and database server. Refer to the [FAQ](https://github.com/facebookincubator/Facebook-For-OpenCart/blob/master/FAQ.md) for more details.
 
+  10. Our plugin internally used Facebook Business SDK, the plugin size could exceed your pre-defined upload_max_filesize. You may need to increas the value of upload_max_filesize for your webserver in order to install the plugin.
+
 # Plugin installation
   1. Install the Facebook for OpenCart plugin via OCMOD. [Video guide](https://drive.google.com/open?id=1V4Nu8nlmHX5ppKqsjcR-xR05Rozb7MKN)
       - Go to the admin panel of OpenCart and click on:
@@ -76,14 +78,18 @@ Installation Guide for Facebook Business Extension v3.0.0
   1. Access the Facebook Business Extension to setup business manager, page, pixel and catalog.
       - Go to the admin panel of OpenCart and click on Menu -> Facebook Business Extension -> Facebook Business Extension. [Screenshot](https://drive.google.com/open?id=1SlQlEMvn5XJ8Tk58gJffZqy7o_7Ihwhn)
       - Click on the Get Started button. [Screenshot](https://drive.google.com/open?id=11rel4BoOcxcmU_aqB6Pn-CIUwFVNTi2w)
-      - Facebook login popup requests you to log in first. [Screenshot](https://drive.google.com/open?id=1k7eEaao8zznOHGtvc4yUs0-8w4YymzPf)
-      - Read the welcome text and click Get Started button. [Screenshot](https://drive.google.com/open?id=1Lqd9WKHt0t2tXucwiQAKm3brvIuPrw2z)
+      - Facebook login popup requests you to log in first. [Screenshot](https://drive.google.com/file/d/1ORUR8DvO3KWRI0T-aFVkXwVC8-gq36QD/view?usp=sharing)
+      - Read the welcome text and click Continue button. [Screenshot](https://drive.google.com/file/d/1cGU6Gyw6aMqyI44UHkiK73ULiU1IjhUB/view?usp=sharing)
+      - The Confirm Settings screen lets you configure the assets which you want to connect. [Screenshot](https://drive.google.com/file/d/1_vllIHcR30uDIUdnxqy0QmXyciX0-HDL/view?usp=sharing)
       - Select an existing Facebook Business Manager or create a new Facebook Business Manager and click on Continue button. [Screenshot](https://drive.google.com/open?id=1nU1kGUke4pHMNX_XqZfQviJAJ49sUlZ-)
       - Select an existing Facebook Page or create a new Facebook Page and click on Continue button. [Screenshot](https://drive.google.com/open?id=1OlxR6EP7usoIH_Yy-5Z_gtFeOlkjvT6M)
+      - Select an existing Facebook Catalog or create a new Facebook Catalog and click on Continue. [Screenshot](https://drive.google.com/file/d/1h7jJmErWYlKthy-bXv-lBAEJVaksY0YD/view?usp=sharing)
+      - Select an existing Facebook Ad Account or create a new Facebook Ad Account and click on Continue. [Screenshot](https://drive.google.com/file/d/1YzD8CoZwUiTJ6-VfrOd7xsl2I4WkNuRN/view?usp=sharing)
       - Select the Facebook pixel you wish to use for your OpenCart store website. Toggle Advanced matching if you wish to active Facebook Advanced matching and click on Continue button. [Screenshot](https://drive.google.com/open?id=1yQBJ3IvhtgH-pdVUkLfxGHidayg7NCC3)
-      - Enter the name of your Facebook Catalog and click Create button. [Screenshot](https://drive.google.com/open?id=1uem2hkQtsftdyxwl0umaEEeuSI4NNone)
-      - Click Next button to grant user permissions. [Screenshot](https://drive.google.com/open?id=120uo9sUrtdnW-HEQBY2rp6XhKn5oWfxO)
-      - Observe that the Facebook Business Extension setup is completed successfully. [Screenshot](https://drive.google.com/open?id=1GMZr3YVwq6V2Wq8-DwleZq9z3ml6Ov4S)
+      - Verify the Business you selected is checked by default. It'll grant OpenCart the permission to manage your business. [Screenshot](https://drive.google.com/file/d/1P68fH48uf79aBl57IqJerwT3FDCv60Gm/view?usp=sharing)
+      - Click Next button to grant user permissions. [Screenshot](https://drive.google.com/open?id=120uo9sUrtdnW-HEQBY2rp6XhKn5oWfxO). You'll be asked for more permissions if on the latest version. [Screenshot](https://drive.google.com/file/d/1NfbEuZQcAmaJnty0a7tekY76fukiHfU0/view?usp=sharing)
+      - Observe that the Facebook Business Extension setup is completed successfully. Click on Done. [Screenshot](https://drive.google.com/file/d/1YQYUt2cKkD3YHRwSTvWlX3-aeIpO6IcD/view?usp=sharing)
+      - Close the popup, and wait for the FBE page to refresh automatically. [Screenshot](https://drive.google.com/open?id=1GMZr3YVwq6V2Wq8-DwleZq9z3ml6Ov4S)
   
   2. If you are an existing user of previous versions of Facebook Business Extension, you should see a different screen on which all of your previously connected assets were automatically populated. Click Continue button to finish the setup. [Screenshot](https://drive.google.com/open?id=1QdOM1ZdcoY8YfrJJPD6MeN76XpLRH6bm)
 

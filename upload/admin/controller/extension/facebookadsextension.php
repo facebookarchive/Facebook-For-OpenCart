@@ -197,10 +197,11 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
     $data['opencart_iframe_url'] = $data['opencart_server_base_url'] . FacebookCommonUtils::OPENCART_FBE_IFRAME_PATH . '?' 
     . 'external_business_id=' . urlencode($data['external_business_id'])
     . '&business_name=' . $data['store_name']
-    . '&feed_url=' . urlencode($data['feed_now_url'])
+    . '&feed_url=' . urlencode($data['feed_url'])
     . '&feed_ping_url=' . urlencode($data['feed_ping_url'])
     . '&timezone=' . date_default_timezone_get()
-    . '&currency=' . $data['base_currency'];
+    . '&currency=' . $data['base_currency']
+    . '&version=' . $data['plugin_version'];
     $data[FacebookCommonUtils::FACEBOOK_SYSTEM_USER_ACCESS_TOKEN] =
     isset($facebook_setting[FacebookCommonUtils::FACEBOOK_SYSTEM_USER_ACCESS_TOKEN])
       ? $facebook_setting[FacebookCommonUtils::FACEBOOK_SYSTEM_USER_ACCESS_TOKEN]
@@ -219,6 +220,23 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
       $data['opencart_iframe_url'] = $data['opencart_iframe_url'] 
       .'&fbe_v2_installed=' . $data[FacebookCommonUtils::FACEBOOK_FBE_V2_INSTALLED];
     }
+
+    if(!empty($data[FacebookCommonUtils::FACEBOOK_SYSTEM_USER_ACCESS_TOKEN])) {
+      $data['opencart_iframe_url'] = $data['opencart_iframe_url']
+      .'&s2s_configured=true';
+    }
+
+    $data[FacebookCommonUtils::FACEBOOK_JSSDK_VER] = $this->getJssdkVersion();
+    $data[FacebookCommonUtils::FACEBOOK_MESSENGER] = 
+    isset($facebook_setting[FacebookCommonUtils::FACEBOOK_MESSENGER])
+      ? $facebook_setting[FacebookCommonUtils::FACEBOOK_MESSENGER]
+      : false;
+
+    // display s2s migration msg when there's no SUAT
+    $data['plugin_configure_s2s_message'] =
+      $data[FacebookCommonUtils::FACEBOOK_SYSTEM_USER_ACCESS_TOKEN] === ''
+      ? FacebookCommonUtils::FACEBOOK_CONFIGURE_S2S_MESSAGE
+      : '';
 
     $this->response->setOutput(
       $this->load->view(
@@ -308,6 +326,10 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
       $this->isFAESettingAvailableAsString(
         $facebook_setting,
         FacebookCommonUtils::FACEBOOK_PIXEL_USE_PII));
+    $this->faeLog->write('Use S2S = ' .
+      $this->isFAESettingAvailableAsString(
+        $facebook_setting,
+        FacebookCommonUtils::FACEBOOK_USE_S2S));
     $this->faeLog->write('Page ID = ' .
       $this->isFAESettingAvailableAsString(
         $facebook_setting,
@@ -320,6 +342,10 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
       $this->isFAESettingAvailableAsString(
         $facebook_setting,
         FacebookCommonUtils::FACEBOOK_MESSENGER));
+    $this->faeLog->write('Messenger customization locale = ' .
+      $this->isFAESettingAvailableAsString(
+        $facebook_setting,
+        FacebookCommonUtils::FACEBOOK_CUSTOMIZATION_LOCALE));
   }
 
   private function isFAESettingAvailableAsString(
@@ -386,17 +412,21 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
       && $this->facebookcommonutils->isValidSetting(
         FacebookCommonUtils::FACEBOOK_PIXEL_ID,
         $this->request->post[FacebookCommonUtils::FACEBOOK_PIXEL_ID])) {
-      $data[FacebookCommonUtils::FACEBOOK_PIXEL_ID] =
-        $this->request->post[FacebookCommonUtils::FACEBOOK_PIXEL_ID];
-    }
+      $pixel_id = $this->request->post[FacebookCommonUtils::FACEBOOK_PIXEL_ID];
+      $data[FacebookCommonUtils::FACEBOOK_PIXEL_ID] = $pixel_id;
 
-    if (isset(
-      $this->request->post[FacebookCommonUtils::FACEBOOK_PIXEL_USE_PII])
-      && $this->facebookcommonutils->isValidSetting(
-        FacebookCommonUtils::FACEBOOK_PIXEL_USE_PII,
-        $this->request->post[FacebookCommonUtils::FACEBOOK_PIXEL_USE_PII])) {
-      $data[FacebookCommonUtils::FACEBOOK_PIXEL_USE_PII] =
-        $this->request->post[FacebookCommonUtils::FACEBOOK_PIXEL_USE_PII];
+      // in the future we may have a dedicated toggle for s2s
+      $data[FacebookCommonUtils::FACEBOOK_USE_S2S] = 'true';
+
+      // if AAM is turned off, don't send PII in pixel and server event
+      $pixel_aam_setting = $this->facebookcommonutils->getPixelAAMSetting($pixel_id);
+      if ($this->facebookcommonutils->isValidSetting(
+        FacebookCommonUtils::FACEBOOK_PIXEL_USE_PII, $pixel_aam_setting)) {
+        $data[FacebookCommonUtils::FACEBOOK_PIXEL_USE_PII] = $pixel_aam_setting;
+      }
+      $data[FacebookCommonUtils::FACEBOOK_PIXEL_ENABLED_AAM_FIELDS] = 
+        $this->facebookcommonutils->getPixelEnabledAAMFields($pixel_id);
+      $data[FacebookCommonUtils::FACEBOOK_LAST_AAM_CHECK_TIME] = time();
     }
 
     if (isset($this->request->post[FacebookCommonUtils::FACEBOOK_PAGE_ID])
@@ -423,6 +453,14 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
         $this->request->post[FacebookCommonUtils::FACEBOOK_MESSENGER])) {
       $data[FacebookCommonUtils::FACEBOOK_MESSENGER] =
         $this->request->post[FacebookCommonUtils::FACEBOOK_MESSENGER];
+    }
+
+    if (isset($this->request->post[FacebookCommonUtils::FACEBOOK_CUSTOMIZATION_LOCALE])
+      && $this->facebookcommonutils->isValidSetting(
+        FacebookCommonUtils::FACEBOOK_CUSTOMIZATION_LOCALE,
+        $this->request->post[FacebookCommonUtils::FACEBOOK_CUSTOMIZATION_LOCALE])) {
+      $data[FacebookCommonUtils::FACEBOOK_CUSTOMIZATION_LOCALE] =
+        $this->request->post[FacebookCommonUtils::FACEBOOK_CUSTOMIZATION_LOCALE];
     }
 
     if (isset($this->request->post[FacebookCommonUtils::FACEBOOK_ENABLE_COOKIE_BAR])
@@ -537,6 +575,7 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
       DIR_APPLICATION . '/../admin/view/template/extension/module/facebookadsextension_installer.tpl',
       DIR_APPLICATION . '/../admin/view/template/extension/module/facebookadsextension_installer.twig',
       DIR_APPLICATION . '/../system/library/controller/extension/facebookproductfeed.php',
+      DIR_APPLICATION . '/../system/library/eventidgenerator.php',
       DIR_APPLICATION . '/../system/library/facebookcommonutils.php',
       DIR_APPLICATION . '/../system/library/facebookgraphapi.php',
       DIR_APPLICATION . '/../system/library/facebookgraphapierror.php',
@@ -544,15 +583,17 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
       DIR_APPLICATION . '/../system/library/facebookproductformatter.php',
       DIR_APPLICATION . '/../system/library/facebookproducttrait.php',
       DIR_APPLICATION . '/../system/library/facebooksampleproductfeedformatter.php',
+      DIR_APPLICATION . '/../system/library/facebookserversideevent.php',
       DIR_APPLICATION . '/../system/library/facebooktax.php',
       DIR_APPLICATION . '/../system/library/model/extension/facebookproduct.php',
       DIR_APPLICATION . '/../system/library/model/extension/facebooksetting.php',
+      DIR_APPLICATION . '/../system/library/servereventfactory.php',
       DIR_APPLICATION . '/../catalog/controller/extension/facebookeventparameters.php',
       DIR_APPLICATION . '/../catalog/controller/extension/facebookfeed.php',
       DIR_APPLICATION . '/../catalog/controller/extension/facebookpageshopcheckoutredirect.php',
       DIR_APPLICATION . '/../catalog/controller/extension/facebookproduct.php',
       DIR_APPLICATION . '/../catalog/view/javascript/facebook/cookieconsent.min.js',
-      DIR_APPLICATION . '/../catalog/view/javascript/facebook/facebook_pixel_3_0_1.js',
+      DIR_APPLICATION . '/../catalog/view/javascript/facebook/facebook_pixel_3_1_0.js',
       DIR_APPLICATION . '/../catalog/view/theme/css/facebook/cookieconsent.min.css',
 // system auto generated, DO NOT MODIFY
       null
@@ -768,5 +809,18 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
       FacebookCommonUtils::FACEBOOK_LAST_UPGRADE_CHECK_TIME
         => date("Y-m-d"));
     $this->model_extension_facebooksetting->updateSettings($data);
+  }
+
+  private function getJssdkVersion() {
+    $jssdk_version = $this->model_extension_facebooksetting
+      ->getSetting(FacebookCommonUtils::FACEBOOK_JSSDK_VER);
+    if(!$jssdk_version) {
+      $jssdk_version = 'v7.0';
+      $data = array(
+        FacebookCommonUtils::FACEBOOK_JSSDK_VER => $jssdk_version
+      );
+      $this->model_extension_facebooksetting->updateSettings($data);
+    }
+    return $jssdk_version;
   }
 }

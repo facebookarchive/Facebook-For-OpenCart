@@ -5,6 +5,9 @@
 // This source code is licensed under the license found in the
 // LICENSE file in the root directory of this source tree.
 
+use FacebookPixelPlugin\Core\ServerEventFactory;
+use FacebookPixelPlugin\Core\FacebookServerSideEvent;
+
 class ControllerExtensionFacebookProduct extends Controller {
   public function __construct($registry) {
     parent::__construct($registry);
@@ -19,7 +22,24 @@ class ControllerExtensionFacebookProduct extends Controller {
   private function loadLibrariesForFacebookCatalog() {
     $this->load->model('catalog/product');
     $this->facebookcommonutils = new FacebookCommonUtils();
-    $this->facebookgraphapi = new FacebookGraphAPI();
+  }
+
+  private function createAddToCartServerEvent($event_name, $params) {
+    $server_event = null;
+    if ($event_name === 'AddToCart') {
+      $user_pii_data = $this->facebookcommonutils->getPii(
+        $this->config,
+        $this->customer,
+        $this->facebookcommonutils->getGuestLogin($this->session));
+      $server_event = ServerEventFactory::safeCreateEvent(
+        'AddToCart',
+        array($this->facebookcommonutils, 'getDAPixelParamsForProducts'),
+        array($params),
+        $user_pii_data,
+        $this->config
+      );
+    }
+    return $server_event;
   }
 
   public function getProductInfoForFacebookPixel() {
@@ -50,8 +70,13 @@ class ControllerExtensionFacebookProduct extends Controller {
             'currency' => $this->currency,
             'currencyCode' => $this->session->data['currency'],
             'hasQuantity' => true));
+          
+          $server_event = $this->createAddToCartServerEvent($event_name, $params);
+          $event_id = empty($server_event) ? null : $server_event->getEventId();
+          FacebookServerSideEvent::getInstance()->track($server_event, $this->config);
+
           $facebook_pixel_params =
-            $this->facebookcommonutils->getDAPixelParamsForProducts($params);
+            $this->facebookcommonutils->getDAPixelParamsForProducts($params, $event_id);
         }
       }
     }

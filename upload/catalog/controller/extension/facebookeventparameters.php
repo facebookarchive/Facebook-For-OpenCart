@@ -8,13 +8,23 @@
 /*
  * Builds up the event data for the request in a single place
  */
+require_once DIR_APPLICATION . '../system/library/vendor/autoload.php';
+require_once DIR_APPLICATION . '../system/library/servereventfactory.php';
+require_once DIR_APPLICATION . '../system/library/facebookserversideevent.php';
+
+use FacebookPixelPlugin\Core\ServerEventFactory;
+use FacebookPixelPlugin\Core\FacebookServerSideEvent;
+
 class ControllerExtensionFacebookEventParameters extends Controller {
+  private $event_id = null;
+  private $user_pii_data = null;
 
   public function __construct($registry) {
     parent::__construct($registry);
     if (!$this->areRequiredFilesPresent()) {
       return;
     }
+    $this->fbutils = new FacebookCommonUtils();
   }
 
   public function index() {
@@ -36,7 +46,9 @@ class ControllerExtensionFacebookEventParameters extends Controller {
 
     try {
       $data = array();
-      $this->fbutils = new FacebookCommonUtils();
+
+      // always fetch the latest pixel AAM setting from Events Manager
+      $this->updateUseS2SUsePIIByAAMSetting();
 
       // we are storing all the pixel data in the fbevents parameters
       // this fbevents will be sent over to the header.php
@@ -44,10 +56,13 @@ class ControllerExtensionFacebookEventParameters extends Controller {
       // fired as FB pixel events via javascript
       $data['facebook_pixel_id_FAE'] = $this->config->get('facebook_pixel_id');
       $data['facebook_pixel_params_FAE'] = $this->getAgentParameters();
-      $data['facebook_pixel_pii_FAE'] = $this->fbutils->getPii(
+      $this->user_pii_data = $this->fbutils->getPii(
         $this->config,
         $this->customer,
-        $this->getGuestLogin());
+        $this->fbutils->getGuestLogin($this->session));
+      $data['facebook_pixel_pii_FAE'] = json_encode(
+        $this->user_pii_data,
+        JSON_PRETTY_PRINT | JSON_FORCE_OBJECT);
       $data['facebook_pixel_event_params_FAE'] = $this->getEventParameters();
       $data['facebook_enable_cookie_bar'] =
         ($this->config->get(FacebookCommonUtils::FACEBOOK_ENABLE_COOKIE_BAR))
@@ -60,16 +75,11 @@ class ControllerExtensionFacebookEventParameters extends Controller {
     }
   }
 
-  private function getGuestLogin() {
-    return (isset($this->session->data['guest']))
-      ? $this->session->data['guest']
-      : null;
-  }
-
   private function getRequiredFiles() {
     return array(
 // system auto generated, DO NOT MODIFY
       DIR_APPLICATION . '/../system/library/controller/extension/facebookproductfeed.php',
+      DIR_APPLICATION . '/../system/library/eventidgenerator.php',
       DIR_APPLICATION . '/../system/library/facebookcommonutils.php',
       DIR_APPLICATION . '/../system/library/facebookgraphapi.php',
       DIR_APPLICATION . '/../system/library/facebookgraphapierror.php',
@@ -77,15 +87,17 @@ class ControllerExtensionFacebookEventParameters extends Controller {
       DIR_APPLICATION . '/../system/library/facebookproductformatter.php',
       DIR_APPLICATION . '/../system/library/facebookproducttrait.php',
       DIR_APPLICATION . '/../system/library/facebooksampleproductfeedformatter.php',
+      DIR_APPLICATION . '/../system/library/facebookserversideevent.php',
       DIR_APPLICATION . '/../system/library/facebooktax.php',
       DIR_APPLICATION . '/../system/library/model/extension/facebookproduct.php',
       DIR_APPLICATION . '/../system/library/model/extension/facebooksetting.php',
+      DIR_APPLICATION . '/../system/library/servereventfactory.php',
       DIR_APPLICATION . '/../catalog/controller/extension/facebookeventparameters.php',
       DIR_APPLICATION . '/../catalog/controller/extension/facebookfeed.php',
       DIR_APPLICATION . '/../catalog/controller/extension/facebookpageshopcheckoutredirect.php',
       DIR_APPLICATION . '/../catalog/controller/extension/facebookproduct.php',
       DIR_APPLICATION . '/../catalog/view/javascript/facebook/cookieconsent.min.js',
-      DIR_APPLICATION . '/../catalog/view/javascript/facebook/facebook_pixel_3_0_1.js',
+      DIR_APPLICATION . '/../catalog/view/javascript/facebook/facebook_pixel_3_1_0.js',
       DIR_APPLICATION . '/../catalog/view/theme/css/facebook/cookieconsent.min.css',
 // system auto generated, DO NOT MODIFY
       '');
@@ -98,6 +110,33 @@ class ControllerExtensionFacebookEventParameters extends Controller {
       }
     }
     return true;
+  }
+
+  private function updateUseS2SUsePIIByAAMSetting() {
+    $pixel_id = $this->config->get('facebook_pixel_id');
+
+    if (empty($pixel_id)) {
+      return;
+    }
+
+    $this->model_extension_facebooksetting = $this->fbutils
+      ->loadFacebookSettingsModel($this->registry);
+    $facebook_setting = $this->model_extension_facebooksetting->getSettings();
+    $last_aam_check_time = $facebook_setting[FacebookCommonUtils::FACEBOOK_LAST_AAM_CHECK_TIME];
+
+    // fetch again after 20mins
+    if (time() - $last_aam_check_time < 60*20) {
+      return;
+    }
+
+    $pixel_aam_setting = $this->fbutils->getPixelAAMSetting($pixel_id);
+    $pixel_enabled_amm_fields = $this->fbutils->getPixelEnabledAAMFields($pixel_id);
+    $data = array(
+      FacebookCommonUtils::FACEBOOK_PIXEL_USE_PII => $pixel_aam_setting,
+      FacebookCommonUtils::FACEBOOK_PIXEL_ENABLED_AAM_FIELDS => $pixel_enabled_amm_fields,
+      FacebookCommonUtils::FACEBOOK_LAST_AAM_CHECK_TIME => time()
+    );
+    $this->model_extension_facebooksetting->updateSettings($data);
   }
 
   private function getAgentParameters() {
@@ -114,6 +153,7 @@ class ControllerExtensionFacebookEventParameters extends Controller {
       : null;
 
     $facebook_pixel_event_params_fae = null;
+    $server_event = null;
 
     // This grabs events stored on redirects
     if (array_key_exists(
@@ -126,6 +166,14 @@ class ControllerExtensionFacebookEventParameters extends Controller {
     // checking the route and handling the event firing accordingly
     switch ($route) {
       case 'checkout/success': {
+        $server_event = ServerEventFactory::safeCreateEvent(
+          'Purchase',
+          array($this, 'getPurchaseEventParameters'),
+          array(),
+          $this->user_pii_data,
+          $this->config
+        );
+
         $facebook_pixel_event_params_fae = $this->getPurchaseEventParameters();
         break;
       }
@@ -138,28 +186,49 @@ class ControllerExtensionFacebookEventParameters extends Controller {
 
       case 'checkout/cart': {
         $products = $this->cart->getProducts();
+        $server_event = ServerEventFactory::safeCreateEvent(
+          'AddToCart',
+          array($this, 'getAddToCartEventParameters'),
+          array($products),
+          $this->user_pii_data,
+          $this->config
+        );
+
         $facebook_pixel_event_params_fae = $this->getAddToCartEventParameters(
           $products);
         break;
       }
 
-      case 'account/order/info': {
-        $product_id = (isset($this->session->data['product_id']))
-          ? (int)$this->session->data['product_id']
-          : 0;
-        $quantity = (isset($this->session->data['quantity']))
-          ? $this->session->data['quantity']
-          : 1;
-        $product_info = $this->getProductDetails($product_id, $quantity);
-        if ($product_info) {
-          $facebook_pixel_event_params_fae =
-            $this->getAddToCartEventParameters(
-              array($product_info));
+      case 'account/order/reorder': {
+        $order_product_info = $this->getOrderProductInfo();
+        if ($order_product_info) {
+          $product_info = $this->getProductDetails($order_product_info['product_id'], $order_product_info['quantity']);
+          if ($product_info) {
+            $server_event = ServerEventFactory::safeCreateEvent(
+              'AddToCart',
+              array($this, 'getAddToCartEventParameters'),
+              array(array($product_info)),
+              $this->user_pii_data,
+              $this->config
+            );
+
+            $facebook_pixel_event_params_fae =
+              $this->getAddToCartEventParameters(
+                array($product_info));
+          }
         }
         break;
       }
 
       case 'checkout/checkout': {
+        $server_event = ServerEventFactory::safeCreateEvent(
+          'InitiateCheckout',
+          array($this, 'getInitiateCheckoutEventParameters'),
+          array(),
+          $this->user_pii_data,
+          $this->config
+        );
+
         $facebook_pixel_event_params_fae =
           $this->getInitiateCheckoutEventParameters();
         break;
@@ -201,9 +270,33 @@ class ControllerExtensionFacebookEventParameters extends Controller {
       }
     }
 
+    $this->event_id = empty($server_event) ? null : $server_event->getEventId();
+    FacebookServerSideEvent::getInstance()->track($server_event, $this->config);
+
     return ($facebook_pixel_event_params_fae)
       ? addslashes(json_encode($facebook_pixel_event_params_fae))
       : $facebook_pixel_event_params_fae;
+  }
+
+  private function getOrderProductInfo() {
+    if (isset($this->request->get['order_id'])) {
+      $order_id = $this->request->get['order_id'];
+    } else {
+      $order_id = 0;
+    }
+    $this->load->model('account/order');
+    $order_info = $this->model_account_order->getOrder($order_id);
+
+    if ($order_info) {
+      if (isset($this->request->get['order_product_id'])) {
+        $order_product_id = $this->request->get['order_product_id'];
+      } else {
+        $order_product_id = 0;
+      }
+    }
+
+    $order_product_info = $this->model_account_order->getOrderProduct($order_id, $order_product_id);
+    return $order_product_info;
   }
 
   private function getProductDetails($product_id, $quantity) {
@@ -215,7 +308,7 @@ class ControllerExtensionFacebookEventParameters extends Controller {
     return $product_info;
   }
 
-  private function getPurchaseEventParameters() {
+  public function getPurchaseEventParameters() {
     $products = $this->cart->getProducts();
     return $this->generateEventParameters(
       $products,
@@ -236,7 +329,7 @@ class ControllerExtensionFacebookEventParameters extends Controller {
       : array();
   }
 
-  private function getAddToCartEventParameters(
+  public function getAddToCartEventParameters(
     $products) {
     return $this->generateEventParameters(
       $products,
@@ -244,7 +337,7 @@ class ControllerExtensionFacebookEventParameters extends Controller {
       true);
   }
 
-  private function getInitiateCheckoutEventParameters() {
+  public function getInitiateCheckoutEventParameters() {
     $products = $this->cart->getProducts();
     return $this->generateEventParameters(
       $products,
@@ -537,7 +630,7 @@ class ControllerExtensionFacebookEventParameters extends Controller {
       'currency' => $this->currency,
       'currencyCode' => $this->session->data['currency'],
       'hasQuantity' => $has_quantity));
-    return $this->fbutils->getDAPixelParamsForProducts($params);
+    return $this->fbutils->getDAPixelParamsForProducts($params, $this->event_id);
 
   }
 }

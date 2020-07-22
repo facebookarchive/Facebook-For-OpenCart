@@ -1,7 +1,12 @@
 Facebook Business Extension
-Latest version: 3.0.1
+Latest version: 3.1.0
 
 Change log
+3.1.0 - 22 Jul 2020
+* Include support for the Conversion API
+* Enable Messenger Chat plugin option from the Management View
+* Fix minor issues like 'Object object' error
+
 3.0.1 - 21 May 2020
 * Fix issue 'The message received is not from the verified source'.
 * Fix catalog can't be synced immediately after updating product.

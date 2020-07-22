@@ -9,10 +9,10 @@
 window.fbAsyncInit = function() {
     // FB JavaScript SDK configuration and setup
     FB.init({
-        appId: "<?php echo $opencart_facebook_app_id; ?>", // FB App ID (replaced by OpenCart's appId once completed app review)
+        appId: "<?php echo $opencart_facebook_app_id; ?>", // FB App ID
         cookie: true, // enable cookies to allow the server to access the session
         xfbml: true, // parse social plugins on this page
-        version: "v5.0" // use graph api version 2.8
+        version: "<?php echo $facebook_jssdk_version; ?>"
     });
 };
 
@@ -46,16 +46,27 @@ function receiveMessage(e) {
       } else if(message.installed) {
         // installed
         if(!message.pixel_id || !message.profiles || !message.profiles[0]) {
-          const messageStr = JSON.stringify(message);
+          var messageStr = JSON.stringify(message);
           reject(new Error(`An error occured when creating Facebook Business Extension setup. ${messageStr}`));
         } else {
-          var settingsKeyValueData = {
+          var settings = {
             facebook_pixel_id: message.pixel_id,
             facebook_page_id: message.profiles[0],
-            facebook_fbe_v2_installed: message.installed
+            facebook_fbe_v2_installed: message.installed,
+            facebook_system_user_access_token: message.system_user_access_token,
+            facebook_messenger_activated: false
           };
-          resolve(settingsKeyValueData);
+          resolve(settings);
         }
+      } else if(message.updated) {
+        // launch management view and updated configs
+        var data = message.data;
+        var settings = {
+          updated: true,
+          facebook_messenger_activated: data.messenger_chat.enabled,
+          facebook_customization_locale: data.messenger_chat.default_locale
+        };
+        resolve(settings);
       } else {
         // uninstalled
         resolve();
@@ -63,27 +74,21 @@ function receiveMessage(e) {
     }
   })
   .then(result => handleMessageReceived(result))
-  .then(result => reloadCurrentPage(result))
-  .catch(error => logErrorMessage(error))
+  .catch(error => logErrorMessage(error));
 }
 
 function handleMessageReceived(value) {
-  if(!value) {
-    return deleteSettings();
-  } else {
-    return updateFacebookBusinessExtensionSettings(value);
-  }
-}
-
-function launchFBEManagementView() {
-  FB.ui(
-    {
-      display: "popup",
-      method: "facebook_business_extension",
-      external_business_id: "<?php echo $external_business_id; ?>"
-    },
-    function(response) {}
-  );
+	if (!value) {
+		return deleteSettings()
+			.then(result => reloadCurrentPage(result));
+	} else if (value.updated) {
+    // management view
+		return updateFacebookBusinessExtensionSettings(value);
+	} else {
+    // setup
+		return updateFacebookBusinessExtensionSettings(value)
+			.then(result => reloadCurrentPage(result));
+	}
 }
 
 function updateFacebookBusinessExtensionSettings(data) {
@@ -98,7 +103,7 @@ function updateFacebookBusinessExtensionSettings(data) {
         if(!json || !json.success) {
           reject(new Error("An error occured when updating Facebook Business Extension settings."));
         } else {
-          resolve(json);
+          resolve("");
         }
       },
       error: function(xhr, ajaxOptions, thrownError) {
@@ -118,7 +123,7 @@ function deleteSettings() {
         if(!json || !json.success) {
           reject(new Error("An error occured when deleting Facebook Business Extension settings."));
         } else {
-          resolve(json);
+          resolve("Your FBE settings are deleted.");
         }
       },
       error: function(xhr, ajaxOptions, thrownError) {
@@ -134,9 +139,10 @@ function logErrorMessage(error) {
 }
 
 function reloadCurrentPage(result) {
-  if(result.success) {
-    location.reload();
+  if(result) {
+    alert(result);
   }
+  location.reload();
 }
 </script>
 
@@ -174,6 +180,11 @@ function reloadCurrentPage(result) {
         <button type="button" class="close" data-dismiss="alert">&times;</button>
       </div>
     <?php } ?>
+    <?php if ($plugin_configure_s2s_message) { ?>
+      <div class="alert alert-info"><i class="fa fa-exclamation-circle"></i> <?php echo $plugin_configure_s2s_message; ?>
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+      </div>
+    <?php } ?>
     <div class="panel panel-default">
       <div class="panel-body">
         <div id="facebook-header">
@@ -190,16 +201,6 @@ function reloadCurrentPage(result) {
           <h2><?php echo $body_text; ?></h2>
           <h2 id="h2DiaSettingId">
           </h2>
-          <?php if ($facebook_fbe_v2_installed) { ?>
-            <div>
-              <button
-                type="button"
-                class="blue"
-                onClick="launchFBEManagementView()">
-                Manage Settings
-              </button>
-            </div>
-          <?php } ?>
           <iframe src="<?php echo $opencart_iframe_url; ?>" width="300" height="150" frameBorder="0"></iframe>
           <div class="download">
             <a class="download" href="<?php echo $download_log_link; ?>">

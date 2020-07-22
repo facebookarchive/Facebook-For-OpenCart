@@ -9,7 +9,7 @@
 <modification>
 	<name>Facebook Business Extension</name>
 	<code>facebook_business_extension</code>
-	<version>3.0.1</version>
+	<version>3.1.0</version>
 	<author>Facebook</author>
 	<link>https://github.com/facebookincubator/Facebook-For-OpenCart</link>
 
@@ -201,15 +201,6 @@
           $this->config->get(FacebookCommonUtils::FACEBOOK_JSSDK_VER);
         $data['facebook_messenger_enabled_FAE'] =
           $this->config->get(FacebookCommonUtils::FACEBOOK_MESSENGER);
-        // default greeting code to empty string if setting is not available
-        $customization_greeting_code = $this->config->get(
-          FacebookCommonUtils::FACEBOOK_CUSTOMIZATION_GREETING_TEXT_CODE);
-        $data['facebook_customization_greeting_text_code_FAE'] =
-          ($customization_greeting_code)
-          ? sprintf('logged_in_greeting="%s" logged_out_greeting="%s"',
-            $customization_greeting_code,
-            $customization_greeting_code)
-          : '';
         // default locale to en_US if setting is not available
         $customization_locale = $this->config->get(
           FacebookCommonUtils::FACEBOOK_CUSTOMIZATION_LOCALE);
@@ -217,13 +208,6 @@
           ($customization_locale)
           ? $customization_locale
           : 'en_US';
-        // default theme color code to empty string if setting is not available
-        $customization_theme_color_code = $this->config->get(
-          FacebookCommonUtils::FACEBOOK_CUSTOMIZATION_THEME_COLOR_CODE);
-        $data['facebook_customization_theme_color_code_FAE'] =
-          ($customization_theme_color_code)
-          ? sprintf('theme_color="%s"', $customization_theme_color_code)
-          : '';
       ]]></add>
     </operation>
   </file>
@@ -348,7 +332,7 @@
 
             <?php if ($facebook_pixel_id_FAE) { ?>
 // system auto generated facebook_pixel.js, DO NOT MODIFY
-pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_3_0_1.js';
+pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_3_1_0.js';
 // system auto generated facebook_pixel.js, DO NOT MODIFY
               facebook_loadScript(
                 pixel_script_filename,
@@ -409,8 +393,6 @@ pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_3_0_1.j
           class="fb-customerchat"
           attribution="fbe_opencart"
           page_id="<?php echo $facebook_page_id_FAE ?>"
-          <?php echo $facebook_customization_greeting_text_code_FAE ?>
-          <?php echo $facebook_customization_theme_color_code_FAE ?>
         />
         <?php } ?>
       ]]></add>
@@ -550,7 +532,7 @@ pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_3_0_1.j
 
             {% if facebook_pixel_id_FAE %}
 // system auto generated facebook_pixel.js, DO NOT MODIFY
-pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_3_0_1.js';
+pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_3_1_0.js';
 // system auto generated facebook_pixel.js, DO NOT MODIFY
               facebook_loadScript(
                 pixel_script_filename,
@@ -611,8 +593,6 @@ pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_3_0_1.j
           class="fb-customerchat"
           attribution="fbe_opencart"
           page_id="{{ facebook_page_id_FAE }}"
-          {{ facebook_customization_greeting_text_code_FAE }}
-          {{ facebook_customization_theme_color_code_FAE }}
         />
         {% endif %}
       ]]></add>
@@ -913,15 +893,6 @@ pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_3_0_1.j
           $this->config->get(FacebookCommonUtils::FACEBOOK_JSSDK_VER);
         $data['facebook_messenger_enabled_FAE'] =
           $this->config->get(FacebookCommonUtils::FACEBOOK_MESSENGER);
-        // default greeting code to empty string if setting is not available
-        $customization_greeting_code = $this->config->get(
-          FacebookCommonUtils::FACEBOOK_CUSTOMIZATION_GREETING_TEXT_CODE);
-        $data['facebook_customization_greeting_text_code_FAE'] =
-          ($customization_greeting_code)
-          ? sprintf('logged_in_greeting="%s" logged_out_greeting="%s"',
-            $customization_greeting_code,
-            $customization_greeting_code)
-          : '';
         // default locale to en_US if setting is not available
         $customization_locale = $this->config->get(
           FacebookCommonUtils::FACEBOOK_CUSTOMIZATION_LOCALE);
@@ -929,13 +900,6 @@ pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_3_0_1.j
           ($customization_locale)
           ? $customization_locale
           : 'en_US';
-        // default theme color code to empty string if setting is not available
-        $customization_theme_color_code = $this->config->get(
-          FacebookCommonUtils::FACEBOOK_CUSTOMIZATION_THEME_COLOR_CODE);
-        $data['facebook_customization_theme_color_code_FAE'] =
-          ($customization_theme_color_code)
-          ? sprintf('theme_color="%s"', $customization_theme_color_code)
-          : '';
       ]]></add>
     </operation>
   </file>
@@ -1062,7 +1026,7 @@ pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_3_0_1.j
 
               <?php if ($facebook_pixel_id_FAE) { ?>
 // system auto generated facebook_pixel.js, DO NOT MODIFY
-pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_3_0_1.js';
+pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_3_1_0.js';
 // system auto generated facebook_pixel.js, DO NOT MODIFY
                 facebook_loadScript(
                   pixel_script_filename,
@@ -1113,8 +1077,6 @@ pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_3_0_1.j
           class="fb-customerchat"
           attribution="fbe_opencart"
           page_id="<?php echo $facebook_page_id_FAE ?>"
-          <?php echo $facebook_customization_greeting_text_code_FAE ?>
-          <?php echo $facebook_customization_theme_color_code_FAE ?>
         />
         <?php } ?>
       ]]></add>
@@ -1260,7 +1222,7 @@ pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_3_0_1.j
 
               {% if facebook_pixel_id_FAE %}
 // system auto generated facebook_pixel.js, DO NOT MODIFY
-pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_3_0_1.js';
+pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_3_1_0.js';
 // system auto generated facebook_pixel.js, DO NOT MODIFY
                 facebook_loadScript(
                   pixel_script_filename,
@@ -1311,8 +1273,6 @@ pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_3_0_1.j
           class="fb-customerchat"
           attribution="fbe_opencart"
           page_id="{{ facebook_page_id_FAE }}"
-          {{ facebook_customization_greeting_text_code_FAE }}
-          {{ facebook_customization_theme_color_code_FAE }}
         />
         {% endif %}
       ]]></add>

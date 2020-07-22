@@ -64,12 +64,12 @@
 
     // catalog/view/javascript/common.js has a cart variable which is used by
     // various product listing pages to add product to cart directly.
-    // We will like to modify and inject AddToCart event in the cart.add() method.
+    // We would like to modify and inject AddToCart event in the cart.add() method.
     // However, OpenCart's modification system does not support js and css files
     // as they are not accessible from the front end.
     // https://github.com/vqmod/vqmod/wiki/About-vQmod
     // Instead, we modify the existing cart.add method and fire off addToCart.
-    // A ajax call is fire to the URl endpoint /getproductinfoforfacebookpixel
+    // An ajax call is fire to the URl endpoint /getproductinfoforfacebookpixel
     // to get the price and name of the product
     // added defensive checks to ensure the cart is loaded
     if (typeof cart !== 'undefined') {

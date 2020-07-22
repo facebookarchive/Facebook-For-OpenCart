@@ -5,6 +5,10 @@
 // This source code is licensed under the license found in the
 // LICENSE file in the root directory of this source tree.
 
+require_once __DIR__ . '/vendor/autoload.php';
+
+use FacebookAds\Object\ServerSide\AdsPixelSettings;
+
 class DAPixelConfigParams {
   private $eventName; // pixel event name to be fired
   private $products; // products to be used to generate the DA pixel params
@@ -87,6 +91,7 @@ class FacebookCommonUtils {
   const FACEBOOK_DIA_SETTING_ID = 'facebook_dia_setting_id';
   const FACEBOOK_PIXEL_ID = 'facebook_pixel_id';
   const FACEBOOK_PIXEL_USE_PII = 'facebook_pixel_use_pii';
+  const FACEBOOK_PIXEL_ENABLED_AAM_FIELDS = 'facebook_pixel_enabled_aam_fields';
   const FACEBOOK_PIXEL_SIGNATURE = 'facebook_pixel_signature';
   const FACEBOOK_CATALOG_ID = 'facebook_catalog_id';
   const FACEBOOK_PAGE_ID = 'facebook_page_id';
@@ -100,23 +105,20 @@ class FacebookCommonUtils {
   const FACEBOOK_UPLOAD_END_TIME = 'facebook_upload_end_time';
   const FACEBOOK_MESSENGER = 'facebook_messenger_activated';
   const FACEBOOK_JSSDK_VER = 'facebook_jssdk_version';
-  const FACEBOOK_CUSTOMIZATION = 'facebook_customization';
-  const FACEBOOK_CUSTOMIZATION_GREETING_TEXT_CODE =
-    'facebook_customization_greeting_text_code';
   const FACEBOOK_CUSTOMIZATION_LOCALE = 'facebook_customization_locale';
-  const FACEBOOK_CUSTOMIZATION_THEME_COLOR_CODE =
-    'facebook_customization_theme_color_code';
   const FACEBOOK_LATEST_RELEASE_URL =
     'https://api.github.com/repos/facebookincubator/Facebook-for-OpenCart/releases/latest';
   const FACEBOOK_LAST_UPGRADE_CHECK_TIME = 'facebook_last_upgrade_check_time';
+  const FACEBOOK_LAST_AAM_CHECK_TIME = 'facebook_last_aam_check_time';
   const FACEBOOK_ENABLE_COOKIE_BAR = 'facebook_enable_cookie_bar';
   const FACEBOOK_PIXEL_CODE_INDICATOR = 'window.isFacebookPixelAdded=1;';
   const FACEBOOK_MESSENGER_CHAT_CODE_INDICATOR = 'window.isFacebookCustomerChatAdded=1;';
   const FACEBOOK_ENABLE_SPECIAL_PRICE = 'facebook_enable_special_price';
   const FACEBOOK_SYSTEM_USER_ACCESS_TOKEN = 'facebook_system_user_access_token';
   const FACEBOOK_FBE_V2_INSTALLED = 'facebook_fbe_v2_installed';
-  const OPENCART_SERVER_BASE_URL = 'https://www.opencart.com';
-  const OPENCART_FBE_IFRAME_PATH = '/facebook/index.html';
+  const FACEBOOK_USE_S2S = 'facebook_use_s2s';
+  const OPENCART_SERVER_BASE_URL = 'https://facebook.opencart.com';
+  const OPENCART_FBE_IFRAME_PATH = '/';
   const OPENCART_FACEBOOK_APP_ID = '785409108588782';
 
   const FACEBOOK_THRESHOLD_FOR_INITIAL_SYNC_BY_API = 1000;
@@ -149,12 +151,14 @@ class FacebookCommonUtils {
   const PLUGIN_UPGRADE_MESSAGE = 'A newer version of the Facebook Business Extension plugin is available. To download it, go to <a href="https://github.com/facebookincubator/Facebook-For-OpenCart/releases" target="_blank">Github</a> or <a href="https://www.opencart.com/index.php?route=marketplace/extension/info&extension_id=32336" target="_blank">OpenCart marketplace</a>.';
   const MISSING_WEB_STORE_CODE_ERROR_MESSAGE = 'We have detected the %s is not correctly setup in your web store site. You can try these below steps to fix the problem.<br/>1. Ensure that you have given read+write permissions to the admin, catalog and system folders on your OpenCart webserver<br/>2. Ensure that you have Refresh the modifications, <a href="https://drive.google.com/open?id=1qy-ipwK1HCk8oSnUmGuy6MCJxQdUyGfw" target="_blank">View steps</a><br/>3. For OpenCart 3.x, ensure that you have disabled the theme and SASS cache, <a href="https://drive.google.com/open?id=1bY-bworYxX36b88HDvFW0_32C3Wtq_Tm" target="_blank">View steps</a><br/>4. For OpenCart 3.x, ensure that you do not have modifications to the header design, <a href="https://drive.google.com/open?id=1066BSKAqjKegzw-5oKuvtZuzu_PzkRZT" target="_blank">View steps</a><br/>';
   const FACEBOOK_FEED_MIGRATED_AND_WEBSITE_IN_MAINTENANCE_MESSAGE = 'Warning: We have detected that your web store is in maintenance mode. This will cause the Facebook catalog scheduled sync to fail. To disable the maintenance mode, access Settings, click on your Store, select Server tab and choose No for Maintenance mode.';
+  const FACEBOOK_CONFIGURE_S2S_MESSAGE =
+    'The Facebook Business Extension now includes support for the Conversion API, which lets you send events directly from your website\'s server. Click button below to setup. Refer to the <a href="https://github.com/facebookincubator/Facebook-For-OpenCart/blob/master/INSTALL_GUIDE.md#setup-for-facebook-business-manager-page-pixel-and-catalog" target="_blank">installation guide</a> for more details.';
 
   const ACCESS_TOKEN_INVALID_EXCEPTION_CODE = 452;
 
   private $pluginAgentName = 'exopencart';
 // system auto generated, DO NOT MODIFY
-private $pluginVersion = '3.0.1';
+private $pluginVersion = '3.1.0';
 // system auto generated, DO NOT MODIFY
 
   public function __construct() {
@@ -204,9 +208,15 @@ private $pluginVersion = '3.0.1';
     return $text;
   }
 
+  public function getGuestLogin($session) {
+    return (isset($session->data['guest']))
+      ? $session->data['guest']
+      : null;
+  }
+
   public function getPii($config, $customer, $guest) {
     $facebook_pixel_pii_fae = array();
-    if ($config->get('facebook_pixel_use_pii') === 'true') {
+    if ($config->get(self::FACEBOOK_PIXEL_USE_PII) === 'true') {
       $email = '';
       $firstname = '';
       $lastname = '';
@@ -236,26 +246,28 @@ private $pluginVersion = '3.0.1';
           : '';
       }
 
-      if ($email) {
+      $enabled_amm_fields = explode(
+        ',', 
+        $config->get(FacebookCommonUtils::FACEBOOK_PIXEL_ENABLED_AAM_FIELDS)
+      );
+      if ($email && in_array('em', $enabled_amm_fields)) {
         $facebook_pixel_pii_fae['em'] =
           $this->getEscapedString($email);
       }
-      if ($firstname) {
+      if ($firstname && in_array('fn', $enabled_amm_fields)) {
         $facebook_pixel_pii_fae['fn'] =
           $this->getEscapedString($firstname);
       }
-      if ($lastname) {
+      if ($lastname && in_array('ln', $enabled_amm_fields)) {
         $facebook_pixel_pii_fae['ln'] =
           $this->getEscapedString($lastname);
       }
-      if ($telephone) {
+      if ($telephone && in_array('ph', $enabled_amm_fields)) {
         $facebook_pixel_pii_fae['ph'] =
           $this->getEscapedString($telephone);
       }
     }
-    return json_encode(
-      $facebook_pixel_pii_fae,
-      JSON_PRETTY_PRINT | JSON_FORCE_OBJECT);
+    return $facebook_pixel_pii_fae;
   }
 
   public function getDAPixelParamsForProducts($params, $event_id = null) {
@@ -419,11 +431,28 @@ private $pluginVersion = '3.0.1';
       case FacebookCommonUtils::FACEBOOK_ENABLE_COOKIE_BAR:
       case FacebookCommonUtils::FACEBOOK_ENABLE_SPECIAL_PRICE:
       case FacebookCommonUtils::FACEBOOK_MESSENGER:
-      case FacebookCommonUtils::FACEBOOK_FEED_MIGRATED:
+      case FacebookCommonUtils::FACEBOOK_USE_S2S:
         $is_valid = $this->isTrueFalseString($value);
         break;
     }
 
     return $is_valid;
+  }
+
+  public function getPixelAAMSetting($pixel_id) {
+    $settings = AdsPixelSettings::buildFromPixelId($pixel_id);
+    if ($settings !== null) {
+      return $settings->getEnableAutomaticMatching() ? 'true' : 'false';
+    }
+    return 'false';
+  }
+  
+  public function getPixelEnabledAAMFields($pixel_id) {
+    $settings = AdsPixelSettings::buildFromPixelId($pixel_id);
+    if ($settings !== null) {
+      $enabled_aam_fileds = $settings->getEnabledAutomaticMatchingFields();
+      return implode(',', $enabled_aam_fileds);
+    }
+    return '';
   }
 }
