@@ -552,28 +552,31 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
   private function getRequiredFiles() {
     // holds all the files that we have added to this OpenCart FAE
     // these are not the core opencart files modified through install.xml
+
+    /* As this file lives inside the admin folder, the paths below shouldn't mention "admin" as in OpenCart you can have a custom name for your 
+    "admin" folder, so Constant DIR_APPLICATION will give the exact folder, whatever that is.*/
     return array(
 // system auto generated, DO NOT MODIFY
-      DIR_APPLICATION . '/../admin/controller/extension/facebookadsextension.php',
-      DIR_APPLICATION . '/../admin/controller/extension/facebookproduct.php',
-      DIR_APPLICATION . '/../admin/controller/extension/facebookproductfeed.php',
-      DIR_APPLICATION . '/../admin/controller/extension/facebookproducttrait.php',
-      DIR_APPLICATION . '/../admin/controller/extension/module/facebookadsextension_installer.php',
-      DIR_APPLICATION . '/../admin/language/en-gb/extension/facebookadsextension.php',
-      DIR_APPLICATION . '/../admin/language/en-gb/extension/module/facebookadsextension_installer.php',
-      DIR_APPLICATION . '/../admin/language/english/extension/facebookadsextension.php',
-      DIR_APPLICATION . '/../admin/language/english/extension/module/facebookadsextension_installer.php',
-      DIR_APPLICATION . '/../admin/view/image/facebook/background.png',
-      DIR_APPLICATION . '/../admin/view/image/facebook/buttonbg.png',
-      DIR_APPLICATION . '/../admin/view/image/facebook/fbicons.png',
-      DIR_APPLICATION . '/../admin/view/image/facebook/loadingicon.gif',
-      DIR_APPLICATION . '/../admin/view/stylesheet/facebook/dia.css',
-      DIR_APPLICATION . '/../admin/view/stylesheet/facebook/feed.css',
-      DIR_APPLICATION . '/../admin/view/stylesheet/facebook/pixel.css',
-      DIR_APPLICATION . '/../admin/view/template/extension/facebookadsextension.tpl',
-      DIR_APPLICATION . '/../admin/view/template/extension/facebookadsextension.twig',
-      DIR_APPLICATION . '/../admin/view/template/extension/module/facebookadsextension_installer.tpl',
-      DIR_APPLICATION . '/../admin/view/template/extension/module/facebookadsextension_installer.twig',
+      DIR_APPLICATION . '/controller/extension/facebookadsextension.php',
+      DIR_APPLICATION . '/controller/extension/facebookproduct.php',
+      DIR_APPLICATION . '/controller/extension/facebookproductfeed.php',
+      DIR_APPLICATION . '/controller/extension/facebookproducttrait.php',
+      DIR_APPLICATION . '/controller/extension/module/facebookadsextension_installer.php',
+      DIR_APPLICATION . '/language/en-gb/extension/facebookadsextension.php',
+      DIR_APPLICATION . '/language/en-gb/extension/module/facebookadsextension_installer.php',
+      DIR_APPLICATION . '/language/english/extension/facebookadsextension.php',
+      DIR_APPLICATION . '/language/english/extension/module/facebookadsextension_installer.php',
+      DIR_APPLICATION . '/view/image/facebook/background.png',
+      DIR_APPLICATION . '/view/image/facebook/buttonbg.png',
+      DIR_APPLICATION . '/view/image/facebook/fbicons.png',
+      DIR_APPLICATION . '/view/image/facebook/loadingicon.gif',
+      DIR_APPLICATION . '/view/stylesheet/facebook/dia.css',
+      DIR_APPLICATION . '/view/stylesheet/facebook/feed.css',
+      DIR_APPLICATION . '/view/stylesheet/facebook/pixel.css',
+      DIR_APPLICATION . '/view/template/extension/facebookadsextension.tpl',
+      DIR_APPLICATION . '/view/template/extension/facebookadsextension.twig',
+      DIR_APPLICATION . '/view/template/extension/module/facebookadsextension_installer.tpl',
+      DIR_APPLICATION . '/view/template/extension/module/facebookadsextension_installer.twig',
       DIR_APPLICATION . '/../system/library/controller/extension/facebookproductfeed.php',
       DIR_APPLICATION . '/../system/library/eventidgenerator.php',
       DIR_APPLICATION . '/../system/library/facebookcommonutils.php',
@@ -603,8 +606,10 @@ class ControllerExtensionFacebookAdsExtension extends Controller {
   private function getOmittedFiles($version) {
     // get omitted folder check in different version to allow backward compatibility
     $version_dir = array(
+      /* As this file lives inside the admin folder, the paths below shouldn't mention "admin" as in OpenCart you can have a custom name for your 
+    "admin" folder, so Constant DIR_APPLICATION will give the exact folder, whatever that is. */
       '2.0.3.1' => array(
-        DIR_APPLICATION . '/../admin/controller/extension/module/facebookadsextension_installer.php'
+        DIR_APPLICATION . '/controller/extension/module/facebookadsextension_installer.php'
       )
     );
 

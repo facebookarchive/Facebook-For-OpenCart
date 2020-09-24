@@ -76,7 +76,9 @@ class ControllerExtensionModuleFacebookAdsExtensionInstaller
 
   // delete module folder to prevent path error in lower version
   if (version_compare(VERSION , '2.0.3.1') <= 0) {
-    $directory = DIR_APPLICATION . '/../admin/controller/extension/module/';
+    /* As this file lives inside the admin folder, the paths below shouldn't mention "admin" as in OpenCart you can have a custom name for your 
+    "admin" folder, so Constant DIR_APPLICATION will give the exact folder, whatever that is.*/
+    $directory = DIR_APPLICATION . '/controller/extension/module/';
     unlink($directory . 'facebookadsextension_installer.php');
     // check if the folder is empty before we remove the folder
     $iterator = new \FilesystemIterator($directory);
