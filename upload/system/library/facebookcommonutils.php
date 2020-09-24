@@ -5,7 +5,7 @@
 // This source code is licensed under the license found in the
 // LICENSE file in the root directory of this source tree.
 
-require_once __DIR__ . '/vendor/autoload.php';
+require_once DIR_SYSTEM . 'library/vendor/autoload.php';
 
 use FacebookAds\Object\ServerSide\AdsPixelSettings;
 
