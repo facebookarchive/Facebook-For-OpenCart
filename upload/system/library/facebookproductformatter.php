@@ -93,6 +93,7 @@ abstract class FacebookProductFormatter {
       'description' => $this->getDescription($product),
       'image_url' => $this->getImageUrl($product),
       'url' => $this->getUrl($product),
+      'category_path' => $this->getCategoryPath($product),
       'category' => $this->getCategory($product),
       'brand' => $this->getBrand($product),
       'price' => $this->getPrice($product),
@@ -135,6 +136,15 @@ abstract class FacebookProductFormatter {
       $this->facebookcommonutils->lowercaseIfAllCaps($description);
 
     return $this->facebookcommonutils->trimText($description, 5000);
+  }
+
+  private function getCategoryPath($product) {
+    $category_path = $this->facebookcommonutils->getProperFormattedString(
+      $product['category_path_name']);
+    if (!$category_path) {
+      $category_path = $this->params->getStoreName();
+    }
+    return $this->facebookcommonutils->trimText($category_path, 250);
   }
 
   private function getCategory($product) {
@@ -192,7 +202,7 @@ abstract class FacebookProductFormatter {
     if ($product['quantity'] <= 0) {
       switch ($product['stock_status_id']) {
         // in stock
-        // we will default to in stock        
+        // we will default to in stock
         case 7 :
           break;
 
@@ -216,7 +226,7 @@ abstract class FacebookProductFormatter {
         // we will default to in stock
         default :
           break;
-      }      
+      }
     }
     return $stock_status;
   }
