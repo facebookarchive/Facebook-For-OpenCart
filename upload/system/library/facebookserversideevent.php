@@ -23,7 +23,7 @@ require_once __DIR__ . '/facebookcommonutils.php';
 use \FacebookCommonUtils;
 use FacebookAds\Api;
 use FacebookAds\Object\ServerSide\Event;
-use FacebookAds\Object\ServerSide\EventRequest;
+use FacebookAds\Object\ServerSide\EventRequestAsync;
 use FacebookAds\Object\ServerSide\UserData;
 
 class FacebookServerSideEvent {
@@ -68,20 +68,22 @@ class FacebookServerSideEvent {
 			return;
 		}
 
-		try {
-			$pixel_id = $config->get(FacebookCommonUtils::FACEBOOK_PIXEL_ID);
-			$access_token = $config->get(FacebookCommonUtils::FACEBOOK_SYSTEM_USER_ACCESS_TOKEN);
-			$agent = self::$fbutils->getAgentString();
+		$pixel_id = $config->get(FacebookCommonUtils::FACEBOOK_PIXEL_ID);
+		$access_token = $config->get(FacebookCommonUtils::FACEBOOK_SYSTEM_USER_ACCESS_TOKEN);
+		$agent = self::$fbutils->getAgentString();
 
-			$api = Api::init(null, null, $access_token);
+		$api = Api::init(null, null, $access_token);
 
-			$request = (new EventRequest($pixel_id))
-						->setEvents($events)
-						->setPartnerAgent($agent);
+		$async_request = (new EventRequestAsync($pixel_id))
+					->setEvents($events)
+					->setPartnerAgent($agent);
 
-			$response = $request->execute();
-		} catch (\Exception $e) {
-			self::$faeLog->write('FacebookServerSideEvent send error: ' . $e->getMessage());
-		}
+		return $async_request->execute()
+			->then(
+				null,
+				function(\Exception $e) {
+					self::$faeLog->write('FacebookServerSideEvent send error: ' . $e->getMessage());
+				}
+			);
 	}
 }
