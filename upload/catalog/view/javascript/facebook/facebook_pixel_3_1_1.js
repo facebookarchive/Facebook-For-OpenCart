@@ -19,7 +19,9 @@
       track_param =
         facebook_pixel_event_params.is_custom_event ? 'trackCustom' : 'track';
       delete facebook_pixel_event_params.is_custom_event;
-      fbq(track_param, event_name, facebook_pixel_event_params);
+      event_id = facebook_pixel_event_params.event_id;
+      delete facebook_pixel_event_params.event_id;
+      fbq(track_param, event_name, facebook_pixel_event_params, {eventID: event_id});
     };
 
     return {

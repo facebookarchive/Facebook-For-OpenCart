@@ -97,7 +97,7 @@ class ControllerExtensionFacebookEventParameters extends Controller {
       DIR_APPLICATION . '/../catalog/controller/extension/facebookpageshopcheckoutredirect.php',
       DIR_APPLICATION . '/../catalog/controller/extension/facebookproduct.php',
       DIR_APPLICATION . '/../catalog/view/javascript/facebook/cookieconsent.min.js',
-      DIR_APPLICATION . '/../catalog/view/javascript/facebook/facebook_pixel_3_1_0.js',
+      DIR_APPLICATION . '/../catalog/view/javascript/facebook/facebook_pixel_3_1_1.js',
       DIR_APPLICATION . '/../catalog/view/theme/css/facebook/cookieconsent.min.css',
 // system auto generated, DO NOT MODIFY
       '');
@@ -173,7 +173,7 @@ class ControllerExtensionFacebookEventParameters extends Controller {
           $this->user_pii_data,
           $this->config
         );
-
+        $this->event_id = empty($server_event) ? null : $server_event->getEventId();
         $facebook_pixel_event_params_fae = $this->getPurchaseEventParameters();
         break;
       }
@@ -193,7 +193,7 @@ class ControllerExtensionFacebookEventParameters extends Controller {
           $this->user_pii_data,
           $this->config
         );
-
+        $this->event_id = empty($server_event) ? null : $server_event->getEventId();
         $facebook_pixel_event_params_fae = $this->getAddToCartEventParameters(
           $products);
         break;
@@ -211,7 +211,7 @@ class ControllerExtensionFacebookEventParameters extends Controller {
               $this->user_pii_data,
               $this->config
             );
-
+            $this->event_id = empty($server_event) ? null : $server_event->getEventId();
             $facebook_pixel_event_params_fae =
               $this->getAddToCartEventParameters(
                 array($product_info));
@@ -228,7 +228,7 @@ class ControllerExtensionFacebookEventParameters extends Controller {
           $this->user_pii_data,
           $this->config
         );
-
+        $this->event_id = empty($server_event) ? null : $server_event->getEventId();
         $facebook_pixel_event_params_fae =
           $this->getInitiateCheckoutEventParameters();
         break;
@@ -270,7 +270,6 @@ class ControllerExtensionFacebookEventParameters extends Controller {
       }
     }
 
-    $this->event_id = empty($server_event) ? null : $server_event->getEventId();
     FacebookServerSideEvent::getInstance()->track($server_event, $this->config);
 
     return ($facebook_pixel_event_params_fae)

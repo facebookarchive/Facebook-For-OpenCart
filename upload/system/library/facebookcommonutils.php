@@ -158,7 +158,7 @@ class FacebookCommonUtils {
 
   private $pluginAgentName = 'exopencart';
 // system auto generated, DO NOT MODIFY
-private $pluginVersion = '3.1.0';
+private $pluginVersion = '3.1.1';
 // system auto generated, DO NOT MODIFY
 
   public function __construct() {
@@ -306,7 +306,7 @@ private $pluginVersion = '3.1.0';
       : "";
     $facebook_pixel_params['num_items'] = $num_items;
     if (!empty($event_id)) {
-      $facebook_pixel_params['eid'] = $event_id;
+      $facebook_pixel_params['event_id'] = $event_id;
     }
     return $facebook_pixel_params;
   }
@@ -335,7 +335,7 @@ private $pluginVersion = '3.1.0';
     $facebook_pixel_event_params_fae['is_custom_event'] =
       $params->isCustomEvent();
     if (!empty($event_id)) {
-      $facebook_pixel_event_params_fae['eid'] = $event_id;
+      $facebook_pixel_event_params_fae['event_id'] = $event_id;
     }
     return $facebook_pixel_event_params_fae;
   }

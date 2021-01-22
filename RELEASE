@@ -1,7 +1,11 @@
 Facebook Business Extension
-Latest version: 3.1.0
+Latest version: 3.1.1
 
 Change log
+3.1.1 - 9 Nov 2020
+* Fixed Conversions API event_id set wrongly in pixel event
+* Changed to use Async Request for Conversions API
+
 3.1.0 - 22 Jul 2020
 * Include support for the Conversion API
 * Enable Messenger Chat plugin option from the Management View
