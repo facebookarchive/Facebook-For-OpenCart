@@ -9,7 +9,7 @@
 <modification>
 	<name>Facebook Business Extension</name>
 	<code>facebook_business_extension</code>
-	<version>3.1.1</version>
+	<version>3.1.2</version>
 	<author>Facebook</author>
 	<link>https://github.com/facebookincubator/Facebook-For-OpenCart</link>
 
@@ -332,7 +332,7 @@
 
             <?php if ($facebook_pixel_id_FAE) { ?>
 // system auto generated facebook_pixel.js, DO NOT MODIFY
-pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_3_1_1.js';
+pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_3_1_2.js';
 // system auto generated facebook_pixel.js, DO NOT MODIFY
               facebook_loadScript(
                 pixel_script_filename,
@@ -532,7 +532,7 @@ pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_3_1_1.j
 
             {% if facebook_pixel_id_FAE %}
 // system auto generated facebook_pixel.js, DO NOT MODIFY
-pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_3_1_1.js';
+pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_3_1_2.js';
 // system auto generated facebook_pixel.js, DO NOT MODIFY
               facebook_loadScript(
                 pixel_script_filename,
@@ -1026,7 +1026,7 @@ pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_3_1_1.j
 
               <?php if ($facebook_pixel_id_FAE) { ?>
 // system auto generated facebook_pixel.js, DO NOT MODIFY
-pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_3_1_1.js';
+pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_3_1_2.js';
 // system auto generated facebook_pixel.js, DO NOT MODIFY
                 facebook_loadScript(
                   pixel_script_filename,
@@ -1222,7 +1222,7 @@ pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_3_1_1.j
 
               {% if facebook_pixel_id_FAE %}
 // system auto generated facebook_pixel.js, DO NOT MODIFY
-pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_3_1_1.js';
+pixel_script_filename = 'catalog/view/javascript/facebook/facebook_pixel_3_1_2.js';
 // system auto generated facebook_pixel.js, DO NOT MODIFY
                 facebook_loadScript(
                   pixel_script_filename,

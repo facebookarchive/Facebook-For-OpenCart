@@ -1,7 +1,10 @@
 Facebook Business Extension
-Latest version: 3.1.1
+Latest version: 3.1.2
 
 Change log
+3.1.2 - 1 Feb 2021
+* Added action_source parameter due to Conversions API requirement change starting Feb 15th - https://developers.facebook.com/docs/marketing-api/conversions-api
+
 3.1.1 - 9 Nov 2020
 * Fixed Conversions API event_id set wrongly in pixel event
 * Changed to use Async Request for Conversions API

@@ -20,6 +20,7 @@ use FacebookAds\Object\ServerSide\Event;
 use FacebookAds\Object\ServerSide\UserData;
 use FacebookAds\Object\ServerSide\CustomData;
 use FacebookAds\Object\ServerSide\Util;
+use FacebookAds\Object\ServerSide\ActionSource;
 use FacebookPixelPlugin\Core\EventIdGenerator;
 
 class ServerEventFactory {
@@ -39,6 +40,7 @@ class ServerEventFactory {
 			->setEventTime(time())
 			->setEventId(EventIdGenerator::guidv4())
 			->setEventSourceUrl(Util::getRequestUri())
+			->setActionSource(ActionSource::WEBSITE)
 			->setUserData($user_data)
 			->setCustomData(new CustomData());
 
@@ -63,7 +65,7 @@ class ServerEventFactory {
 					$config->get(FacebookCommonUtils::FACEBOOK_PIXEL_ENABLED_AAM_FIELDS)
 				);
 				$user_data = $event->getUserData();
-				
+
 				if (!empty($user_pii_data['em']) && in_array('em', $enabled_amm_fields)) {
 					$user_data->setEmail($user_pii_data['em']);
 				}
