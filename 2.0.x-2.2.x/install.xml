@@ -1,0 +1,554 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2017-present, Facebook, Inc. -->
+<!-- All rights reserved. -->
+
+<!-- This source code is licensed under the license found in the -->
+<!-- LICENSE file in the root directory of this source tree. -->
+<modification>
+    <name>Facebook Business Extension</name>
+    <code>facebook_business</code>
+    <version>4.0.2</version>
+    <author>Facebook</author>
+    <link>https://github.com/facebookincubator/Facebook-For-OpenCart</link>
+    <file path="admin/controller/common/dashboard.php">
+        <operation>
+            <search><![CDATA[
+                public function index() {
+            ]]></search>
+            <add position="after"><![CDATA[
+                $this->load->language('module/facebook_business');
+                $this->load->model('module/facebook_business');
+
+                if ($this->model_module_facebook_business->isNewExtensionAvailable()) {
+                    $data['fb_upgrade_message'] = $this->language->get('text_upgrade_message');
+                } else {
+                    $data['fb_upgrade_message'] = '';
+                }
+            ]]></add>
+        </operation>
+    </file>
+    <file path="admin/view/template/common/dashboard.tpl">
+        <operation>
+            <search><![CDATA[
+                <?php if ($error_install) { ?>
+            ]]></search>
+            <add position="before"><![CDATA[
+                <?php if ($fb_upgrade_message) { ?>
+                <div class="alert alert-info"><i class="fa fa-exclamation-circle"></i> <?php echo $fb_upgrade_message; ?>
+                  <button type="button" class="close" data-dismiss="alert">&times;</button>
+                </div>
+                <?php } ?>
+            ]]></add>
+        </operation>
+    </file>
+    <file path="admin/controller/common/menu.php">
+        <operation>
+            <search><![CDATA[
+                public function index() {
+            ]]></search>
+            <add position="after"><![CDATA[
+                $data['facebook_business'] = $this->url->link('module/facebook_business', 'token=' . $this->session->data['token'], 'SSL');
+
+                $this->load->model('module/facebook_business');
+
+                $data['is_facebook_business_installed'] = $this->model_module_facebook_business->checkInstalled();
+            ]]></add>
+        </operation>
+    </file>
+    <file path="admin/view/template/common/menu.tpl">
+        <operation>
+            <search><![CDATA[
+                <ul id="menu">
+            ]]></search>
+            <add position="after"><![CDATA[
+                <?php if ($is_facebook_business_installed) { ?>
+                <li id="facebook-business-extension"><a href="<?php echo $facebook_business; ?>"><i class="fa fa-facebook-square"></i> Facebook Business Extension</span></a></li>
+                <?php } ?>
+            ]]></add>
+        </operation>
+    </file>
+    <file path="admin/controller/catalog/product.php">
+        <operation>
+            <search><![CDATA[
+                $data['tab_openbay'] = $this->language->get('tab_openbay');
+            ]]></search>
+            <add position="after"><![CDATA[
+                $data = array_merge($this->load->language('module/facebook_business'), $data);
+            ]]></add>
+        </operation>
+        <operation>
+            <search><![CDATA[
+                $data['layouts'] = $this->model_design_layout->getLayouts();
+            ]]></search>
+            <add position="after"><![CDATA[
+                $this->load->model('module/facebook_business');
+
+                $data['is_facebook_business_installed'] = $this->model_module_facebook_business->checkInstalled();
+
+                if ($data['is_facebook_business_installed']) {
+                    // Get Google Product Categories
+                    $google_taxonomy_url = 'https://www.google.com/basepages/producttype/taxonomy-with-ids.en-US.txt';
+
+                    $options = array(
+                        CURLOPT_RETURNTRANSFER => true,
+                        CURLOPT_HEADER         => false,
+                        CURLOPT_FOLLOWLOCATION => true,
+                        CURLOPT_AUTOREFERER    => true
+                    );
+
+                    $curl = curl_init($google_taxonomy_url);
+                    curl_setopt_array($curl, $options);
+                    $content = curl_exec($curl);
+
+                    if (curl_errno($curl)) {
+                        $curl_error = curl_error($curl);
+                    } else {
+                        $curl_error = false;
+                    }
+
+                    curl_close($curl);
+
+                    $data['google_product_categories'] = array();
+                    $data['error_google_product_category'] = '';
+
+                    if ($content && !$curl_error) {
+                        $google_product_categories_file = explode(PHP_EOL, $content);
+                        $version = array_shift($google_product_categories_file);
+                        
+                        foreach ($google_product_categories_file as $google_product_category) {
+                            if ($google_product_category) {
+                                list($id, $name) = explode(' - ', $google_product_category);
+                                $data['google_product_categories'][$id] = $name;
+                            }
+                        }
+                    } else {
+                        $data['error_google_product_category'] = $this->language->get('error_google_product_category');
+                    }
+
+                    if (isset($this->request->get['product_id'])) {
+                        $facebook_params = $this->model_module_facebook_business->getFacebookParams($this->request->get['product_id']);
+                    } else {
+                        $facebook_params = array(
+                            'facebook_google_product_category' => '',
+                            'facebook_condition'               => '',
+                            'facebook_age_group'               => '',
+                            'facebook_color'                   => '',
+                            'facebook_gender'                  => '',
+                            'facebook_material'                => '',
+                            'facebook_pattern'                 => ''
+                        );
+                    }
+
+                    foreach ($facebook_params as $facebook_param => $value) {
+                        if (isset($this->request->post[$facebook_param])) {
+                            $data[$facebook_param] = $this->request->post[$facebook_param];
+                        } else {
+                            $data[$facebook_param] = $value;
+                        }
+                    }
+                }
+            ]]></add>
+        </operation>
+    </file>
+    <file path="admin/model/catalog/product.php">
+        <operation>
+            <search><![CDATA[
+                return $product_id;
+            ]]></search>
+            <add position="before"><![CDATA[
+                if (isset($data['facebook_google_product_category']) && isset($data['facebook_condition']) && isset($data['facebook_age_group']) && isset($data['facebook_color']) && isset($data['facebook_gender']) && isset($data['facebook_material']) && isset($data['facebook_pattern'])) {
+                    $this->db->query("DELETE FROM " . DB_PREFIX . "product_to_facebook WHERE product_id = '" . (int)$product_id . "'");
+                    $this->db->query("INSERT INTO " . DB_PREFIX . "product_to_facebook SET product_id = '" . (int)$product_id . "', google_product_category = '" . (int)$data['facebook_google_product_category'] . "', `condition` = '" . $this->db->escape($data['facebook_condition']) . "', age_group = '" . $this->db->escape($data['facebook_age_group']) . "', color = '" . $this->db->escape($data['facebook_color']) . "', gender = '" . $this->db->escape($data['facebook_gender']) . "', material = '" . $this->db->escape($data['facebook_material']) . "', pattern = '" . $this->db->escape($data['facebook_pattern']) . "'");
+                }
+            ]]></add>
+        </operation>
+        <operation>
+            <search><![CDATA[
+                public function editProduct($product_id, $data) {
+            ]]></search>
+            <add position="after"><![CDATA[
+                if (isset($data['facebook_google_product_category']) && isset($data['facebook_condition']) && isset($data['facebook_age_group']) && isset($data['facebook_color']) && isset($data['facebook_gender']) && isset($data['facebook_material']) && isset($data['facebook_pattern'])) {
+                    $this->db->query("DELETE FROM " . DB_PREFIX . "product_to_facebook WHERE product_id = '" . (int)$product_id . "'");
+                    $this->db->query("INSERT INTO " . DB_PREFIX . "product_to_facebook SET product_id = '" . (int)$product_id . "', google_product_category = '" . (int)$data['facebook_google_product_category'] . "', `condition` = '" . $this->db->escape($data['facebook_condition']) . "', age_group = '" . $this->db->escape($data['facebook_age_group']) . "', color = '" . $this->db->escape($data['facebook_color']) . "', gender = '" . $this->db->escape($data['facebook_gender']) . "', material = '" . $this->db->escape($data['facebook_material']) . "', pattern = '" . $this->db->escape($data['facebook_pattern']) . "'");
+                }
+            ]]></add>
+        </operation>
+        <operation>
+            <search><![CDATA[
+                public function deleteProduct($product_id) {
+            ]]></search>
+            <add position="after"><![CDATA[
+                $product_to_facebook_query = $this->db->query("SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = '" . DB_DATABASE . "' AND TABLE_NAME = '" . DB_PREFIX . "product_to_facebook'");
+                
+                if ($product_to_facebook_query->num_rows) {
+                    $this->db->query("DELETE FROM " . DB_PREFIX . "product_to_facebook WHERE product_id = '" . (int)$product_id . "'");
+                }
+            ]]></add>
+        </operation>
+        <operation>
+            <search><![CDATA[
+                $data = $query->row;
+            ]]></search>
+            <add position="after"><![CDATA[
+                $product_to_facebook_query = $this->db->query("SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = '" . DB_DATABASE . "' AND TABLE_NAME = '" . DB_PREFIX . "product_to_facebook'");
+                
+                if ($product_to_facebook_query->num_rows) {
+                    $data = array_merge($data, $this->getProductToFacebook($product_id));
+                }
+            ]]></add>
+        </operation>
+        <operation>
+            <search><![CDATA[
+                public function deleteProduct($product_id) {
+            ]]></search>
+            <add position="before"><![CDATA[
+                public function getProductToFacebook($product_id) {
+                    $query = $this->db->query("SELECT * FROM `" . DB_PREFIX . "product_to_facebook` WHERE product_id = '" . (int)$product_id . "'");
+
+                    if ($query->num_rows) {
+                        $facebook_params = array(
+                            'facebook_google_product_category'   => $query->row['google_product_category'],
+                            'facebook_condition'                 => $query->row['condition'],
+                            'facebook_age_group'                 => $query->row['age_group'],
+                            'facebook_color'                     => $query->row['color'],
+                            'facebook_gender'                    => $query->row['gender'],
+                            'facebook_material'                  => $query->row['material'],
+                            'facebook_pattern'                   => $query->row['pattern']
+                        );
+                    } else {
+                        $facebook_params = array(
+                            'facebook_google_product_category'   => '',
+                            'facebook_condition'                 => '',
+                            'facebook_age_group'                 => '',
+                            'facebook_color'                     => '',
+                            'facebook_gender'                    => '',
+                            'facebook_material'                  => '',
+                            'facebook_pattern'                   => ''
+                        );
+                    }
+
+                    return $facebook_params;
+                }
+            ]]></add>
+        </operation>
+    </file>
+    <file path="admin/view/template/catalog/product_form.tpl">
+        <operation>
+            <search><![CDATA[
+                <li><a href="#tab-design" data-toggle="tab"><?php echo $tab_design; ?></a></li>
+            ]]></search>
+            <add position="after"><![CDATA[
+                <?php if ($is_facebook_business_installed) { ?>
+                <li><a href="#tab-facebook" data-toggle="tab"><?php echo $tab_facebook; ?></a></li>
+                <?php } ?>
+            ]]></add>
+        </operation>
+        <operation>
+            <search><![CDATA[
+                <div class="tab-pane" id="tab-design">
+            ]]></search>
+            <add position="before"><![CDATA[
+                <?php if ($is_facebook_business_installed) { ?>
+                <div class="tab-pane" id="tab-facebook">
+                  <div class="alert alert-info"><i class="fa fa-exclamation-circle"></i> <?php echo $text_additional_fields_info; ?>
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label" for="input-facebook-google-product-category"><?php echo $entry_facebook_google_product_category; ?></label>
+                    <div class="col-sm-10">
+                      <select name="facebook_google_product_category"  id="input-facebook-google-product-category" class="form-control">
+                        <option value="0"><?php echo $text_please_select; ?></option>
+                        <?php if ($google_product_categories && !$error_google_product_category) { ?>
+                        <?php foreach ($google_product_categories as $id => $name) { ?>
+                        <option value="<?php echo $id; ?>"<?php echo $facebook_google_product_category == $id ? ' selected="selected"' : ''; ?>><?php echo $name; ?></option>
+                        <?php } ?>
+                        <?php } else { ?>
+                        <div class="text-danger"><?php echo $error_google_product_category; ?></div>
+                        <?php } ?>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label" for="input-facebook-condition"><?php echo $entry_facebook_condition; ?></label>
+                    <div class="col-sm-10">
+                      <select name="facebook_condition"  id="input-facebook-condition" class="form-control">
+                        <option value=""><?php echo $text_please_select; ?></option>
+                        <option value="<?php echo $text_condition_new; ?>"<?php echo $facebook_condition == $text_condition_new ? ' selected="selected"' : ''; ?>><?php echo $text_condition_new; ?></option>
+                        <option value="<?php echo $text_condition_refurbished; ?>"<?php echo $facebook_condition == $text_condition_refurbished ? ' selected="selected"' : ''; ?>><?php echo $text_condition_refurbished; ?></option>
+                        <option value="<?php echo $text_condition_used; ?>"<?php echo $facebook_condition == $text_condition_used ? ' selected="selected"' : ''; ?>><?php echo $text_condition_used; ?></option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label" for="input-facebook-age-group"><?php echo $entry_facebook_age_group; ?></label>
+                    <div class="col-sm-10">
+                      <select name="facebook_age_group"  id="input-facebook-age-group" class="form-control">
+                        <option value=""><?php echo $text_please_select; ?></option>
+                        <option value="<?php echo $text_age_group_all_ages; ?>"<?php echo $facebook_age_group == $text_age_group_all_ages ? ' selected="selected"' : ''; ?>><?php echo $text_age_group_all_ages; ?></option>
+                        <option value="<?php echo $text_age_group_adult; ?>"<?php echo $facebook_age_group == $text_age_group_adult ? ' selected="selected"' : ''; ?>><?php echo $text_age_group_adult; ?></option>
+                        <option value="<?php echo $text_age_group_teen; ?>"<?php echo $facebook_age_group == $text_age_group_teen ? ' selected="selected"' : ''; ?>><?php echo $text_age_group_teen; ?></option>
+                        <option value="<?php echo $text_age_group_kids; ?>"<?php echo $facebook_age_group == $text_age_group_kids ? ' selected="selected"' : ''; ?>><?php echo $text_age_group_kids; ?></option>
+                        <option value="<?php echo $text_age_group_toddler; ?>"<?php echo $facebook_age_group == $text_age_group_toddler ? ' selected="selected"' : ''; ?>><?php echo $text_age_group_toddler; ?></option>
+                        <option value="<?php echo $text_age_group_infant; ?>"<?php echo $facebook_age_group == $text_age_group_infant ? ' selected="selected"' : ''; ?>><?php echo $text_age_group_infant; ?></option>
+                        <option value="<?php echo $text_age_group_newborn; ?>"<?php echo $facebook_age_group == $text_age_group_newborn ? ' selected="selected"' : ''; ?>><?php echo $text_age_group_newborn; ?></option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label" for="input-facebook-gender"><?php echo $entry_facebook_gender; ?></label>
+                    <div class="col-sm-10">
+                      <select name="facebook_gender"  id="input-facebook-gender" class="form-control">
+                        <option value=""><?php echo $text_please_select; ?></option>
+                        <option value="<?php echo $text_gender_female; ?>"<?php echo $facebook_gender == $text_gender_female ? ' selected="selected"' : ''; ?>><?php echo $text_gender_female; ?></option>
+                        <option value="<?php echo $text_gender_male; ?>"<?php echo $facebook_gender == $text_gender_male ? ' selected="selected"' : ''; ?>><?php echo $text_gender_male; ?></option>
+                        <option value="<?php echo $text_gender_unisex; ?>"<?php echo $facebook_gender == $text_gender_unisex ? ' selected="selected"' : ''; ?>><?php echo $text_gender_unisex; ?></option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label" for="input-facebook-material"><?php echo $entry_facebook_material; ?></label>
+                    <div class="col-sm-10">
+                      <select name="facebook_material"  id="input-facebook-material" class="form-control">
+                        <option value=""><?php echo $text_please_select; ?></option>
+                        <option value="<?php echo $text_material_cotton; ?>"<?php echo $facebook_material == $text_material_cotton ? ' selected="selected"' : ''; ?>><?php echo $text_material_cotton; ?></option>
+                        <option value="<?php echo $text_material_denim; ?>"<?php echo $facebook_material == $text_material_denim ? ' selected="selected"' : ''; ?>><?php echo $text_material_denim; ?></option>
+                        <option value="<?php echo $text_material_leather; ?>"<?php echo $facebook_material == $text_material_leather ? ' selected="selected"' : ''; ?>><?php echo $text_material_leather; ?></option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label" for="input-facebook-color"><?php echo $entry_facebook_color; ?></label>
+                    <div class="col-sm-10">
+                      <input type="text" name="facebook_color" value="<?php echo $facebook_color; ?>" placeholder="<?php echo $entry_facebook_color; ?>" id="input-facebook-color" class="form-control" />
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label" for="input-facebook-pattern"><?php echo $entry_facebook_pattern; ?></label>
+                    <div class="col-sm-10">
+                      <input type="text" name="facebook_pattern" value="<?php echo $facebook_pattern; ?>" placeholder="<?php echo $entry_facebook_pattern; ?>" id="input-facebook-pattern" class="form-control" />
+                    </div>
+                  </div>
+                </div>
+                <?php } ?>
+            ]]></add>
+        </operation>
+    </file>
+    <file path="catalog/controller/common/header.php">
+        <operation>
+            <search><![CDATA[
+                public function index() {
+            ]]></search>
+            <add position="after"><![CDATA[
+                $this->load->model('module/facebook_business');
+
+                $data['facebook_page_id'] = $this->config->get('facebook_page_id');
+                $data['facebook_jssdk_version'] = $this->config->get('facebook_jssdk_version');
+                $data['facebook_messenger_enabled'] = $this->config->get('facebook_messenger_activated');
+                
+                if ($this->config->get('facebook_customization_locale')) {
+                    $data['facebook_customization_locale'] = $this->config->get('facebook_customization_locale');
+                } else {
+                    $data['facebook_customization_locale'] = 'en_US';
+                }
+
+                // Retrieve latest settings
+                $this->model_module_facebook_business->updateUseS2SUsePIIByAAMSetting();
+
+                $data['facebook_pixel_id'] = $this->config->get('facebook_pixel_id');
+                $data['facebook_pixel_pii'] = $this->model_module_facebook_business->getPii();
+                $data['facebook_pixel_params'] = $this->model_module_facebook_business->getAgentParameters();
+                $data['facebook_pixel_event_params'] = $this->model_module_facebook_business->getEventParameters();
+                $data['facebook_cookie_bar_status'] = $this->config->get('facebook_business_cookie_bar_status');
+
+                $data['cookie_bar_header']      = 'Our Site Uses Cookies';
+                $data['cookie_bar_description'] = 'By clicking Agree, you agree to our <a class="cc-link" href="https://www.facebook.com/legal/terms/update" target="_blank">terms of service</a>, <a class="cc-link" href="https://www.facebook.com/policies/" target="_blank">privacy policy</a> and <a class="cc-link" href="https://www.facebook.com/policies/cookies/" target="_blank">cookies policy</a>.';
+                $data['cookie_bar_opt_in']      = 'Agree';
+                $data['cookie_bar_opt_out']     = 'Opt Out';
+            ]]></add>
+        </operation>
+    </file>
+    <file path="catalog/view/theme/*/template/common/header.tpl">
+        <operation>
+            <search><![CDATA[
+                </head>
+            ]]></search>
+            <add position="before"><![CDATA[
+              <script type="text/javascript">
+                // we are using this flag to determine if the pixel
+                // is successfully added to the header
+                window.isFacebookPixelInHeaderAdded = 1;
+                window.isFacebookPixelAdded=1;
+              </script>
+
+              <script type="text/javascript">
+                function facebook_loadScript(url, callback) {
+                  var script = document.createElement("script");
+                  script.type = "text/javascript";
+                  if(script.readyState) {  // only required for IE <9
+                    script.onreadystatechange = function() {
+                      if (script.readyState === "loaded" || script.readyState === "complete") {
+                        script.onreadystatechange = null;
+                        if (callback) {
+                          callback();
+                        }
+                      }
+                    };
+                  } else {  //Others
+                    if (callback) {
+                      script.onload = callback;
+                    }
+                  }
+
+                  script.src = url;
+                  document.getElementsByTagName("head")[0].appendChild(script);
+                }
+              </script>
+
+              <script type="text/javascript">
+                (function() {
+                  var enableCookieBar = '<?php echo $facebook_cookie_bar_status ?>';
+                  if (enableCookieBar == '1') {
+                    facebook_loadScript("catalog/view/javascript/facebook_business/cookieconsent.min.js");
+
+                    // loading the css file
+                    var css = document.createElement("link");
+                    css.setAttribute("rel", "stylesheet");
+                    css.setAttribute("type", "text/css");
+                    css.setAttribute(
+                      "href",
+                      "catalog/view/theme/css/facebook_business/cookieconsent.min.css");
+                    document.getElementsByTagName("head")[0].appendChild(css);
+
+                    window.addEventListener("load", function(){
+                      function setConsent() {
+                        fbq(
+                          'consent',
+                          this.hasConsented() ? 'grant' : 'revoke'
+                        );
+                      }
+                      window.cookieconsent.initialise({
+                        palette: {
+                          popup: {
+                            background: '#237afc'
+                          },
+                          button: {
+                            background: '#fff',
+                            text: '#237afc'
+                          }
+                        },
+                        cookie: {
+                          name: fbq.consentCookieName
+                        },
+                        type: 'opt-out',
+                        showLink: false,
+                        content: {
+                          allow: '<?php echo $cookie_bar_opt_in; ?>',
+                          deny: '<?php echo $cookie_bar_opt_out; ?>',
+                          header: '<?php echo $cookie_bar_header; ?>',
+                          message: '<?php echo $cookie_bar_description; ?>'
+                        },
+                        layout: 'basic-header',
+                        location: true,
+                        revokable: true,
+                        onInitialise: setConsent,
+                        onStatusChange: setConsent,
+                        onRevokeChoice: setConsent
+                      }, function (popup) {
+                        // If this isn't open, we know that we can use cookies.
+                        if (!popup.getStatus() && !popup.options.enabled) {
+                          popup.setStatus(cookieconsent.status.dismiss);
+                        }
+                      });
+                    });
+                  }
+                })();
+              </script>
+
+              <script type="text/javascript">
+                (function() {
+                  !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+                  n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+                  n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+                  t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+                  document,'script','https://connect.facebook.net/en_US/fbevents.js');
+
+                  var enableCookieBar = '<?php echo $facebook_cookie_bar_status ?>';
+                  if (enableCookieBar == '1') {
+                    fbq.consentCookieName = 'fb_cookieconsent_status';
+
+                    (function() {
+                      function getCookie(t){var i=("; "+document.cookie).split("; "+t+"=");if(2==i.length)return i.pop().split(";").shift()}
+                      var consentValue = getCookie(fbq.consentCookieName);
+                      fbq('consent', consentValue === 'dismiss' ? 'grant' : 'revoke');
+                    })();
+                  }
+
+                  <?php if ($facebook_pixel_id) { ?>
+                    // system auto generated facebook_pixel.js, DO NOT MODIFY
+                    pixel_script_filename = 'catalog/view/javascript/facebook_business/facebook_pixel_3_1_2.js';
+                    // system auto generated facebook_pixel.js, DO NOT MODIFY
+                    facebook_loadScript(
+                      pixel_script_filename,
+                      function() {
+                        var params = <?php echo $facebook_pixel_params; ?>;
+                        _facebookAdsExtension.facebookPixel.init(
+                          '<?php echo $facebook_pixel_id; ?>',
+                          <?php echo $facebook_pixel_pii; ?>,
+                          params);
+                        <?php if ($facebook_pixel_event_params) { ?>
+                          _facebookAdsExtension.facebookPixel.firePixel(
+                            JSON.parse('<?php echo $facebook_pixel_event_params; ?>'));
+                        <?php } ?>
+                      });
+                  <?php } ?>
+                })();
+              </script>
+
+              <script type="text/javascript">
+                // we are using this flag to determine if the customer chat
+                // is successfully added to the header
+                window.isFacebookCustomerChatInHeaderAdded = 1;
+                window.isFacebookCustomerChatAdded=1;
+              </script>
+
+              <?php if ($facebook_messenger_enabled == 'true') { ?>
+              <!-- Facebook JSSDK -->
+              <script>
+                window.fbAsyncInit = function() {
+                  FB.init({
+                    appId            : '',
+                    autoLogAppEvents : true,
+                    xfbml            : true,
+                    version          : 'v10.0'
+                  });
+                };
+
+                (function(d, s, id){
+                    var js, fjs = d.getElementsByTagName(s)[0];
+                    if (d.getElementById(id)) {return;}
+                    js = d.createElement(s); js.id = id;
+                    js.src = "https://connect.facebook.net/<?php echo $facebook_customization_locale; ?>/sdk/xfbml.customerchat.js";
+                    fjs.parentNode.insertBefore(js, fjs);
+                  }(document, 'script', 'facebook-jssdk'));
+              </script>
+              <div
+                id="fb-customerchat-header"
+                class="fb-customerchat"
+                attribution="fbe_opencart"
+                page_id="<?php echo $facebook_page_id; ?>">
+              </div>
+              <?php } ?>
+            ]]></add>
+        </operation>
+    </file>
+    <file path="catalog/controller/checkout/success.php">
+        <operation>
+            <search><![CDATA[
+                unset($this->session->data['order_id']);
+            ]]></search>
+            <add position="before"><![CDATA[
+                $this->session->data['facebook_business_order_id'] = $this->session->data['order_id'];
+            ]]></add>
+        </operation>
+    </file>
+</modification>

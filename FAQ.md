@@ -1,159 +1,163 @@
-Frequently Asked Questions for Facebook Business Extension
-====
+# Frequently Asked Questions for Facebook Business Extension
+
 - The latest version of the plugin can be found at [here](https://github.com/facebookincubator/Facebook-For-OpenCart/releases/latest)
 - The latest version of the README can be found at [here](https://github.com/facebookincubator/Facebook-For-OpenCart/blob/master/README.md)
 - The latest version of the INSTALL_GUIDE can be found at [here](https://github.com/facebookincubator/Facebook-For-OpenCart/blob/master/INSTALL_GUIDE.md)
+- The previous version of INSTALL_GUIDE before v4.0.0 can be found at [here](https://github.com/facebookincubator/Facebook-For-OpenCart/blob/master/INSTALL_GUIDE_3.x.x.md)
 - The previous version of INSTALL_GUIDE before v3.0.0 can be found at [here](https://github.com/facebookincubator/Facebook-For-OpenCart/blob/master/INSTALL_GUIDE_2.x.x.md)
 - The latest version of the FAQ can be found at [here](https://github.com/facebookincubator/Facebook-For-OpenCart/blob/master/FAQ.md)
+- The previous version of the FAQ before v4.0.0 can be found at [here](https://github.com/facebookincubator/Facebook-For-OpenCart/blob/master/FAQ_3.x.x.md)
 - The previous version of the FAQ before v3.0.0 can be found at [here](https://github.com/facebookincubator/Facebook-For-OpenCart/blob/master/FAQ_2.x.x.md)
-- For other questions or bug reporting, please create a ticket at our [github](https://github.com/facebookincubator/Facebook-For-OpenCart/issues)
+- For other questions or bug reporting **regarding the OpenCart plugin**, please open a ticket with us at our [helpdesk](https://marketinsg.zendesk.com/') or open a new issue on [github](https://github.com/facebookincubator/)
+- For Facebook related issues or enquiries, please open a ticket with Facebook Business Support at [Facebook Business Help Centre](https://www.facebook.com/business/help/support)
 
-====
+
 Always check that you have installed the latest version of the plugin as we are continously improving the plugin.
 
 
 # Plugin Installation
-1. Do you support installation via VQMOD?
-    - No, we do not support installation via VQMOD. The mode of plugin installation is via OCMOD.
+1. Do you support installation via vQmod?
+    - No, we do not support installation via vQmod. The mode of plugin installation is via the OpenCart Extension Installer and OpenCart Events (for OpenCart 2.3.x to 3.x.x and above) or OCMOD (for OpenCart 2.0.x to 2.2.x).
 
-2. I am getting "Directory containing files to be uploaded could not be found!" error when I am installing the plugin zip file to OpenCart.
-    - If you need to create the plugin zip file manually, you need to ensure there is no additional top level folder inside the plugin file. [Screenshot](https://drive.google.com/open?id=1A_EwXnTBc8OOES6D1D0yiEzp4NTN1VbU)
+2. I am getting "Directory containing files to be uploaded could not be found!" error when I am installing the plugin zip file on OpenCart.
+    - If you are creating the plugin zip file manually (i.e. downloading from GitHub and manually compressing the files), please ensure that there is no additional top level folders inside the plugin zip file. This means that when compressing the files into a zip file, there should not be any other folders other than the 'upload' folder. [Screenshot](https://drive.google.com/file/d/1bld3AYjB2JXyveM1uRbJ-Jqw26ZTaxQ_/view?usp=sharing)
 
 3. I am getting "Invalid file type" error when I am installing the plugin zip file to OpenCart.
-    - You need to ensure that the plugin file ends with the extension ".ocmod.zip". Files which do not end with this extension will result in OpenCart showing "Invalid file type" when you install the plugin throught the installer. [Screenshot](https://drive.google.com/open?id=1NH0yR9X6C49M_CMGtuh2qvNoX_iMuIp-)
+    - Please ensure that the plugin zip file you are uploading ends with the file extension ```.ocmod.zip```. For example ```facebook_business.ocmod.zip```. Files that do not end with this file extension will cause the "Invalid file type" error when installing through OpenCart's Extension Installer. [Screenshot](https://drive.google.com/file/d/1RZjlW4SJvL6lDFupHtg944kkTrgx7ls3/view?usp=sharing)
 
-4. I do not see the menu for Facebook Business Extension after installing the plugin.
-    - You will need to perform a refresh for the modifications after the plugin installation. Go to the admin panel of OpenCart and click on Menu -> Extensions -> Modifications and click on the Refresh button. You may need to refresh your webpage after doing this. [Screenshot](https://drive.google.com/open?id=1qy-ipwK1HCk8oSnUmGuy6MCJxQdUyGfw)
+4. Can I manually upload the files into my web server to install the Facebook Business Extension plugin?
+    - If you are using OpenCart version 2.0.x to 2.2.x:
+      - No, it is highly recommended that you use the OpenCart extension Installer to install the plugin as it uses OCMOD.
+      - However, in the event that using the OpenCart Extension Installer is not possible, you can still perform an installation by uploading the files directly through your web server but the installation of the OCMOD script has to be done manually or through a third-party extension.
+
+    - If you are using OpenCart version 2.3.x to 3.x.x and above:
+      - Yes, you may manually upload the contents of the 'upload' folder into your web server to perform an installation of the Facebook Business Extension plugin.
+
 
 
 # Accessing the Facebook Business Extension module
-1. I am getting "Page not found" error when accessing the Facebook Business Extension. [Screenshot](https://drive.google.com/open?id=1R2t3gS4smJgmYTtLeTerJ-8yTUOr_wLD)
-    - To access the Facebook Business Extension, go to the admin panel of OpenCart and click on Menu -> Facebook Business Extension -> Facebook Business Extension. [Screenshot](https://drive.google.com/open?id=1xC5hQLqn-6AR7mxPME3y-safDTY-LFya)
-    - Do NOT access the Facebook Business Extension through Menu -> Extensions -> Extensions and clicking on the Edit button. [Screenshot](https://drive.google.com/open?id=1xC5hQLqn-6AR7mxPME3y-safDTY-LFya)
-    - Check that the file admin/controller/extension/facebookadsextension.php exists on your webserver. If this file is not available, you need to give read+write+execute permissions to the admin, catalog and system folders and their child folders. After that, you need to remove the plugin and reinstall the plugin. [Screenshot](https://drive.google.com/open?id=1M9hh6ZkR6y-gCl8LEFsuY4wJ3EDpI6rM)
+1. I do not see the Facebook Business Extension under Extensions -> Extensions -> Modules.
+    - This means that there was an error during the installation of the plugin.
+    - If you are using OpenCart version 2.0.x to 2.3.x, please ensure that you have FTP enabled and the correct details filled up. [Screenshot](https://drive.google.com/file/d/1-QS-vZtpZgun5lJXnn5H0UGriAm_YujF/view?usp=sharing)
+    - Please ensure that the file admin/controller/extension/module/facebook_business.php exists on your web server. If this file is not available, it means that installation of the plugin failed and you will need to perform a re-installation.
+    - If subsequent re-installations still fail, please reach out to us via our [helpdesk](https://marketinsg.zendesk.com/) for assistance.
 
-2. I am getting "We have detected missing files for Facebook Business Extension." error at the Facebook Business Extension module. [Screenshot](https://drive.google.com/open?id=1nQ_C51kqngNRZc0y9FREPgGsnOgCaHo3)
-    - We need to copy some new files to your webserver, and there are some files which may not have been copied over correctly. Check that you have given read+write+execute permissions to the admin, catalog and system folders and their child folders. After that, you need to remove the plugin and reinstall the plugin. [Screenshot](https://drive.google.com/open?id=1M9hh6ZkR6y-gCl8LEFsuY4wJ3EDpI6rM)
+2. I do not see the menu for Facebook Business Extension in my admin panel after installing the plugin.
+    - For OpenCart version 2.0.x to 2.2.x, please ensure the following points:
+        - Facebook Business Extension is installed under Extensions -> Modules -> Facebook Business Extension.
+        - Facebook Business Extension Modifications is installed and enabled under Extensions -> Modifications -> Facebook Business Extension. Please also ensure that you have refreshed your modifications cache (light blue gear icon button located at the top-right corner).
+        - Alternatively, you should be able to access the extension at Extensions -> Modules -> Facebook Business Extension -> 'Edit'.
 
-3. I am getting "We are unable to locate the admin/controller/extension/facebookadsextension.php file on your webserver." error. [Screenshot](https://drive.google.com/open?id=1kOpwredZx505yTPSlMntgskqZfhJuFKv)
-    - We need to copy some new files to your webserver, and we are unable to locate the file admin/controller/extension/facebookadsextension.php which may not have been copied over correctly. Check that you have given read+write+execute permissions to the admin, catalog and system folders and their child folders. After that, you need to remove the plugin and reinstall the plugin. [Screenshot](https://drive.google.com/open?id=1M9hh6ZkR6y-gCl8LEFsuY4wJ3EDpI6rM)
+    - For OpenCart version 2.3.x to 3.x.x and above, please ensure the following points:
+        - Facebook Business Extension is installed under Extensions -> Extensions -> Modules -> Facebook Business Extension. [Screenshot](https://drive.google.com/file/d/1WjIaYXA3bqqLGqAnRHp0OU_Dn9-oqK6s/view?usp=sharing)
+        - Facebook Business Extension's Events under Extensions -> Events are present and not disabled. [Screenshot](https://drive.google.com/file/d/1kWN4ThDHLKMMPYMxMQWqSj4SePQOcBmj/view?usp=sharing)
+        - If you are using OpenCart version 3 and above, you may also need to perform a refresh for the Twig/SASS cache. To do so, go to your OpenCart admin dashboard, click the light blue gear icon button located at the top-right corner, and then click the yellow refresh button next to Theme and SASS. You do not need to perform these actions if they are disabled. [Screenshot](https://drive.google.com/file/d/1xTKIXdgrN7g7UdbpsfK8Um1Kkd_hOLsK/view?usp=sharing)
+        - Alternatively, you should be able to access the extension at Extensions -> Extensions -> Modules -> Facebook Business Extension -> 'Edit'. [Screenshot](https://drive.google.com/file/d/1-jnNis1ZC0crNPqwVcAyA4-wCshBy3sc/view?usp=sharing)
 
-4. I am getting "Permission Denied" error at the Facebook Business Extension module. [Screenshot](https://drive.google.com/open?id=1wgBr11M5ikAVNXtxYw0bkYMsksTGW2ri)
-    - If you are on OpenCart 3.x, ensure that you have performed the additional installation step. [Video guide](https://drive.google.com/open?id=1-ljN_pNcyZBbN2LoXtxwaJEy0dfnxAum)
-    - By default, the plugin will automatically enable the Access and Modify permission for the default OpenCart Adminstrator user group. Please give the required permissions if you are using a different user group. [Video guide](https://drive.google.com/open?id=1JUwZPlUNIhFO7I8U0slbJSQNjyu4al_J)
+3. I do not see the Facebook tab in my product configurations. [Screenshot](https://drive.google.com/file/d/1Us0vPwSp-6jGjxp-W3hF4K2VLAZgtjWd/view?usp=sharing)
+    - For OpenCart version 2.0.x to 2.2.x:
+        - Please ensure that the Facebook Business Extension OCMOD is installed correctly under Extensions -> Modfications and that it is not disabled. Please also ensure that you have refreshed your modifications cache. [Screenshot](https://drive.google.com/file/d/12s7W1aD3AAV2lROdcUwQbeMoEwDx2lsL/view?usp=sharing)
+    
+    - For OpenCart version 2.3.x to 3.x.x and above:
+        - Please ensure that Facebook Business Extension's Events under Extensions -> Events are present and not disabled. [Screenshot](https://drive.google.com/file/d/1kWN4ThDHLKMMPYMxMQWqSj4SePQOcBmj/view?usp=sharing)
+    
+    - If the above points do not work, please contact our [help desk](https://marketinsg.zendesk.com/) or open an issue with us to receive support from our development team.
 
-5. I have installed the OpenCart plugin but I am unable to see the Facebook Business Extension module from the menu bar. [Screenshot](https://drive.google.com/open?id=1YUDir2bkB5dWPyNi-xpd7APZsKnrbj0M)
-    - Check that you have refreshed the plugin modifications. Click on Refresh button to refresh the existing plugins on your OpenCart server. [Screenshot](https://drive.google.com/open?id=1Mfr49CzavKogSrOvZurJIvadfCwtR_6p)
+4. I am getting "Permission Denied" error when accessing the Facebook Business Extension module. [Screenshot](https://drive.google.com/file/d/1z7HECXtRIZlw5SdIcXvMi3EF0XjvTYew/view?usp=sharing)
+    - By default, the plugin will automatically enable the Access and Modify permission for the default OpenCart Adminstrator user group. Please give the required permissions if you are using a different user group. [Video guide](https://drive.google.com/file/d/1jfOLd79zA-3wyGoiWopzf7ok0U0KaG6W/view?usp=sharing)
 
-# Setup for Facebook business manager, page, pixel, catalog and page shop
-1. I see an error that says "An error occured when creating Facebook Business Extension setup" or "[Object Object]".
-    - Generally speaking it means there're issues when setup FBE with your account and the selected assets.
-    - It could be due to permission errors that you don't have right permissions to update the assets, or your assets are invalid. 
-    - If you see "An error occured when creating Facebook Business Extension setup", you can attach the screeshot of the error message details for us to troubleshoot. [Screenshot](https://drive.google.com/open?id=1Kc31pxu9aXehB7a2sR3ea3gqO9vc_RSc)
 
-2. I can't see my page.
+# Setup for Facebook Business Manager, Page, Pixel, Catalog and Page Shop
+1. I can't see my page.
     - Usually this is due to a lack of permissions to access the page.
     - Ensure that you are the admin of the page, or were added as an admin at least one week ago due to existing security control to prevent bad actor.
     - Ensure you own the Business Manager associated with the page. You can go to Page Settings, click Page Roles tab, under Page Owner section, check whether you have access to the Business Manager. [Screenshot](https://drive.google.com/open?id=1nZjt9oK8xIe3rBunsVnnRF6rmlNKhudr)
 
+2. I am unable to get Facebook Pixel to fire on my webstore after completing the setup. [Screenshot](https://drive.google.com/open?id=1rSQYT9mQViGkloFkRJKpEmfxl4iOU161)
+    - For OpenCart version 2.0.x to 2.2.x:
+        - Please ensure that the Facebook Business Extension OCMOD is installed correctly under Extensions -> Modfications and that it is not disabled. Please also ensure that you have refreshed your modifications cache. [Screenshot](https://drive.google.com/file/d/12s7W1aD3AAV2lROdcUwQbeMoEwDx2lsL/view?usp=sharing)
+        - If you are using any custom theme or third-party caching extensions on your OpenCart website, please clear the relevant cache.
 
-3. I am unable to see the pixel fired on my webstore after completing the setup. [Screenshot](https://drive.google.com/open?id=1rSQYT9mQViGkloFkRJKpEmfxl4iOU161)
-    - Check that you have refreshed the plugin modifications. Click on Refresh button to refresh the existing plugins on your OpenCart server. [Screenshot](https://drive.google.com/open?id=1Mfr49CzavKogSrOvZurJIvadfCwtR_6p)
-    - If you are using OpenCart 3.x, check that you have disabled the theme cache. [Screenshot](https://drive.google.com/open?id=1bY-bworYxX36b88HDvFW0_32C3Wtq_Tm)
-    - Please check if you are using the version 2.1.4 and above for the Facebook for OpenCart plugin.
-    - If you are on OpenCart v3.x, please check that you have not made any changes to the common/header.twig template file using the Theme Editor. It is a known issue that the Theme Editor is not compatible with ocmod plugins, and the Facebook for OpenCart plugin is using ocmod. [Screenshot](https://drive.google.com/open?id=1c5lnHR0fw9laZXOs9UEyhpMpsDaij_mU)
+    - For OpenCart version 2.3.x to 3.x.x and above:
+        - Please ensure that the Facebook Business Extension's Events under Extensions -> Events are present and not disabled. [Screenshot](https://drive.google.com/file/d/1kWN4ThDHLKMMPYMxMQWqSj4SePQOcBmj/view?usp=sharing)
+        - If you are using OpenCart v3.x, check that you have disabled the theme cache or you have refreshed your theme cache. [Screenshot](https://drive.google.com/open?id=1bY-bworYxX36b88HDvFW0_32C3Wtq_Tm)
+        - If you are using any custom theme or third-party caching extensions on your OpenCart website, please clear the relevant cache.
 
-4. I am getting "There is an error with Facebook Business Extension setup. Click on Facebook Business Extension, Manage Settings, go to Advanced options and click on Delete Settings to restart the setup." error after completing the setup. [Screenshot](https://drive.google.com/open?id=1PadMA4cE1M-l_PgmyYo3_qg2JGU8E0Iy)
-    - If you have a large catalog, eg more than 5000 products, there could be memory limitations due to your webserver/database configurations. Please refer to the next section "Syncing of OpenCart products to Facebook catalog" for more details.
-    - The problem may occur if there is some connection problem during the setup process. You can delete away the existing settings and re-setup fpr Facebook Business Extension again. [Video guide](https://drive.google.com/open?id=1PenBy_xizQGszdiS5BrmVFPypn5HKnkL)
+    - If the above have been ensured and you are still unable to get your Facebook Pixel firing, do contact our [help desk](https://marketinsg.zendesk.com) or open an issue with us to receive support from our development team.
 
-5. I see an error that says We're unable to proceed since the selected page has already been configured for the Facebook Business Extension.
+3. I see an error that says we're unable to proceed since the selected page has already been configured for the Facebook Business Extension.
     - If you see this error, it means that your Page is associated with another store. You'll need to decide whether you want to keep the Facebook Page associated with your old OpenCart store, or associate it with a different store. [Screenshot](https://drive.google.com/open?id=1gntxIF0YGa5XQEk2Pe-ichA-yQ5ZMr-J)
 
-6. I see an error that says the access token is invalid.
-    - If you see that the access token is invalid due to password change or invalid user session, you will need to update your access token and check that you do not log out of Facebook on your browser.
-    - If you see that the access token is invalid due to unable to decrypt reasons, you will need to update your access token.
-    - To refresh your access token, you can follow the steps in this screenshot. [Screenshot](https://drive.google.com/open?id=18koOQZmV3ra6wMsjsaWUPDuYZR_phl3J)
+4. I'm getting "An error occured while fetching FBE feature config" error message when trying to setup Facebook Business Manager.
+    - Please try to perform a quick reinstallation of the plugin by following the steps below.
 
-# Syncing of OpenCart products to Facebook catalog
-1. How does the plugin sync the OpenCart products to Facebook catalog?
-    - We are using a daily scheduled generated feed to sync the OpenCart products to Facebook catalog.
-    - If you need to re-sync the catalog immediately after updating product details in OpenCart, please follow the steps as below:
-        - Click button Manage Settings, in the Management View, click Catalog in the left menu.
-        - In Catalog page, click the button to Open Catalog Manager.
-        - In Catalog Manager, open Product Data Sources, click Request Update Now button whenever you need to sync catalog immediately. [Screenshot](https://drive.google.com/open?id=1zdpdAHnG7-Tte_iyAjBswRgwTX6g-4wG)
+    - For OpenCart 2.0.x to 2.2.x:
+        - Go to your admin panel and proceed to Extensions -> Modules -> Facebook Business Extension. Click on 'Uninstall'. [Screenshot](https://drive.google.com/file/d/1hh0TCxsM6lOeWdxNxxZYYkzQqvRJsxbj/view?usp=sharing)
+        - On the same page, click on 'Install' again for 'Facebook Business Extension'.
 
-2. I made changes to my OpenCart products by using 3rd party extensions, such as importing new products in bulk or updating product prices in bulk. Why are my changes not reflected on Facebook catalog.
-    - Our scheduled sync is performed on a daily basis.
-    - If you like the product changes to be reflected on Facebook catalog immediately, you can access the Facebook Business Extension module, click on Manage Settings, click on Your Products. Click on Fetch Now to sync your products to Facebook. [Screenshot](https://drive.google.com/open?id=1bCTT4gU4gC8pi6T6HLhpe2fkHWI-RvhN)
+    - For OpenCart 2.3.x to 3.x.x and above:
+        - Go to your admin panel and proceed to Extensions -> Extensions -> Modules -> Facebook Business Extension. Click on 'Uninstall'. [Screenshot](https://drive.google.com/file/d/1u_Yz5bj7xx6Cu53qC5k9Qo3nWKpxRXPB/view?usp=sharing)
+        - On the same page, click on 'Install' again for 'Facebook Business Extension'.
 
-3. I am getting "There is an error with Facebook Business Extension setup. Click on Facebook Business Extension, Manage Settings, go to Advanced options and click on Delete Settings to restart the setup." or "MYSQL server has gone away" errors.
-    - If you have a large catalog, eg more than 5000 products, there could be memory limitations due to your webserver/database configurations when we are pulling all the available products to generate the initial product catalog feed file. Here are some suggestions for you to solve the problem.
-      - We are only syncing products which are enabled to Facebook catalog. You can set products which are no longer in use to disabled. [Screenshot](https://drive.google.com/open?id=1cKfe_oIX9Hbvcuqop4-Zxsgeyk3rZa_J)
-      - Check the error logs for your webserver and database to understand if there are any errors logged.
-      - If you are On MYSQL database server and you are getting errors such as "MYSQL server has gone away" and "InnoDB: mmap(134217728 bytes) failed; errno 12", you can look into reducing the innodb_buffer_pool_size variable on your MYSQL server. The reason could be that the MYSQL server is trying to take up more memory than the allowed memory permissible on your server, resulting in MYSQL server crashing. Please refer to the MYSQL documentation [here](https://dev.mysql.com/doc/refman/8.0/en/innodb-parameters.html)
-      - If you are on MYSQL database server, you can look into increasing the wait_timeout and max_allowed_packet variables on your MYSQL server. Please refer to the MYSQL documentation [here](https://dev.mysql.com/doc/refman/8.0/en/gone-away.html) for more details.
-      - If you are on a shared hosting service, you may need to increase the memory configurations to be able to cater for generating the large catalog.
-
-4. How many product catalogs can I use with this setup?
+# Synchronising of OpenCart products to Facebook catalog
+1. How many product catalogs can I use with this setup?
     - You may only use 1 product catalog.
 
-5. Why is Facebook catalog/Page shop not showing up my product images?
+2. Why is Facebook catalog/Page shop not showing up my product images?
     - Ensure the file permission of the images on your website have read access. See this post for more details - https://github.com/facebookincubator/Facebook-For-OpenCart/issues/87
     - Check on the DNS and SSL certification for your web hosting company if it is set to Flexible and to change this to Full (Strict). Check this post for more details - https://github.com/facebookincubator/Facebook-For-OpenCart/issues/244
 
-6. Why is the Checkout link from Page Shop not working?
+3. Why is the Checkout link from Page Shop not working?
     - Check if the issue is due to server handling the URL rewrite due to special characters in the URL. See this post for more details - https://github.com/facebookincubator/Facebook-For-OpenCart/issues/113
+
 
 # Product configurations and settings
 1. Facebook product catalog showing "This url is classified as malicious" warning message.
     - Facebook has detected that your website URL may be malicious. You can reach to Facebook team, share with us the context and submit an appeal to review your website URL again [here](https://www.facebook.com/help/contact/571927962827151).
 
-2. How is the plugin syncing OpenCart product discount prices to Facebook catalog?
-    - The plugin takes the Special prices of the OpenCart products and sync them to Facebook catalog. If a date period is set, the discount will be for that date period. Otherwise, the discount will be treated as always-on discount. [Screenshot](https://drive.google.com/open?id=1j23IFfCvVz87mPUARDhoXZvmkKZjVGcH)
+2. How is the plugin synchronising OpenCart product special prices to Facebook catalog's sale prices?
+    - The plugin pulls Special prices from your OpenCart products the same way OpenCart does. This means that the only special prices that are active (i.e. no Date Start and Date End configured **or** the current date is within the Date Start and Date End period) is pulled for the default customer group and based on priority.
 
 3. Why is my OpenCart product options not configured to Facebook Page Shop?
-    - As the OpenCart product options structure is different from as Facebook product group structure, the plugin does not sync the OpenCart product options to Facebook catalog. Instead, when a consumer clicks on the checkout link on Facebook page shop, he/she will be brought to the product details page on your website for the consumer to specify the product options.
+    - This is because by default, OpenCart does not support product variants and instead, have product options. Since OpenCart product options do not have a unique product ID or SKU, the FBE plugin is unable to synchronise the OpenCart product options to Facebook Catalog. Instead, when a customer clicks on the checkout link on your Facebook page shop, the customer will then be brought to the product page on your OpenCart website to specify for product options.
 
 4. The currency listed on the Facebook catalog is not the correct currency. How do I change it?
     - You need to create the right currency on OpenCart, and then select the currency on the Store Settings. [Screenshot](https://drive.google.com/open?id=11Sh6AiyPpQrv2ki7-oBAQvZnnlyxcyRV) [Screenshot](https://drive.google.com/open?id=1yL-RFUhWI-qX-Mo2u4dpNNW0B6nOHAvl)
     - For the existing Facebook catalog, you can delete away the existing Facebook Business Extension settings and re-setup again. [Video guide](https://drive.google.com/open?id=1PenBy_xizQGszdiS5BrmVFPypn5HKnkL)
 
-5. How does the plugin handle stock status on Facebook catalog?
-    - The plugin is following the logic on OpenCart product details page - https://github.com/opencart/opencart/blob/master/upload/catalog/controller/product/product.php#L247-L253
+5. How does the plugin handle item availability on Facebook catalog?
     - The OpenCart to Facebook product status mapping is as follow:
-      - OpenCart quantity of (1 or more) = Facebook in stock
-      - OpenCart quantity of (0 or less), in stock = Facebook in stock
-      - OpenCart quantity of (0 or less), out of stock = Facebook out of stock
-      - OpenCart quantity of (0 or less), pre order = Facebook pre order
-      - OpenCart quantity of (0 or less), 2-3 days = Facebook in stock
+        - OpenCart product quantity of (1 or more) = Facebook Availability 'in stock'
+        - OpenCart product quantity of (0 or less), with 'Subtract Stock' option for the product set to 'disabled' = Facebook Availability 'in stock'
+        - OpenCart product quantity of (0 or less), with 'Subtract Stock' option for the product set to 'enabled' = Facebook Availability 'out of stock'
 
-# Cookie bar shown on Web store
+# Cookie Consent Bar on Web store
 1. Why am I unable to see the option to disable cookie bar on web store?
     - Please check if you are using the version 2.1.0 and above for the Facebook for OpenCart plugin.
+    - Please ensure that you've followed the steps [here](https://github.com/facebookincubator/Facebook-For-OpenCart/blob/master/INSTALL_GUIDE.md#cookie-bar-on-your-opencart-website).
 
-2. Why is the webstore still showing cookie bar when I disable the cookie bar option settings? The settings does not seem to be saving correctly into the system.
-    - Your web browser may be caching the previous copy of the Javascript files of the plugin. Please clear the cache by forcing the browser to "Empty cache and hard reload". [Screenshot](https://drive.google.com/open?id=1NuUS-bEyIHAacbui6HsFMK6DxWGtllVE)
+2. Why is my OpenCart website still showing the cookie consent bar when I have already disabled the cookie bar option in my Facebook Business Extension's settings?
+    - Your web browser may be caching the previous copy of the Javascript files of the plugin. Please try clearing your browser cache.
 
 # Facebook Messenger Chat plugin
-1. I am unable to see the Messenger chat plugin on my website
-    - Please check that you have enabled the Messenger chat plugin. [Video guide](https://drive.google.com/open?id=1XubpAUFYw6m7lB9A8RqrdOPq3IjEQvIq)
-    - If you are on OpenCart v3.x, please check that you have not made any changes to the common/header.twig template file using the Theme Editor. It is a known issue that the Theme Editor is not compatible with ocmod plugins, and the Facebook for OpenCart plugin is using ocmod. [Screenshot](https://drive.google.com/open?id=1c5lnHR0fw9laZXOs9UEyhpMpsDaij_mU)
+1. I am unable to see the Facebook Messenger Chat plugin on my website
+    - Please ensure that you've followed the steps [here](https://github.com/facebookincubator/Facebook-For-OpenCart/blob/master/INSTALL_GUIDE.md#setup-for-facebook-messenger-chat).
 
 # Setting up for running ads on Facebook
-1. What should I do if I already have the Facebook pixel installed on my OpenCart website?
-    - If you've already installed the Facebook pixel and are running Facebook dynamic ads, you don't have to use the Facebook Business Extension in OpenCart.
-    - If you've set up the Facebook pixel but not dynamic ads, or you think you may have set up the Facebook pixel incorrectly, you should use the Facebook Business Extension to get everything set up. Keep in mind you'll have to manually remove your existing Facebook pixel code from your website before starting, otherwise you'll have 2 versions of your pixel on your website.
-    - Having 2 versions on the Facebook pixel can lead to:
-      - Campaign results doubling (ex: 2x the number of actual conversions)
-      - Cost per result being halved in your reports
-    - If you remove your existing pixel and start over with the OpenCart plugin, we recommend pausing your active campaigns first and re-installing right away. This way, you'll minimize any impact on your website Custom Audiences and conversion counts.
+1. What should I do if I have already set up Facebook Pixel on my OpenCart website?
+    - If you already have existing Facebook Pixel implementations installed and are running Facebook Dynamic Ads, you do not have to use the Facebook Business Extension in OpenCart.
+    - If you already have existing Facebook Pixel implementations installed but not dynamic ads, or you think you may have set up Facebook Pixel incorrectly on your OpenCart website, you can use the Facebook Business Extension plugin to get everything set up for your OpenCart website automatically.
+        - Please note that you will have to manually remove and uninstall your existing Facebook Pixel implementations (i.e. third-party Facebook Pixel plugins or existing Facebook Pixel codes) from your OpenCart website. Otherwise, you will have multiple versions of Facebook Pixel on your website.
+        - Having multiple versions of Facebook Pixel on your website can lead to:
+            - Incorrect Campaign results (e.g. 2 times the number of actual conversions)
+            - Cost per result being halved in your reports
+        - If you are removing existing Facebook Pixel implementations on your website to start over with the Facebook Business Extension plugin, we highly recommend that you pause your active campaigns first. This way, you will minimise any impact on your website's Custom Audiences and conversion rates.
 
 2. Will Facebook dynamic ads stay up to date with my stock changes?
-    - Yes, we'll sync with your OpenCart site immediately when you make any modifications to the products.
+    - Yes, your Facebook Catalog is automatically scheduled to update everyday.
 
 3. I want to also reach people who have not visited my website or app, what should I do?
-    - You can drive new potential customers to visit your website, or to take a specific action, by creating an ad campaign using the website conversions objective. Learn more about how to optimize your ad sets for conversions 
+    - You can drive new potential customers to visit your website, or to take a specific action, by creating an ad campaign using the website conversions objective. Learn more about how to optimize your ad sets for conversions [here](https://www.facebook.com/business/help/416997652473726).
 
-4. My advertiser pays a third party to manage their OpenCart site, what should I do?
-    - That's fine. Just be sure that the third party is added as an administrator to the advertiser's Facebook page and ad account.
+4. My advertiser pays a third party vendor to manage their OpenCart site, what should I do?
+    - That's fine. Just be sure that the third party vendor is added as an administrator to the advertiser's Facebook page and ad account.
