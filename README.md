@@ -3,11 +3,7 @@
 - The latest version of the plugin can be found at [here](https://github.com/facebookincubator/Facebook-For-OpenCart/releases/latest)
 - The latest version of the README can be found at [here](https://github.com/facebookincubator/Facebook-For-OpenCart/blob/master/README.md)
 - The latest version of the INSTALL_GUIDE can be found at [here](https://github.com/facebookincubator/Facebook-For-OpenCart/blob/master/INSTALL_GUIDE.md)
-- The previous version of INSTALL_GUIDE before v4.0.0 can be found at [here](https://github.com/facebookincubator/Facebook-For-OpenCart/blob/master/INSTALL_GUIDE_3.x.x.md)
-- The previous version of INSTALL_GUIDE before v3.0.0 can be found at [here](https://github.com/facebookincubator/Facebook-For-OpenCart/blob/master/INSTALL_GUIDE_2.x.x.md)
 - The latest version of the FAQ can be found at [here](https://github.com/facebookincubator/Facebook-For-OpenCart/blob/master/FAQ.md)
-- The previous version of the FAQ before v4.0.0 can be found at [here](https://github.com/facebookincubator/Facebook-For-OpenCart/blob/master/FAQ_3.x.x.md)
-- The previous version of the FAQ before v3.0.0 can be found at [here](https://github.com/facebookincubator/Facebook-For-OpenCart/blob/master/FAQ_2.x.x.md)
 - For other questions or bug reporting **regarding the OpenCart plugin**, please open a ticket with us at our [helpdesk](https://marketinsg.zendesk.com/') or open a new issue on [github](https://github.com/facebookincubator/)
 - For Facebook related issues or enquiries, please open a ticket with Facebook Business Support at [Facebook Business Help Centre](https://www.facebook.com/business/help/support)
 

@@ -2,11 +2,7 @@
   - The latest version of the plugin can be found at [here](https://github.com/facebookincubator/Facebook-For-OpenCart/releases/latest)
   - The latest version of the README can be found at [here](https://github.com/facebookincubator/Facebook-For-OpenCart/blob/master/README.md)
   - The latest version of the INSTALL_GUIDE can be found at [here](https://github.com/facebookincubator/Facebook-For-OpenCart/blob/master/INSTALL_GUIDE.md)
-  - The previous version of INSTALL_GUIDE before v4.0.0 can be found at [here](https://github.com/facebookincubator/Facebook-For-OpenCart/blob/master/INSTALL_GUIDE_3.x.x.md)
-  - The previous version of INSTALL_GUIDE before v3.0.0 can be found at [here](https://github.com/facebookincubator/Facebook-For-OpenCart/blob/master/INSTALL_GUIDE_2.x.x.md)
   - The latest version of the FAQ can be found at [here](https://github.com/facebookincubator/Facebook-For-OpenCart/blob/master/FAQ.md)
-  - The previous version of the FAQ before v4.0.0 can be found at [here](https://github.com/facebookincubator/Facebook-For-OpenCart/blob/master/FAQ_3.x.x.md)
-  - The previous version of the FAQ before v3.0.0 can be found at [here](https://github.com/facebookincubator/Facebook-For-OpenCart/blob/master/FAQ_2.x.x.md)
   - For other questions or bug reporting **regarding the OpenCart plugin**, please open a ticket with us at our [helpdesk](https://marketinsg.zendesk.com/') or open a new issue on [github](https://github.com/facebookincubator/)
   - For Facebook related issues or enquiries, please open a ticket with Facebook Business Support at [Facebook Business Help Centre](https://www.facebook.com/business/help/support)
 
@@ -16,17 +12,18 @@
   2. Remove all existing pixel implementations from the website. Duplicate pixel events may be fired if there are existing pixel implementations.
 
   3. If you were previously using the Facebook Business Extension plugin version 3.1.2 and below, please follow the Uninstall Guides below to uninstall the existing plugin before attempting to install the new plugin:
-      - For Facebook Business Extension version 2.x.x, please click [here](https://github.com/facebookincubator/Facebook-For-OpenCart/blob/master/INSTALL_GUIDE_2.x.x.md)
-      - For Facebook Business Extension version 3.x.x, please click [here](https://github.com/facebookincubator/Facebook-For-OpenCart/blob/master/INSTALL_GUIDE_3.x.x.md)
+      - For Facebook Business Extension version 2.x.x to 3x.x, please click [here](#uninstall-the-plugin)
 
   4. Ensure that your web server uses PHP version 7.2 and above. This is because the plugin uses Facebook Business SDK internally and it requires PHP version 7.2 and above.
   
-  5. Download the latest version of the plugin file, ```Facebook_Business_Extension.ocmod.zip```.
+  5. Download the latest version of the plugin file, ```Facebook_Business_Extension-OCxxx.ocmod.zip```, where xxx is the OpenCart version you are using.
       - You can get the latest version of the plugin from these websites:
         - [OpenCart marketplace](https://www.opencart.com/index.php?route=marketplace/extension/info&extension_id=32336)
         - [Github latest release](https://github.com/facebookincubator/Facebook-For-OpenCart/releases/latest)
 
       - Ensure that the plugin file ends with ```.ocmod.zip``` extension. [Screenshot](https://drive.google.com/file/d/1fHks0Ab0Wlo42xGqaK09QjHi8QKK-aIi/view?usp=sharing)
+
+      - Ensure that you've downloaded the correct zip file for your OpenCart installation.
   
   6. Installation of the plugin is via the OpenCart Extension Installer for all OpenCart versions. For OpenCart 2.0.x to 2.2.x, the plugin uses OCMOD (OpenCart Modifications) as well.
       - For OpenCart 2.0.x to 2.2.x:
@@ -37,14 +34,16 @@
             - Click on FTP tab and setup your FTP details.
           - Option 2: Install QuickFix: Extensions Installer issue when FTP support disabled. 
             - [Download Link](https://www.opencart.com/index.php?route=marketplace/extension/info&extension_id=18892)
-        - Installation of the plugin through manual upload of the plugin's files onto your web server is not recommended as the OCMOD script will not be installed correctly.
+        - Installation of the plugin through manual upload of the plugin's files onto your web server is not recommended as the OCMOD script will not be installed correctly. You should only install the plugin through manual upload if you are able to install the OCMOD script correctly. Otherwise, the extension will not work correctly.
         - vQmod installation is NOT supported.
           
       - For OpenCart 2.3.x or OpenCart 3.x:
         - There is no additional setup required as the extension uses OpenCart Events instead of OCMOD.
         - Installation of the plugin through manual upload of the plugin's files onto your web server is supported.
 
-  7. Our plugin uses the default OpenCart folder structure, i.e. admin, catalog and system. If your folder structure is not the same **and** you are performing the installation of the plugin through manual upload, you will need to change the directory names of the plugin accordingly or ensure that you are uploading into the correct directories.
+  7. Our plugin uses the default OpenCart folder structure, i.e. admin, catalog and system.
+      - If your folder structure is not the same **AND** you are performing the installation of the plugin through manual upload, you will need to change the directory names of the plugin accordingly or ensure that you are uploading into the correct directories.
+      - If you are performing installation through the OpenCart Extension Installer, you do not need to take any actions.
 
   8. Our plugin will generate the catalog feed of all your products and upload it to Facebook after the setup for Facebook Pixel and Catalog has been completed. Depending on your web server and database server configurations, you may experience issues if you have a large product catalog, e.g. more than 5000 products. You may also need to increase the memory settings for your web server and database server. Please kindly refer to the [FAQ](https://github.com/facebookincubator/Facebook-For-OpenCart/blob/master/FAQ.md) for more details.
 
@@ -183,7 +182,7 @@ In Management View, you can add more features such as enable Facebook Page Shop 
 
 # Uninstall the plugin
 
-  - If you are using Facebook Business Extension v3.x and below:
+  - If you are using Facebook Business Extension v3.x.x and below:
 
     1. [Video guide](https://drive.google.com/open?id=1aPxqEcH1J3tT3bG0vMIC5DLnkDN7fo_d)
 
@@ -231,14 +230,6 @@ In Management View, you can add more features such as enable Facebook Page Shop 
 
 # Upgrade the plugin to a newer version
 
-  - If you are using Facebook Business Extension v3.x and below, and upgrading to Facebook Business Extension v4.x.x:
-    
-    1. You must already have installed the Facebook Business Extension plugin on your OpenCart website.
-
-    2. Delete the existing Facebook Business Extension plugin. [Video guide](https://drive.google.com/open?id=1aPxqEcH1J3tT3bG0vMIC5DLnkDN7fo_d)
-
-    3. Install the new Facebook Business Extension version 4.0.0 and above by following the steps [here](#plugin-installation).
-
   - If you are using Facebook Business Extension v4.x.x, and upgrading to Facebook Business Extension v4.x.x and above:
    
     1. You must already have installed the Facebook Business Extension plugin on your OpenCart website.
@@ -266,15 +257,13 @@ In Management View, you can add more features such as enable Facebook Page Shop 
             - Then, on the same page, click on 'Install' again.
             - This is to install/uninstall any Events or database changes that might have been made in the new version of the plugin. Do note that this will not remove your connection with Facebook Business but your OpenCart settings for the Facebook Business Extension (i.e. syncing of special prices as discount to Facebook Catalog option and enabling of cookie bar option) will be reset.
 
-  - If you are using Facebook Business Extension v3.x and below, and upgrading to Facebook Business Extension v3.x and below:
+  - If you are using Facebook Business Extension v3.x.x and below, and upgrading to Facebook Business Extension v4.x.x:
+      
+      1. You must already have installed the Facebook Business Extension plugin on your OpenCart website.
 
-    1. [Video guide](https://drive.google.com/open?id=12dX2wYTcE3Y7Wf-ZBD_6X4EAZU2L-8vp)
+      2. Delete the existing Facebook Business Extension plugin. [Video guide](https://drive.google.com/open?id=1aPxqEcH1J3tT3bG0vMIC5DLnkDN7fo_d)
 
-    2. You must already have installed the Facebook Business Extension plugin on your OpenCart website.
-    
-    3. Delete the existing Facebook for OpenCart plugin. [Video guide](https://drive.google.com/open?id=1aPxqEcH1J3tT3bG0vMIC5DLnkDN7fo_d)
-
-    4. Install the later version plugin. Verify that the Facebook for OpenCart version is shown as the later version. [Screenshot.](https://drive.google.com/open?id=19Nfp_1x9cQbGCk-rMmi3PkLy3NEPFHdS) [Video guide](https://drive.google.com/open?id=1V4Nu8nlmHX5ppKqsjcR-xR05Rozb7MKN)
+      3. Install the new Facebook Business Extension version 4.0.0 and above by following the steps [here](#plugin-installation).
 
 # Cookie bar on your OpenCart website
   1. Disable the cookie bar.

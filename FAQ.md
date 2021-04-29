@@ -3,11 +3,7 @@
 - The latest version of the plugin can be found at [here](https://github.com/facebookincubator/Facebook-For-OpenCart/releases/latest)
 - The latest version of the README can be found at [here](https://github.com/facebookincubator/Facebook-For-OpenCart/blob/master/README.md)
 - The latest version of the INSTALL_GUIDE can be found at [here](https://github.com/facebookincubator/Facebook-For-OpenCart/blob/master/INSTALL_GUIDE.md)
-- The previous version of INSTALL_GUIDE before v4.0.0 can be found at [here](https://github.com/facebookincubator/Facebook-For-OpenCart/blob/master/INSTALL_GUIDE_3.x.x.md)
-- The previous version of INSTALL_GUIDE before v3.0.0 can be found at [here](https://github.com/facebookincubator/Facebook-For-OpenCart/blob/master/INSTALL_GUIDE_2.x.x.md)
 - The latest version of the FAQ can be found at [here](https://github.com/facebookincubator/Facebook-For-OpenCart/blob/master/FAQ.md)
-- The previous version of the FAQ before v4.0.0 can be found at [here](https://github.com/facebookincubator/Facebook-For-OpenCart/blob/master/FAQ_3.x.x.md)
-- The previous version of the FAQ before v3.0.0 can be found at [here](https://github.com/facebookincubator/Facebook-For-OpenCart/blob/master/FAQ_2.x.x.md)
 - For other questions or bug reporting **regarding the OpenCart plugin**, please open a ticket with us at our [helpdesk](https://marketinsg.zendesk.com/') or open a new issue on [github](https://github.com/facebookincubator/)
 - For Facebook related issues or enquiries, please open a ticket with Facebook Business Support at [Facebook Business Help Centre](https://www.facebook.com/business/help/support)
 
@@ -20,7 +16,8 @@ Always check that you have installed the latest version of the plugin as we are 
     - No, we do not support installation via vQmod. The mode of plugin installation is via the OpenCart Extension Installer and OpenCart Events (for OpenCart 2.3.x to 3.x.x and above) or OCMOD (for OpenCart 2.0.x to 2.2.x).
 
 2. I am getting "Directory containing files to be uploaded could not be found!" error when I am installing the plugin zip file on OpenCart.
-    - If you are creating the plugin zip file manually (i.e. downloading from GitHub and manually compressing the files), please ensure that there is no additional top level folders inside the plugin zip file. This means that when compressing the files into a zip file, there should not be any other folders other than the 'upload' folder. [Screenshot](https://drive.google.com/file/d/1bld3AYjB2JXyveM1uRbJ-Jqw26ZTaxQ_/view?usp=sharing)
+    - If you are creating the plugin zip file manually (i.e. downloading from GitHub and manually compressing the files), please ensure that there is no additional top level folders inside the plugin zip file. This means that when compressing the files into a zip file, there should not be any other folders other than the `upload` folder.
+    - It is highly recommended that you download the packaged plugin zip files from [OpenCart Marketplace](https://www.opencart.com/index.php?route=marketplace/extension/info&extension_id=32336) or [GitHub latest release](https://github.com/facebookincubator/Facebook-For-OpenCart/releases/latest).
 
 3. I am getting "Invalid file type" error when I am installing the plugin zip file to OpenCart.
     - Please ensure that the plugin zip file you are uploading ends with the file extension ```.ocmod.zip```. For example ```facebook_business.ocmod.zip```. Files that do not end with this file extension will cause the "Invalid file type" error when installing through OpenCart's Extension Installer. [Screenshot](https://drive.google.com/file/d/1RZjlW4SJvL6lDFupHtg944kkTrgx7ls3/view?usp=sharing)
