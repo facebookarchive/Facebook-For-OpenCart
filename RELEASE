@@ -1,7 +1,25 @@
 Facebook Business Extension
-Latest version: 3.1.2
+Latest version: 4.0.2
 
 Change log
+4.0.2 - 29 Apr 2021
+* Added Facebook Copyright Message
+
+4.0.1 - 25 Apr 2021
+* Added plugin version in OpenCart admin plugin page
+* Fixed empty data in Purchase Event bug
+* Fixed incorrect contents data in AddToCart Event
+* Fixed Facebook Messenger Chat locale bug
+* Fixed empty Facebook Catalog Feed CSV file bug
+* Fixed other minor bugs
+
+4.0.0 - 15 Apr 2021
+* Revamped and restructured entire plugin
+* Improvements made to plugin
+* Upgraded to Facebook Graph API v10.0
+* Added custom Facebook Catalog fields for OpenCart products
+* Fixed and resolved many existing common issues and bugs
+
 3.1.2 - 1 Feb 2021
 * Added action_source parameter due to Conversions API requirement change starting Feb 15th - https://developers.facebook.com/docs/marketing-api/conversions-api
 
