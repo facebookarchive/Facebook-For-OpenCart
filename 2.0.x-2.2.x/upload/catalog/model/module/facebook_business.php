@@ -1,9 +1,11 @@
 <?php
-// Copyright 2017-present, Facebook, Inc.
-// All rights reserved.
-
-// This source code is licensed under the license found in the
-// LICENSE file in the root directory of this source tree.
+/**
+  * Copyright (c) Facebook, Inc. and its affiliates.
+  * All rights reserved.
+  *
+  * This source code is licensed under the license found in the
+  * LICENSE file in the root directory of this source tree.
+  */
 
 require_once(DIR_SYSTEM . 'library/vendor/facebook_business/vendor/autoload.php');
 
@@ -17,7 +19,7 @@ use FacebookAds\Object\ServerSide\UserData;
 use FacebookAds\Object\ServerSide\Util;
 
 class ModelModuleFacebookBusiness extends Model {
-    private $pluginVersion = '4.0.0';
+    private $pluginVersion = '4.0.3';
 
     // this function is a direct lifting from admin/model/catalog/product.php
     // except that the SQL query is joining other tables to obtain
@@ -604,7 +606,10 @@ class ModelModuleFacebookBusiness extends Model {
                         'event_id'          => $event_id
                     );
                 } else {
-                    $facebook_pixel_event_params = array('event_name' => $event_name);
+                    $facebook_pixel_event_params = array(
+                        'event_name'        => $event_name,
+                        'event_id'          => $event_id
+                    );
                 }
               
                 break;
@@ -680,10 +685,11 @@ class ModelModuleFacebookBusiness extends Model {
                     $this->language->load('account/success');
 
                     $facebook_pixel_event_params = array(
-                        'event_name'   => $event_name,
-                        'content_name' => $this->formatString($this->language->get('heading_title')),
-                        'currency'     => strtoupper($this->session->data['currency']),
-                        'status'       => true
+                        'event_name'        => $event_name,
+                        'content_name'      => $this->formatString($this->language->get('heading_title')),
+                        'currency'          => strtoupper($this->session->data['currency']),
+                        'status'            => true,
+                        'event_id'          => $event_id
                     );
                 }
 
@@ -693,7 +699,8 @@ class ModelModuleFacebookBusiness extends Model {
                 $event_name = 'Contact';
 
                 $facebook_pixel_event_params = array(
-                    'event_name' => $event_name
+                    'event_name' => $event_name,
+                    'event_id'   => $event_id
                 );
 
                 break;
@@ -745,19 +752,22 @@ class ModelModuleFacebookBusiness extends Model {
                         }
 
                         $facebook_pixel_event_params = array(
-                          'event_name'        => $event_name,
-                          'content_name'      => $this->formatString($manufacturer_info['name']),
-                          'content_category'  => $this->formatString($manufacturer_info['name']),
-                          'content_ids'       => $content_ids,
-                          'content_type'      => 'product',
-                          'contents'          => $contents,
-                          'currency'          => strtoupper($this->session->data['currency']),
-                          'value'             => $value,
-                          'num_items'         => $num_items,
-                          'event_id'          => $event_id
-                      );
+                            'event_name'        => $event_name,
+                            'content_name'      => $this->formatString($manufacturer_info['name']),
+                            'content_category'  => $this->formatString($manufacturer_info['name']),
+                            'content_ids'       => $content_ids,
+                            'content_type'      => 'product',
+                            'contents'          => $contents,
+                            'currency'          => strtoupper($this->session->data['currency']),
+                            'value'             => $value,
+                            'num_items'         => $num_items,
+                            'event_id'          => $event_id
+                        );
                     } else {
-                        $facebook_pixel_event_params = array('event_name' => $event_name);
+                        $facebook_pixel_event_params = array(
+                            'event_name'        => $event_name,
+                            'event_id'          => $event_id
+                        );
                     }
                 }
 
@@ -862,22 +872,10 @@ class ModelModuleFacebookBusiness extends Model {
 
             try {
                 $user_data = (new UserData())
-                  ->setClientIpAddress(Util::getIpAddress())
-                  ->setClientUserAgent(Util::getHttpUserAgent())
-                  ->setFbp(Util::getFbp())
-                  ->setFbc(Util::getFbc());
-            
-                $event = (new Event())
-                  ->setEventName($event_name)
-                  ->setEventTime(time())
-                  ->setEventId($event_id)
-                  ->setEventSourceUrl(Util::getRequestUri())
-                  ->setActionSource(ActionSource::WEBSITE)
-                  ->setUserData($user_data)
-                  ->setDataProcessingOptions(array())
-                  ->setDataProcessingOptionsCountry(0)
-                  ->setDataProcessingOptionsState(0)
-                  ->setCustomData(new CustomData());
+                    ->setClientIpAddress(Util::getIpAddress())
+                    ->setClientUserAgent(Util::getHttpUserAgent())
+                    ->setFbp(Util::getFbp())
+                    ->setFbc(Util::getFbc());
 
                 $enabled_aam_fields = explode(',', $this->config->get('facebook_pixel_enabled_aam_fields'));
 
@@ -898,6 +896,18 @@ class ModelModuleFacebookBusiness extends Model {
                         $user_data->setPhone($user_pii_data['ph']);
                     }
                 }
+
+                $event = (new Event())
+                    ->setEventName($event_name)
+                    ->setEventTime(time())
+                    ->setEventId($event_id)
+                    ->setEventSourceUrl(Util::getRequestUri())
+                    ->setActionSource(ActionSource::WEBSITE)
+                    ->setUserData($user_data)
+                    ->setDataProcessingOptions(array())
+                    ->setDataProcessingOptionsCountry(0)
+                    ->setDataProcessingOptionsState(0)
+                    ->setCustomData(new CustomData());
 
                 $custom_data = $event->getCustomData();
 
