@@ -207,7 +207,7 @@ class ControllerExtensionModuleFacebookBusiness extends Controller {
         $this->model_extension_event->addEvent('facebook_business', 'admin/model/catalog/product/deleteProduct/after', 'extension/module/facebook_business/eventPostModelDeleteProduct');
         $this->model_extension_event->addEvent('facebook_business', 'catalog/view/common/header/before', 'extension/module/facebook_business/eventPreViewCommonHeader');
         $this->model_extension_event->addEvent('facebook_business', 'catalog/view/*/common/header/after', 'extension/module/facebook_business/eventPostViewCommonHeader');
-        $this->model_extension_event->addEvent('facebook_business', 'catalog/model/checkout/order/addOrder/after', 'extension/module/facebook_business/eventPostModelAddOrder');
+        $this->model_extension_event->addEvent('facebook_business', 'catalog/controller/checkout/success/before', 'extension/module/facebook_business/eventPreControllerCheckoutSuccess');
     }
 
     public function uninstall() {

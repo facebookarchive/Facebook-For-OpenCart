@@ -2,11 +2,11 @@ Facebook Business Extension
 Latest version: 4.0.3
 
 Change log
-4.0.3 - 4 May 2021
+4.0.3 - 6 May 2021
 * Updated Facebook Copyright Header as per Facebook requirements
+* Added External ID parameter for Pixel Events
 * Fixed minor bugs and improvements
 
-Change log
 4.0.2 - 29 Apr 2021
 * Added Facebook Copyright Message
 
