@@ -90,6 +90,88 @@ class ControllerExtensionModuleFacebookBusiness extends Controller {
         }
     }
 
+    public function appStorePing() {
+        $json = array();
+
+        $this->load->model('extension/module/facebook_business');
+        $json['version'] = $this->model_extension_module_facebook_business->getPluginVersion();
+        $json['store_url'] = $this->url->link('extension/module/facebook_business', '', true);
+
+        $this->response->addHeader('Content-Type: application/json');
+        $this->response->setOutput(json_encode($json));
+    }
+
+    public function appStoreConnect() {
+        $json = array();
+
+        $this->load->model('extension/module/facebook_business');
+
+        if (($this->request->server['REQUEST_METHOD'] == 'POST') && isset($this->request->post['store_url']) && isset($this->request->post['username']) && isset($this->request->post['password'])) {
+            if (strpos(HTTPS_SERVER, $this->request->post['store_url']) !== false && $this->model_extension_module_facebook_business->isVerifiedAdminUser($this->request->post['username'], $this->request->post['password'])) {
+                if ($this->model_extension_module_facebook_business->isExtensionInstalled()) {
+                    if ($this->config->get('facebook_fbe_v2_installed')) {
+                        $json['error'] = 'Your store is already connected to a Facebook Business Page.';
+                    } elseif (!$this->model_extension_module_facebook_business->isVerifiedAdminUser($this->request->post['username'], $this->request->post['password'], 'extension/module/facebook_business')) {
+                        $json['error'] = 'OpenCart Admin user does not have the correct permissions to perform this action!';
+                    }
+                } elseif (!$this->model_extension_module_facebook_business->isVerifiedAdminUser($this->request->post['username'], $this->request->post['password'], 'extension/extension/module', true)) {
+                    $json['error'] = 'OpenCart Admin user does not have the correct permissions to perform this action!';
+                }
+
+                if (!$json) {
+                    $json['success'] = true;
+                    $json['fbe_params'] = array(
+                        'external_business_id' => HTTPS_SERVER,
+                        'business_name'        => $this->config->get('config_name') ? $this->config->get('config_name') : 'My Business',
+                        'feed_url'             => $this->url->link('extension/module/facebook_business/genFeed', '', true),
+                        'feed_ping_url'        => $this->url->link('extension/module/facebook_business/genFeedPing', '', true),
+                        'timezone'             => date_default_timezone_get(),
+                        'currency'             => strtoupper(addslashes($this->config->get('config_currency'))),
+                        'version'              => $this->model_extension_module_facebook_business->getPluginVersion()
+                    );
+                }
+            } else {
+                $json['error'] = 'OpenCart Store verification failed!';
+            }
+        } else {
+            $json['error'] = 'Invalid parameters provided! Please contact OpenCart support for assistance.';
+        }
+
+        $this->response->addHeader('Content-Type: application/json');
+        $this->response->setOutput(json_encode($json));
+    }
+
+    public function appStoreWebhook() {
+        $json = array();
+
+        if (($this->request->server['REQUEST_METHOD'] == 'POST')) {
+            $headers = getallheaders();
+
+            if (isset($headers['X-App-Signature'])) {
+                $signature = $headers['X-App-Signature'];
+            } elseif (isset($headers['x-app-signature'])) {
+                $signature = $headers['x-app-signature'];
+            } else {
+                $signature = '';
+            }
+
+            if ($signature == 'f35ca30bfe0b48aa63404483bef6697e94b3f732') {
+                $this->load->model('extension/module/facebook_business');
+
+                if (isset($this->request->post['facebook_system_user_access_token'])) {
+                    $this->model_extension_module_facebook_business->installFBE($this->request->post);
+                } else {
+                    $this->model_extension_module_facebook_business->uninstallFBE();
+                }
+
+                $json['success'] = true;
+            }
+        }
+
+        $this->response->addHeader('Content-Type: application/json');
+        $this->response->setOutput(json_encode($json));
+    }
+
     private function estimateFeedGenerationTime() {
         $product_total = $this->model_catalog_product->getTotalProducts();
 
@@ -376,11 +458,6 @@ class ControllerExtensionModuleFacebookBusiness extends Controller {
         // Fallback to Product Name if Description and Meta Description are not available
         if (!$description) {
             $description = $this->formatAndTrimString($product_info['name'], 5000);
-        }
-
-        // Check if description length is less than 30 characters
-        if (strlen($description) < 30) {
-            return false;
         }
 
         // If description doesn't contain non-English characters, check if all Uppercase

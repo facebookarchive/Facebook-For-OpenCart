@@ -7,7 +7,7 @@
 <modification>
     <name>Facebook Business Extension</name>
     <code>facebook_business</code>
-    <version>4.0.2</version>
+    <version>4.1.1</version>
     <author>Facebook</author>
     <link>https://github.com/facebookincubator/Facebook-For-OpenCart</link>
     <file path="admin/controller/common/dashboard.php">

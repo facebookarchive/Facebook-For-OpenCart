@@ -8,7 +8,7 @@
   */
 
 class ModelModuleFacebookBusiness extends Model {
-    private $version = '4.0.3';
+    private $version = '4.1.1';
 
     public function install() {
         $this->db->query("

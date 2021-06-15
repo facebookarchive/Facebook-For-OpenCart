@@ -2,6 +2,21 @@ Facebook Business Extension
 Latest version: 4.0.3
 
 Change log
+4.1.1 - 16 Jun 2021
+* Fixed minor bugs and improvements
+  1. Fixed a bug where authentication from webhook can fail
+  2. Fixed a bug where servers using some form of proxy can cause sending of server pixel events to fail
+  3. Fixed a bug in OpenCart versions 3 and above where the product limit is invalid
+
+4.1.0 - 21 May 2021
+* Added Facebook Business App Store Integration
+  1. Users can now install the Facebook Business Extension plugin on their OpenCart store, and then connect with it via Facebook Business App Store
+  2. Any installs/uninstalls through Facebook Business will be updated on the users' OpenCart stores
+* Fixed minor bugs and improvements
+  1. Fixed a bug where Purchase Events are sent with empty data for guest checkouts
+  2. Fixed a bug where ViewCategoryEvents are sent with empty data
+  3. Removed product description limitation of less than 30 characters for Facebook Catalog Feed
+
 4.0.3 - 6 May 2021
 * Updated Facebook Copyright Header as per Facebook requirements
 * Added External ID parameter for Pixel Events

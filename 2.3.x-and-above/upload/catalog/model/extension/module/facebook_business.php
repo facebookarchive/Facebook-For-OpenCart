@@ -19,7 +19,7 @@ use FacebookAds\Object\ServerSide\UserData;
 use FacebookAds\Object\ServerSide\Util;
 
 class ModelExtensionModuleFacebookBusiness extends Model {
-    private $pluginVersion = '4.0.3';
+    private $pluginVersion = '4.1.1';
 
     // this function is a direct lifting from admin/model/catalog/product.php
     // except that the SQL query is joining other tables to obtain
@@ -174,6 +174,100 @@ class ModelExtensionModuleFacebookBusiness extends Model {
         }
     }
 
+    public function installFBE($data = array()) {
+        if (isset($data['facebook_pixel_id'])) {
+            $data['facebook_use_s2s'] = true;
+            $data['facebook_pixel_use_pii'] = $this->getPixelAAMSettings($data['facebook_pixel_id']);
+            $data['facebook_pixel_enabled_aam_fields'] = $this->getPixelEnabledAAMFields($data['facebook_pixel_id']);
+            $data['facebook_last_aam_check_time'] = time();
+        }
+
+        $this->updateFacebookSettings($data);
+    }
+
+    public function uninstallFBE() {
+        $this->db->query("DELETE FROM " . DB_PREFIX . "setting WHERE store_id = '0' AND `code` = 'facebook'");
+    }
+
+    public function isVerifiedAdminUser($username, $password, $check_authorised = '', $install = false) {
+        $user_query = $this->db->query("SELECT * FROM " . DB_PREFIX . "user WHERE username = '" . $this->db->escape($username) . "' AND (password = SHA1(CONCAT(salt, SHA1(CONCAT(salt, SHA1('" . $this->db->escape(htmlspecialchars($password, ENT_QUOTES)) . "'))))) OR password = '" . $this->db->escape(md5($password)) . "') AND status = '1'");
+
+        if ($user_query->num_rows) {
+            if (!empty($check_authorised)) {
+                $user_group_query = $this->db->query("SELECT permission FROM " . DB_PREFIX . "user_group WHERE user_group_id = '" . (int)$user_query->row['user_group_id'] . "'");
+
+                $permissions = json_decode($user_group_query->row['permission'], true);
+          
+                if (is_array($permissions) && in_array($check_authorised, $permissions['modify'])) {
+                    if ($check_authorised == 'extension/extension/module' && $install) {
+                        $this->installExtension($user_group->row['user_group_id']);
+                    }
+
+                    return true;
+                }
+            } else {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function installExtension($user_group_id = 0) {
+        // Install extension
+        $this->db->query("INSERT INTO " . DB_PREFIX . "extension SET `type` = 'module', `code` = 'facebook_business'");
+        
+        // Add custom table
+        $this->db->query("
+          CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "product_to_facebook` (
+            `product_to_facebook_id` INT(11) NOT NULL AUTO_INCREMENT,
+            `product_id` INT(11) NOT NULL,
+            `google_product_category` int(16) NOT NULL DEFAULT 0,
+            `condition` varchar(20) NOT NULL,
+            `age_group` varchar(50) NOT NULL,
+            `color` varchar(255) NOT NULL,
+            `gender` varchar(20) NOT NULL,
+            `material` varchar(255) NOT NULL,
+            `pattern` varchar(255) NOT NULL,
+            PRIMARY KEY (`product_to_facebook_id`)
+          ) ENGINE=MyISAM DEFAULT COLLATE=utf8_general_ci;");
+        
+        // Install events
+        $this->db->query("INSERT INTO `" . DB_PREFIX . "event` SET `code` = 'facebook_business', `trigger` = 'admin/view/common/dashboard/after', `action` = 'extension/module/facebook_business/eventPostViewCommonDashboard', `status` = '1', `date_added` = now()");
+        $this->db->query("INSERT INTO `" . DB_PREFIX . "event` SET `code` = 'facebook_business', `trigger` = 'admin/view/common/column_left/before', `action` = 'extension/module/facebook_business/eventPreViewCommonColumnLeft', `status` = '1', `date_added` = now()");
+        $this->db->query("INSERT INTO `" . DB_PREFIX . "event` SET `code` = 'facebook_business', `trigger` = 'admin/view/catalog/product_form/before', `action` = 'extension/module/facebook_business/eventPreViewCatalogProductForm', `status` = '1', `date_added` = now()");
+        $this->db->query("INSERT INTO `" . DB_PREFIX . "event` SET `code` = 'facebook_business', `trigger` = 'admin/view/catalog/product_form/after', `action` = 'extension/module/facebook_business/eventPostViewCatalogProductForm', `status` = '1', `date_added` = now()");
+        $this->db->query("INSERT INTO `" . DB_PREFIX . "event` SET `code` = 'facebook_business', `trigger` = 'admin/model/catalog/product/addProduct/after', `action` = 'extension/module/facebook_business/eventPostModelAddProduct', `status` = '1', `date_added` = now()");
+        $this->db->query("INSERT INTO `" . DB_PREFIX . "event` SET `code` = 'facebook_business', `trigger` = 'admin/model/catalog/product/editProduct/after', `action` = 'extension/module/facebook_business/eventPostModelEditProduct', `status` = '1', `date_added` = now()");
+        $this->db->query("INSERT INTO `" . DB_PREFIX . "event` SET `code` = 'facebook_business', `trigger` = 'admin/model/catalog/product/copyProduct/after', `action` = 'extension/module/facebook_business/eventPostModelCopyProduct', `status` = '1', `date_added` = now()");
+        $this->db->query("INSERT INTO `" . DB_PREFIX . "event` SET `code` = 'facebook_business', `trigger` = 'admin/model/catalog/product/deleteProduct/after', `action` = 'extension/module/facebook_business/eventPostModelDeleteProduct', `status` = '1', `date_added` = now()");
+        $this->db->query("INSERT INTO `" . DB_PREFIX . "event` SET `code` = 'facebook_business', `trigger` = 'catalog/view/common/header/before', `action` = 'extension/module/facebook_business/eventPreViewCommonHeader', `status` = '1', `date_added` = now()");
+        $this->db->query("INSERT INTO `" . DB_PREFIX . "event` SET `code` = 'facebook_business', `trigger` = 'catalog/view/*/common/header/after', `action` = 'extension/module/facebook_business/eventPostViewCommonHeader', `status` = '1', `date_added` = now()");
+        $this->db->query("INSERT INTO `" . DB_PREFIX . "event` SET `code` = 'facebook_business', `trigger` = 'catalog/controller/checkout/success/before', `action` = 'extension/module/facebook_business/eventPreControllerCheckoutSuccess', `status` = '1', `date_added` = now()");
+        
+        // Adding permissions for user group
+        $user_group_query = $this->db->query("SELECT DISTINCT * FROM " . DB_PREFIX . "user_group WHERE user_group_id = '" . (int)$user_group_id . "'");
+
+        if ($user_group_query->num_rows) {
+            $data = json_decode($user_group_query->row['permission'], true);
+      
+            $data['access'][] = 'extension/module/facebook_business';
+            $data['modify'][] = 'extension/module/facebook_business';
+      
+            $this->db->query("UPDATE " . DB_PREFIX . "user_group SET permission = '" . $this->db->escape(json_encode($data)) . "' WHERE user_group_id = '" . (int)$user_group_id . "'");
+        }
+    }
+
+    public function isExtensionInstalled() {
+        $query = $this->db->query("SELECT * FROM " . DB_PREFIX . "extension WHERE `type` = 'module' AND `code` = 'facebook_business'");
+
+        if ($query->num_rows) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public function getAgentParameters() {
         $plugin_agent_name = 'exopencart';
         $opencart_version = VERSION;
@@ -268,9 +362,10 @@ class ModelExtensionModuleFacebookBusiness extends Model {
                     $order_id = $this->session->data['facebook_business_order_id'];
                     unset($this->session->data['facebook_business_order_id']);
 
+                    $this->load->model('checkout/order');
                     $this->load->model('account/order');
 
-                    $order_info = $this->model_account_order->getOrder($order_id);
+                    $order_info = $this->model_checkout_order->getOrder($order_id);
 
                     if ($order_info) {
                         $order_products = $this->model_account_order->getOrderProducts($order_id);
@@ -556,7 +651,9 @@ class ModelExtensionModuleFacebookBusiness extends Model {
                 $this->load->model('catalog/category');
 
                 if (isset($this->request->get['path'])) {
-                    $category_id = $this->request->get['path'];
+                    $parts = explode('_', (string)$this->request->get['path']);
+
+                    $category_id = (int)end($parts);
                 } else {
                     $category_id = 0;
                 }
@@ -877,9 +974,12 @@ class ModelExtensionModuleFacebookBusiness extends Model {
             $agent = $agent_data['agent'];
             $user_pii_data = $this->getPii();
 
+            $client_ips = explode(',', Util::getIpAddress());
+            $client_ip = $client_ips[0];
+
             try {
                 $user_data = (new UserData())
-                    ->setClientIpAddress(Util::getIpAddress())
+                    ->setClientIpAddress($client_ip)
                     ->setClientUserAgent(Util::getHttpUserAgent())
                     ->setFbp(Util::getFbp())
                     ->setFbc(Util::getFbc());
