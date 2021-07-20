@@ -44,7 +44,7 @@ class ControllerExtensionFacebookProductFeed extends Controller {
       'limit'           => 12,
     );
     $products = $this->model_extension_facebookproduct->
-    getProducts($filter_data);
+      getProducts($filter_data);
     $feed_items = array_map(function($product) {
       return $data = $this->facebooksampleproductfeedformatter->getProductData(
         $this->registry,
@@ -188,7 +188,7 @@ class ControllerExtensionFacebookProductFeed extends Controller {
   }
 
   private function getProductFeedHeaderRow() {
-    return 'id,title,description,image_link,link,product_type,google_product_category,' .
+    return 'id,title,description,image_link,link,google_product_category,' .
       'brand,price,currency,availability,item_group_id,checkout_url,' .
       'additional_image_link,sale_price_effective_date,' .
       'sale_price,condition' . PHP_EOL;
@@ -201,7 +201,6 @@ class ControllerExtensionFacebookProductFeed extends Controller {
       $product_data['description'] . ',' .
       $product_data['image_url'] . ',' .
       $product_data['url'] . ',' .
-      $product_data['category_path'] . ',' .
       $product_data['category'] . ',' .
       $product_data['brand'] . ',' .
       $product_data['price'] . ',' .
@@ -246,8 +245,9 @@ class ControllerExtensionFacebookProductFeed extends Controller {
   private function estimateFeedGenerationTimeWithDecay($feed_gen_time){
     // Update feed generation online time estimate w/ 25% decay.
     $facebook_settings = $this->model_extension_facebooksetting->getSettings();
-    if (isset($facebook_settings[FacebookCommonUtils::FACEBOOK_FEED_RUNTIME_AVG])) {
-      $old_feed_gen_time = $facebook_settings[FacebookCommonUtils::FACEBOOK_FEED_RUNTIME_AVG];
+    if (isset(
+      $facebook_settings[FacebookCommonUtils::FACEBOOK_FEED_RUNTIME_AVG])) {
+        $old_feed_gen_time = $facebook_settings[FacebookCommonUtils::FACEBOOK_FEED_RUNTIME_AVG];
     } else {
       $old_feed_gen_time = 0;
     }
@@ -279,22 +279,22 @@ class ControllerExtensionFacebookProductFeed extends Controller {
   }
 
   public function genFeed($genNow = false){
-    $operation = 'gen feed file';
-    $error_data = array('operation' => 'gen feed file');
+		$operation = 'gen feed file';
+		$error_data = array('operation' => 'gen feed file');
     $this->faeLog->write('gen feed file');
-
+    
     $start_time = time();
 
-    try {
-      // check if feed file path writable
-      $productFeedFullFilename = $this->getWritableProductFeedFullFilename();
-      if (!$productFeedFullFilename) {
-        $this->logError(
-          self::FEED_NOT_WRITABLE_ERROR_MESSAGE . $operation,
-          $error_data,
-          $this->getFeedFolderNotWritableExceptionMessage());
+		try {
+			// check if feed file path writable
+			$productFeedFullFilename = $this->getWritableProductFeedFullFilename();
+			if (!$productFeedFullFilename) {
+				$this->logError(
+					self::FEED_NOT_WRITABLE_ERROR_MESSAGE . $operation,
+					$error_data,
+					$this->getFeedFolderNotWritableExceptionMessage());
       }
-
+      
       // check if feed file stale
       $isStale = $this->checkIsFeedFileStale($productFeedFullFilename);
       if(!$isStale && !$genNow) {
@@ -310,18 +310,18 @@ class ControllerExtensionFacebookProductFeed extends Controller {
 
         if (!$this->generateProductFeedFile($productFeedFullFilename)) {
           $this->logError(
-            self::FEED_FILE_NOT_GENERATED_ERROR_MESSAGE . $operation,
-            $error_data,
-            FacebookCommonUtils::INITIAL_PRODUCT_SYNC_EXCEPTION_MESSAGE);
+          self::FEED_FILE_NOT_GENERATED_ERROR_MESSAGE . $operation,
+          $error_data,
+          FacebookCommonUtils::INITIAL_PRODUCT_SYNC_EXCEPTION_MESSAGE);
         }
 
         // performs a last check if the feed file is successfully generated
         if (is_file($productFeedFullFilename)) {
           $this->faeLog->write('gen feed file, facebook feed created');
-        } else {
+          } else {
           $this->faeLog->write('gen feed file, feed file not created successfully');
           return false;
-        }
+          }
 
         $this->faeLog->write('gen feed file, feed file generated');
       }
@@ -329,7 +329,7 @@ class ControllerExtensionFacebookProductFeed extends Controller {
       $end_time = time();
       $feed_gen_time = $end_time - $start_time;
       $this->faeLog->write(sprintf('feed generation finished, time used: %d seconds', $feed_gen_time));
-
+  
       $this->estimateFeedGenerationTimeWithDecay($feed_gen_time);
 
       // genFeedPing return time estimation only
@@ -338,14 +338,14 @@ class ControllerExtensionFacebookProductFeed extends Controller {
       }
 
       $this->sendFileResponse($productFeedFullFilename);
-    } catch (Exception $e) {
-      $this->faeLog->write('Error with gen feed file '.json_encode($e->getMessage()));
+		} catch (Exception $e) {
+			$this->faeLog->write('Error with gen feed file '.json_encode($e->getMessage()));
 
-      $this->response->addHeader('Content-type: text');
-      $this->response->setOutput('There was a problem generating your feed: %s', $e->getMessage());
+			$this->response->addHeader('Content-type: text');
+			$this->response->setOutput('There was a problem generating your feed: %s', $e->getMessage());
     }
   }
-
+  
   public function estimateFeedGenerationTime() {
     // Estimate = MAX (Appx Time to Gen 500 Products + 30 , Last Runtime + 20)
     $time_estimate = $this->estimateGenerationTime();
@@ -353,7 +353,7 @@ class ControllerExtensionFacebookProductFeed extends Controller {
     $facebook_settings = $this->model_extension_facebooksetting->getSettings();
     if (isset(
       $facebook_setting[FacebookCommonUtils::FACEBOOK_FEED_RUNTIME_AVG])) {
-      $time_previous_avg = $facebook_settings[FacebookCommonUtils::FACEBOOK_FEED_RUNTIME_AVG];
+        $time_previous_avg = $facebook_settings[FacebookCommonUtils::FACEBOOK_FEED_RUNTIME_AVG];
     }
 
     return max($time_estimate, $time_previous_avg);
@@ -362,13 +362,13 @@ class ControllerExtensionFacebookProductFeed extends Controller {
   private function estimateGenerationTime() {
     // Appx Time to Gen 500 products + 30
     $total_num_of_products = $this->model_catalog_product->getTotalProducts(array('filter_status' => 1));
-    $num_of_samples = $total_num_of_products <= FacebookCommonUtils:: FACEBOOK_THRESHOLD_FOR_DRY_RUN_FEED
-      ? $total_num_of_products
+    $num_of_samples = $total_num_of_products <= FacebookCommonUtils:: FACEBOOK_THRESHOLD_FOR_DRY_RUN_FEED 
+      ? $total_num_of_products 
       : FacebookCommonUtils:: FACEBOOK_THRESHOLD_FOR_DRY_RUN_FEED;
     if($num_of_samples == 0) {
       return FacebookCommonUtils::FACEBOOK_GEN_FEED_BUFFER_TIME;
     }
-
+    
     $feed_dryrun_filename = $this->getWritableProductFeedFolder() . FacebookCommonUtils::FACEBOOK_FEED_DRYRUN_FILENAME;
     $feed_dryrun = fopen($feed_dryrun_filename, 'ab');
     $start_time = time();

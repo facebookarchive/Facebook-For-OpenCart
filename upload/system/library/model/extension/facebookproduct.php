@@ -13,49 +13,31 @@ class ModelExtensionFacebookProduct extends Model {
   // instead of modifying the existing method which may lead to
   // breakage with other 3rd party plugins
   public function getProducts($data = array()) {
-    $sql = "SELECT " .
-      "p.*, " .
+    $sql = "SELECT p.*, " .
       "pd.*, " .
       "m.name AS manufacturer_name, " .
-      "GROUP_CONCAT(ptc.category_name SEPARATOR ', ') AS category_name, " .
-      "GROUP_CONCAT(ptcp.category_path_name SEPARATOR ', ') AS category_path_name " .
+      "ptc.category_name " .
       "FROM " . DB_PREFIX . "product p " .
       "LEFT JOIN " . DB_PREFIX . "product_description pd " .
-        "ON (p.product_id = pd.product_id) " .
+        " ON (p.product_id = pd.product_id) " .
       "LEFT JOIN " . DB_PREFIX . "manufacturer m " .
-        "ON (p.manufacturer_id = m.manufacturer_id) " .
+        " ON (p.manufacturer_id = m.manufacturer_id) " .
       // Retrieving category name for each product.
       // OpenCart allows each product to tag to multiple categories
       // and this relationship is stored in product_to_category.
-      // So the approach is to retrieve all categories for the product.
+      // So the approach is to retrieve the category with max id
+      // and use it for the product.
       // The category name is also stored separately in category_description
       "LEFT JOIN " .
         "(SELECT ptc.product_id, ptc.category_id, cd.name AS category_name " .
-          "FROM (SELECT product_id, category_id " .
+          "FROM (SELECT product_id, MAX(category_id) AS category_id " .
             "FROM " . DB_PREFIX . "product_to_category " .
-            ") AS ptc " .
+            "GROUP BY product_id) AS ptc " .
           "LEFT JOIN " . DB_PREFIX . "category_description cd " .
-            "ON (ptc.category_id = cd.category_id) " .
-          "WHERE cd.language_id = '" . (int)$this->config->get('config_language_id') . "' " .
-        ") ptc " .
+            "ON (ptc.category_id = cd.category_id)) ptc " .
         "ON (p.product_id = ptc.product_id) " .
-      "LEFT JOIN " .
-        "(SELECT " .
-          "c.category_id, " .
-          "GROUP_CONCAT(CONVERT(c.path_id, CHAR(8)) ORDER BY c.level ASC SEPARATOR ' > ') AS category_path_id, " .
-          "GROUP_CONCAT(c.name ORDER BY c.level ASC SEPARATOR ' > ') AS category_path_name " .
-          "FROM (" .
-            "SELECT cp.category_id, cp.path_id, cp.level, cd.name " .
-            "FROM " . DB_PREFIX . "category_path cp " .
-            "LEFT JOIN " . DB_PREFIX . "category_description cd " .
-              "ON (cp.path_id = cd.category_id) " .
-            "WHERE cd.language_id = '" . (int)$this->config->get('config_language_id') . "' " .
-            "ORDER BY cp.level ASC, cp.category_id ASC " .
-          ") AS c " .
-          "GROUP BY c.category_id " .
-        ") ptcp " .
-        "ON (ptc.category_id = ptcp.category_id) " .
-      "WHERE pd.language_id = '" . (int)$this->config->get('config_language_id') . "'";
+      "WHERE pd.language_id = '" .
+        (int)$this->config->get('config_language_id') . "'";
 
     if (!empty($data['filter_name'])) {
       $sql .= " AND pd.name LIKE '" .
@@ -143,41 +125,25 @@ class ModelExtensionFacebookProduct extends Model {
         "p.*, " .
         "pd.*, " .
         "m.name AS manufacturer_name, " .
-        "GROUP_CONCAT(ptc.category_name SEPARATOR ', ') AS category_name, " .
-        "GROUP_CONCAT(ptcp.category_path_name SEPARATOR ', ') AS category_path_name " .
+        "ptc.category_name " .
       "FROM " . DB_PREFIX . "product p " .
       "LEFT JOIN " . DB_PREFIX . "product_description pd " .
         "ON (p.product_id = pd.product_id) " .
       "LEFT JOIN " . DB_PREFIX . "manufacturer m " .
         "ON (p.manufacturer_id = m.manufacturer_id) " .
       "LEFT JOIN " .
-        "(SELECT ptc.product_id, ptc.category_id, cd.name AS category_name " .
-          "FROM (SELECT product_id, category_id " .
+        "(SELECT ptc.product_id, " .
+          "ptc.category_id, " .
+          "cd.name AS category_name " .
+          "FROM (SELECT product_id, MAX(category_id) AS category_id " .
             "FROM " . DB_PREFIX . "product_to_category " .
-          ") AS ptc " .
+            "GROUP BY product_id) AS ptc " .
           "LEFT JOIN " . DB_PREFIX . "category_description cd " .
-            "ON (ptc.category_id = cd.category_id) " .
-          "WHERE cd.language_id = '" . (int)$this->config->get('config_language_id') . "' " .
-        ") ptc " .
+            "ON (ptc.category_id = cd.category_id)) ptc " .
         "ON (p.product_id = ptc.product_id) " .
-      "LEFT JOIN " .
-        "(SELECT " .
-          "c.category_id, " .
-          "GROUP_CONCAT(CONVERT(c.path_id, CHAR(8)) ORDER BY c.level ASC SEPARATOR ' > ') AS category_path_id, " .
-          "GROUP_CONCAT(c.name ORDER BY c.level ASC SEPARATOR ' > ') AS category_path_name " .
-          "FROM (" .
-            "SELECT cp.category_id, cp.path_id, cp.level, cd.name " .
-            "FROM " . DB_PREFIX . "category_path cp " .
-            "LEFT JOIN " . DB_PREFIX . "category_description cd " .
-              "ON (cp.path_id = cd.category_id) " .
-            "WHERE cd.language_id = '" . (int)$this->config->get('config_language_id') . "' " .
-            "ORDER BY cp.level ASC, cp.category_id ASC " .
-          ") AS c " .
-          "GROUP BY c.category_id " .
-        ") ptcp " .
-        "ON (ptc.category_id = ptcp.category_id) " .
       "WHERE p.product_id = '" . (int)$product_id . "' " .
-        "AND pd.language_id = '" . (int)$this->config->get('config_language_id') . "'");
+        "AND pd.language_id = '" .
+          (int)$this->config->get('config_language_id') . "'");
 
     return $query->row;
   }
