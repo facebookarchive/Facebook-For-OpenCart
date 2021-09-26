@@ -41,14 +41,69 @@
           </ul>
           <div class="tab-content">
             <div class="tab-pane active" id="tab-connection">
-              <div id="facebook-info">
-                <img src="view/image/facebook_business/f_logo.png" alt="Facebook" title="Facebook" width="60px" class="img-responsive" /><br />
-                <h3><?php echo $text_heading; ?></h3>
-                <p><i class="fa fa-puzzle-piece"></i> <?php echo $text_info_1; ?></p>
-                <p><i class="fa fa-pie-chart"></i> <?php echo $text_info_2; ?></p>
-                <p><i class="fa fa-cart-plus"></i> <?php echo $text_info_3; ?></p>
+              <div class="panel panel-default">
+                <div class="panel-heading"><h3 class="panel-title"><?php echo $text_connection; ?></h3></div>
+                <div class="panel-body">
+                  <div id="facebook-info">
+                    <img src="view/image/facebook_business/f_logo.png" alt="Facebook" title="Facebook" width="60px" class="img-responsive" /><br />
+                    <h3><?php echo $text_heading; ?></h3>
+                    <p><i class="fa fa-puzzle-piece"></i> <?php echo $text_info_1; ?></p>
+                    <p><i class="fa fa-pie-chart"></i> <?php echo $text_info_2; ?></p>
+                    <p><i class="fa fa-cart-plus"></i> <?php echo $text_info_3; ?></p>
+                  </div>
+                  <iframe id="fbIframe" src="<?php echo $opencart_iframe_url; ?>" width="100%" height="150" frameBorder="0"></iframe>
+                </div>
               </div>
-              <iframe id="fbIframe" src="<?php echo $opencart_iframe_url; ?>" width="100%" height="150" frameBorder="0"></iframe>
+              <?php if ($access_token) { ?>
+              <div class="panel panel-default">
+                <div class="panel-heading"><h3 class="panel-title"><?php echo $text_ads_creation; ?></h3></div>
+                <div class="panel-body">
+                  <div class="fb-lwi-ads-creation" 
+                      data-fbe-extras=
+                      "{
+                            'business_config' : {
+                                'business': {
+                                    'name':'<?php echo $business_name; ?>'
+                                }
+                            },
+                            'setup'             : {
+                                'external_business_id' : '<?php echo $external_business_id; ?>',
+                                'timezone'             : '<?php echo $timezone; ?>',
+                                'currency'             : '<?php echo $currency; ?>',
+                                'business_vertical'    : 'ECOMMERCE'
+                            },
+                            'repeat'            : false
+                        }"
+                        data-fbe-scopes="manage_business_extension,ads_management,catalog_management"
+                        data-fbe-redirect-uri='<?php echo $redirect_uri; ?>'>
+                  </div>
+                </div>
+              </div>
+              <div class="panel panel-default">
+                <div class="panel-heading"><h3 class="panel-title"><?php echo $text_ads_insights; ?></h3></div>
+                <div class="panel-body">
+                  <div class="fb-lwi-ads-insights" 
+                      data-fbe-extras=
+                      "{
+                            'business_config'   : {
+                                'business' : {
+                                    'name' : '<?php echo $business_name; ?>'
+                                }
+                            },
+                            'setup'             : {
+                                'external_business_id' : '<?php echo $external_business_id; ?>',
+                                'timezone'             : '<?php echo $timezone; ?>',
+                                'currency'             : '<?php echo $currency; ?>',
+                                'business_vertical'    : 'ECOMMERCE'
+                            },
+                            'repeat'            : false
+                      }"
+                      data-fbe-scopes="manage_business_extension,ads_management,catalog_management"
+                      data-fbe-redirect-uri='<?php echo $redirect_uri; ?>'>
+                  </div>
+                </div>
+              </div>
+              <?php } ?>
               <div class="text-left"><p><small><?php echo $text_plugin_version; ?></small></p></div>
             </div>
             <div class="tab-pane" id="tab-settings">

@@ -37,6 +37,12 @@ class ControllerExtensionModuleFacebookBusiness extends Controller {
 
         $this->load->model('extension/module/facebook_business');
 
+        // For LWI integration
+        $data['business_name'] = $this->config->get('config_name');
+        $data['external_business_id'] = HTTPS_CATALOG;
+        $data['timezone'] = date_default_timezone_get();
+        $data['currency'] = strtoupper(addslashes($this->config->get('config_currency')));
+
         $plugin_version = $this->model_extension_module_facebook_business->getPluginVersion();
 
         $data['opencart_iframe_url'] = $this->opencart_server_base_url . '/facebook?'
@@ -66,9 +72,11 @@ class ControllerExtensionModuleFacebookBusiness extends Controller {
             $data['opencart_iframe_url'] .= '&s2s_configured=' . $this->config->get('facebook_use_s2s');
         }
 
+        $data['access_token'] = $this->config->get('facebook_system_user_access_token');
         $data['opencart_server_base_url'] = $this->opencart_server_base_url;
         $data['facebook_app_id'] = $this->facebook_app_id;
         $data['user_token'] = $this->session->data['user_token'];
+        $data['redirect_uri'] = $this->url->link('extension/module/facebook_business', 'user_token=' . $this->session->data['user_token'], true);
 
         $data['breadcrumbs'] = array();
 
@@ -348,8 +356,10 @@ class ControllerExtensionModuleFacebookBusiness extends Controller {
     public function eventPostModelAddProduct($route, &$args, $product_id) {
         $data = $args[0];
 
-        $this->db->query("DELETE FROM " . DB_PREFIX . "product_to_facebook WHERE product_id = '" . (int)$product_id . "'");
-        $this->db->query("INSERT INTO " . DB_PREFIX . "product_to_facebook SET product_id = '" . (int)$product_id . "', google_product_category = '" . (int)$data['facebook_google_product_category'] . "', `condition` = '" . $this->db->escape($data['facebook_condition']) . "', age_group = '" . $this->db->escape($data['facebook_age_group']) . "', color = '" . $this->db->escape($data['facebook_color']) . "', gender = '" . $this->db->escape($data['facebook_gender']) . "', material = '" . $this->db->escape($data['facebook_material']) . "', pattern = '" . $this->db->escape($data['facebook_pattern']) . "'");
+        if (isset($data['facebook_google_product_category']) && isset($data['facebook_condition']) && isset($data['facebook_age_group']) && isset($data['facebook_color']) && isset($data['facebook_gender']) && isset($data['facebook_material']) && isset($data['facebook_pattern'])) {
+            $this->db->query("DELETE FROM " . DB_PREFIX . "product_to_facebook WHERE product_id = '" . (int)$product_id . "'");
+            $this->db->query("INSERT INTO " . DB_PREFIX . "product_to_facebook SET product_id = '" . (int)$product_id . "', google_product_category = '" . (int)$data['facebook_google_product_category'] . "', `condition` = '" . $this->db->escape($data['facebook_condition']) . "', age_group = '" . $this->db->escape($data['facebook_age_group']) . "', color = '" . $this->db->escape($data['facebook_color']) . "', gender = '" . $this->db->escape($data['facebook_gender']) . "', material = '" . $this->db->escape($data['facebook_material']) . "', pattern = '" . $this->db->escape($data['facebook_pattern']) . "'");
+        }
     }
 
     public function eventPostModelCopyProduct($route, &$args, $test) {

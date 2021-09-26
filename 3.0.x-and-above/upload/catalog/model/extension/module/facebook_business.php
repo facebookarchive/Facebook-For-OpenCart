@@ -19,14 +19,16 @@ use FacebookAds\Object\ServerSide\UserData;
 use FacebookAds\Object\ServerSide\Util;
 
 class ModelExtensionModuleFacebookBusiness extends Model {
-    private $pluginVersion = '4.1.1';
+    private $pluginVersion = '4.2.0';
 
-    // this function is a direct lifting from admin/model/catalog/product.php
-    // except that the SQL query is joining other tables to obtain
-    // brand, category, facebook_product_id and facebook_product_group_id
-    // the rational to duplicate this method into this external class
-    // instead of modifying the existing method which may lead to
-    // breakage with other 3rd party plugins
+    /** 
+      * This function is a direct lifting from admin/model/catalog/product.php,
+      * except that this SQL query is joining other tables to obtain
+      * brand, category, Facebook Product ID and Facebook Product Group ID.
+      * The rationale to duplicate this method into an external class instead
+      * of modifying the existing getProducts metohd is to prevent any
+      * potential conflicts with other third-party extensions.
+      */
     public function getProducts($data = array()) {
         $sql = "SELECT p.*, pd.*, m.name AS manufacturer_name, ptc.category_name FROM " . DB_PREFIX . "product p " .
           "LEFT JOIN " . DB_PREFIX . "product_description pd ON (p.product_id = pd.product_id) " .
@@ -215,7 +217,11 @@ class ModelExtensionModuleFacebookBusiness extends Model {
 
     private function installExtension($user_group_id = 0) {
         // Install extension
-        $this->db->query("INSERT INTO `" . DB_PREFIX . "extension` SET `type` = 'module', `code` = 'facebook_business'");
+        $extension_query = $this->db->query("SELECT * FROM `" . DB_PREFIX . "extension` WEHRE `type` = 'module' AND `code` = 'facebook_business'");
+
+        if (!$extension_query->num_rows) {
+            $this->db->query("INSERT INTO `" . DB_PREFIX . "extension` SET `type` = 'module', `code` = 'facebook_business'");
+        }
         
         // Add custom table
         $this->db->query("
@@ -231,7 +237,10 @@ class ModelExtensionModuleFacebookBusiness extends Model {
             `pattern` varchar(255) NOT NULL,
             PRIMARY KEY (`product_to_facebook_id`)
           ) ENGINE=MyISAM DEFAULT COLLATE=utf8_general_ci;");
-        
+
+        // Delete any existing events first
+        $this->db->query("DELETE FROM `" . DB_PREFIX . "event` WHERE `code` = 'facebook_business'");
+
         // Install events
         $this->db->query("INSERT INTO `" . DB_PREFIX . "event` SET `code` = 'module_facebook_business', `trigger` = 'admin/view/common/dashboard/after', `action` = 'extension/module/facebook_business/eventPostViewCommonDashboard', `sort_order` = '0', `status` = '1'");
         $this->db->query("INSERT INTO `" . DB_PREFIX . "event` SET `code` = 'module_facebook_business', `trigger` = 'admin/view/common/column_left/before', `action` = 'extension/module/facebook_business/eventPreViewCommonColumnLeft', `sort_order` = '0', `status` = '1'");
@@ -254,10 +263,10 @@ class ModelExtensionModuleFacebookBusiness extends Model {
 
         if ($user_group_query->num_rows) {
             $data = json_decode($user_group_query->row['permission'], true);
-      
+
             $data['access'][] = 'extension/module/facebook_business';
             $data['modify'][] = 'extension/module/facebook_business';
-      
+
             $this->db->query("UPDATE " . DB_PREFIX . "user_group SET permission = '" . $this->db->escape(json_encode($data)) . "' WHERE user_group_id = '" . (int)$user_group_id . "'");
         }
     }
@@ -349,7 +358,7 @@ class ModelExtensionModuleFacebookBusiness extends Model {
         $event_name = 'ViewContent';
         $event_id = $this->generateEventId();
     
-        // checking the route and handling the event firing accordingly
+        // Checking route and handling the events fired accordingly
         switch ($route) {
             case 'checkout/success':
                 $event_name = 'Purchase';
@@ -971,21 +980,25 @@ class ModelExtensionModuleFacebookBusiness extends Model {
         }
 
         if ($this->config->get('facebook_use_s2s')) {
-            $pixel_id = $this->config->get('facebook_pixel_id');
-            $access_token = $this->config->get('facebook_system_user_access_token');
-            $agent_data = json_decode($this->getAgentParameters(), true);
-            $agent = $agent_data['agent'];
             $user_pii_data = $this->getPii();
 
             $client_ips = explode(',', Util::getIpAddress());
             $client_ip = $client_ips[0];
 
+            $user_agent = Util::getHttpUserAgent();
+
             try {
-                $user_data = (new UserData())
-                    ->setClientIpAddress($client_ip)
-                    ->setClientUserAgent(Util::getHttpUserAgent())
-                    ->setFbp(Util::getFbp())
-                    ->setFbc(Util::getFbc());
+                if (!empty($client_ip) && !empty($user_agent)) {
+                    $user_data = (new UserData())
+                        ->setClientIpAddress($client_ip)
+                        ->setClientUserAgent($user_agent)
+                        ->setFbp(Util::getFbp())
+                        ->setFbc(Util::getFbc());
+                } else {
+                    $user_data = (new UserData())
+                        ->setFbp(Util::getFbp())
+                        ->setFbc(Util::getFbc());
+                }
 
                 if ($user_pii_data) {
                     if (!empty($user_pii_data['em'])) {
@@ -1043,9 +1056,12 @@ class ModelExtensionModuleFacebookBusiness extends Model {
                 return false;
             }
 
-            $api = Api::init(null, null, $access_token, false);
+            $api = Api::init(null, null, $this->config->get('facebook_system_user_access_token'), false);
 
-            $async_request = (new EventRequestAsync($pixel_id))
+            $agent_data = json_decode($this->getAgentParameters(), true);
+            $agent = $agent_data['agent'];
+
+            $async_request = (new EventRequestAsync($this->config->get('facebook_pixel_id')))
                   ->setEvents(array($event))
                   ->setPartnerAgent($agent);
 

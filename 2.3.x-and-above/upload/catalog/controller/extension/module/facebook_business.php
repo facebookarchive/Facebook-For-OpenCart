@@ -11,9 +11,6 @@ class ControllerExtensionModuleFacebookBusiness extends Controller {
     private $facebook_app_id = '785409108588782';
     private $facebook_feed_filename = 'fbe_product_catalog.csv';
 
-    public function index() {
-    }
-
     public function genFeed($gen_now = false) {
         $this->load->model('catalog/product');
         $this->load->model('extension/module/facebook_business');
@@ -27,12 +24,8 @@ class ControllerExtensionModuleFacebookBusiness extends Controller {
             if ($product_feed_path) {
                 $is_stale = $this->isFeedFileStale($product_feed_path);
 
-                if (!$is_stale && !$gen_now) {
-                    // log skip generation of feed
-                } else {
-                    // remove the file if it exists
-                    // this is because we are switching to append mode
-                    // when writing the file and to avoid writing into existing content
+                if ($is_stale || $gen_now) {
+                    // Remove any existing file
                     if (is_file($product_feed_path)) {
                         unlink($product_feed_path);
                     }
@@ -40,10 +33,9 @@ class ControllerExtensionModuleFacebookBusiness extends Controller {
                     if (!$this->generateProductFeedFile($product_feed_path)) {
                         return false;
                     }
-            
-                    // performs a last check if the feed file is successfully generated
-                    if (is_file($product_feed_path)) {
-                    } else {
+
+                    // Perform one last check if the feed file is successfully generated
+                    if (!is_file($product_feed_path)) {
                         return false;
                     }
                 }
@@ -271,30 +263,28 @@ class ControllerExtensionModuleFacebookBusiness extends Controller {
 
     private function isFeedFileStale($filepath) {
         $time_file_modified = file_exists($filepath) ? filemtime($filepath) : 0;
-    
-        // if we get no file modified time, or the modified time is 8hours ago,
-        // we count it as stale
+
+        /**
+         * If no file last modified time is available, or the last modified time
+         * is 1 hour ago, we count it as 'stale'
+         */
         if (!$time_file_modified) {
             return true;
         } else {
-            return time() - $time_file_modified > 8*3600;
+            return time() - $time_file_modified > 3600;
         }
     }
 
     private function generateProductFeedFile($product_feed_path) {
         try {
-            // opens up the feed file and close inside the main method
-            // to avoid the extra overhead of file opening and closing
-            // error_log('feed file = ' . $product_feed_path);
             $feed_file = fopen($product_feed_path, "ab");
-      
+
             if (!$this->writeProductFeedFileHeader($feed_file)) {
-                // something wrong happened, return false
                 fclose($feed_file);
                 return false;
             }
-            // queries and writes the products in batches
-            // this is to handle for large product catalogs
+
+            // Process products in batches to handle large product catalogs
             $filter_data = array(
                 'filter_status' => 1
             );
@@ -303,7 +293,7 @@ class ControllerExtensionModuleFacebookBusiness extends Controller {
       
             return $this->writeProductFeedFileInBatch($product_total, $feed_file);
         } catch (Exception $e) {
-            // handles any exceptions during the feed file generation
+            // Handle any exceptions during the feed file generation
             if (isset($feed_file) && !!($feed_file)) {
                 fclose($feed_file);
             }
@@ -313,9 +303,10 @@ class ControllerExtensionModuleFacebookBusiness extends Controller {
     }
 
     private function writeProductFeedFileHeader($feed_file) {
-        $product_feed_header_row = 'id,title,description,image_link,link,google_product_category,brand,price,' . 
+        $product_feed_header_row = 'id,title,description,rich_text_description,image_link,link,google_product_category,brand,price,' . 
             'availability,item_group_id,additional_image_link,sale_price,sale_price_effective_date,condition,' . 
             'age_group,color,gender,material,pattern' . PHP_EOL;
+
         try {
             fputs($feed_file, "\xEF\xBB\xBF");
             fwrite($feed_file, $product_feed_header_row);
@@ -327,6 +318,7 @@ class ControllerExtensionModuleFacebookBusiness extends Controller {
 
     private function writeProductFeedFileInBatch($product_total, $feed_file) {
         $total_batches = ceil($product_total / 100);
+
         for ($batch_number = 0; $batch_number < $total_batches; $batch_number++) {
             $filter_data = array(
                 'start' => $batch_number * 100,
@@ -338,14 +330,13 @@ class ControllerExtensionModuleFacebookBusiness extends Controller {
 
             if (isset($products) && sizeof($products) > 0) {
                 if (!$this->writeProductFeedFile($products, $feed_file)) {
-                    // something wrong happened, return false
                     fclose($feed_file);
                     return false;
                 }
             }
         }
 
-        // feed file is generated successfully
+        // Feed file generation is successful
         fclose($feed_file);
         return true;
     }
@@ -421,6 +412,7 @@ class ControllerExtensionModuleFacebookBusiness extends Controller {
             'retailer_id'                 => $product_info['product_id'],
             'name'                        => $this->getName($product_info),
             'description'                 => $this->getDescription($product_info),
+            'rich_text_description'       => $this->getRichTextDescription($product_info),
             'image_url'                   => $this->formatAndTrimString($this->getImageUrl($product_info['image'])),
             'product_url'                 => $this->getProductUrl($product_info['product_id']),
             'category'                    => $this->getCategory($product_info),
@@ -468,6 +460,14 @@ class ControllerExtensionModuleFacebookBusiness extends Controller {
                 $description = ucfirst(strtolower($description));
             }
         }
+
+        return $description;
+    }
+
+    private function getRichTextDescription($product_info) {
+        $description = html_entity_decode($product_info['description'], ENT_QUOTES, 'UTF-8');
+
+        $description = '"' . str_replace('"', '""', $description) . '"';
 
         return $description;
     }
@@ -633,12 +633,12 @@ class ControllerExtensionModuleFacebookBusiness extends Controller {
         $event_name = (isset($this->request->get['event_name']))
           ? $this->request->get['event_name']
           : '';
-    
-        // creating a default facebook_pixel_params with just the event_name
-        // and empty parameters
-        // this is to guard against cases
-        // where the product is not found
-        // or the product_id is not available
+
+        /**
+         * Creating a default facebook_pixel_params with just the event_name
+         * and empty parameters. This is to guard against cases where the
+         * product is not found or the product_id is not available.
+         */
         $facebook_pixel_event_params = array('event_name' => $event_name);
 
         if (isset($this->request->get['product_id']) && $this->request->get['product_id']) {

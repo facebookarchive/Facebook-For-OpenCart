@@ -20,6 +20,9 @@ $_['text_info_2']                           = 'Use the pixel to build the right 
 $_['text_info_3']                           = 'Promote all your products at once with your catalog instead of having to create individual ads.';
 $_['text_upgrade_message']                  = 'A newer version of the Facebook Business Extension plugin is available. To download it, go to <a href="https://github.com/facebookincubator/Facebook-For-OpenCart/releases" target="_blank">Github</a> or <a href="https://www.opencart.com/index.php?route=marketplace/extension/info&extension_id=32336" target="_blank">OpenCart marketplace</a>.';
 $_['text_plugin_version']                   = 'Plugin Version %s';
+$_['text_connection']                       = 'Facebook Business Connection';
+$_['text_ads_creation']                     = 'Ads Creation';
+$_['text_ads_insights']                     = 'Ads Insights';
 
 // Tab
 $_['tab_connection']                        = 'Connection';

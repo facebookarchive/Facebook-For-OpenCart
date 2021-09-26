@@ -62,7 +62,9 @@
             ]]></search>
             <add position="after"><![CDATA[
                 <?php if ($is_facebook_business_installed) { ?>
-                <li id="facebook-business-extension"><a href="<?php echo $facebook_business; ?>"><i class="fa fa-facebook-square"></i> Facebook Business Extension</span></a></li>
+                <li id="facebook-business-extension">
+                  <a href="<?php echo $facebook_business; ?>"><i class="fa fa-facebook-square fa-fw"></i> <span>Facebook Business Extension</span></a>
+                </li>
                 <?php } ?>
             ]]></add>
         </operation>

@@ -36,6 +36,12 @@ class ControllerModuleFacebookBusiness extends Controller {
 
         $this->load->model('module/facebook_business');
 
+        // For LWI integration
+        $data['business_name'] = $this->config->get('config_name');
+        $data['external_business_id'] = HTTPS_CATALOG;
+        $data['timezone'] = date_default_timezone_get();
+        $data['currency'] = strtoupper(addslashes($this->config->get('config_currency')));
+
         $plugin_version = $this->model_module_facebook_business->getPluginVersion();
 
         $data['opencart_iframe_url'] = $this->opencart_server_base_url . '/facebook?'
@@ -65,9 +71,11 @@ class ControllerModuleFacebookBusiness extends Controller {
             $data['opencart_iframe_url'] .= '&s2s_configured=' . $this->config->get('facebook_use_s2s');
         }
 
+        $data['access_token'] = $this->config->get('facebook_system_user_access_token');
         $data['opencart_server_base_url'] = $this->opencart_server_base_url;
         $data['facebook_app_id'] = $this->facebook_app_id;
         $data['token'] = $this->session->data['token'];
+        $data['redirect_uri'] = $this->url->link('module/facebook_business', 'token=' . $this->session->data['token'], true);
 
         $data['breadcrumbs'] = array();
 
