@@ -1,7 +1,10 @@
 Facebook Business Extension
-Latest version: 4.2.0
+Latest version: 4.2.1
 
 Change log
+4.2.1 - 03 Dec 2021
+* Fixed minor bugs and code improvements 
+
 4.2.0 - 27 Sep 2021
 * Added LWI Integration
 * Reduced cache duration of catalog feed from 8 hours to 1 hour

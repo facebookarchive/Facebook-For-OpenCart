@@ -19,7 +19,7 @@ use FacebookAds\Object\ServerSide\UserData;
 use FacebookAds\Object\ServerSide\Util;
 
 class ModelModuleFacebookBusiness extends Model {
-    private $pluginVersion = '4.2.0';
+    private $pluginVersion = '4.2.1';
 
     /** 
       * This function is a direct lifting from admin/model/catalog/product.php,
@@ -217,7 +217,7 @@ class ModelModuleFacebookBusiness extends Model {
 
     private function installExtension($user_group_id = 0) {
         // Install extension
-        $extension_query = $this->db->query("SELECT * FROM `" . DB_PREFIX . "extension` WEHRE `type` = 'module' AND `code` = 'facebook_business'");
+        $extension_query = $this->db->query("SELECT * FROM `" . DB_PREFIX . "extension` WHERE `type` = 'module' AND `code` = 'facebook_business'");
 
         if (!$extension_query->num_rows) {
             $this->db->query("INSERT INTO `" . DB_PREFIX . "extension` SET `type` = 'module', `code` = 'facebook_business'");
@@ -924,7 +924,7 @@ class ModelModuleFacebookBusiness extends Model {
         }
 
         if (isset($this->request->get['page'])) {
-            $page = $this->request->get['page'];
+            $page = (int)$this->request->get['page'];
         } else {
             $page = 1;
         }
@@ -1048,12 +1048,13 @@ class ModelModuleFacebookBusiness extends Model {
                   ->setPartnerAgent($agent);
 
             return $async_request->execute()
-              ->then(
-                null,
-                function(\Exception $ex) {
-                  $this->log->write('Facebook Business Extension :: Fail to send server event! Error Message: ' . $ex->getMessage());
-                }
-              );
+                ->then(
+                    null,
+                    function(\Exception $ex) {
+                        // For debugging
+                        // $this->log->write('Facebook Business Extension :: Fail to send server event! Error Message: ' . $ex->getMessage());
+                    }
+                );
         }
     }
 
